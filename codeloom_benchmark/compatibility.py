@@ -125,7 +125,15 @@ def check(engine: Path, destination: Path):
         ],
         "policy": "Both native adapters must explicitly select the same model/effort; the broker rejects mismatches and never reconstructs histories.",
         "engine_source_commit": subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=engine, text=True
+            [
+                "git",
+                f"--git-dir={engine.resolve() / '.git'}",
+                f"--work-tree={engine.resolve()}",
+                "rev-parse",
+                "HEAD",
+            ],
+            cwd=engine,
+            text=True,
         ).strip(),
         "runtime": runtime,
         "wire_evidence": "adapter-check/status.json",

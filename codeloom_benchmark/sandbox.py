@@ -15,6 +15,13 @@ BASE_TAG = "codeloom-benchmark-runtime:dev"
 
 
 def prepare_runtime(engine: Path):
+    engine = engine.resolve()
+    git = [
+        "git",
+        f"--git-dir={engine / '.git'}",
+        f"--work-tree={engine}",
+    ]
+    tracked = command([*git, "ls-files"], cwd=engine).splitlines()
     stage = ROOT / ".cache/docker/base"
     stage.mkdir(parents=True, exist_ok=True)
     for rel in ("Dockerfile", "engine-requirements.lock", ".dockerignore"):
@@ -25,7 +32,7 @@ def prepare_runtime(engine: Path):
     if target.exists():
         shutil.rmtree(target)
     target.mkdir()
-    for rel in command(["git", "ls-files"], cwd=engine).splitlines():
+    for rel in tracked:
         source = engine / rel
         if source.is_file() and not rel.startswith(("tests/", "docs/", ".github/")):
             dest = target / rel
@@ -38,7 +45,7 @@ def prepare_runtime(engine: Path):
     image = command(["docker", "image", "inspect", BASE_TAG, "--format", "{{.Id}}"])
     engine_files = {
         rel: digest(engine / rel)
-        for rel in command(["git", "ls-files"], cwd=engine).splitlines()
+        for rel in tracked
         if (engine / rel).is_file()
     }
     record = {
@@ -50,8 +57,8 @@ def prepare_runtime(engine: Path):
         },
         "platform": PLATFORM,
         "image": image,
-        "engine_commit": command(["git", "rev-parse", "HEAD"], cwd=engine),
-        "engine_dirty": bool(command(["git", "status", "--porcelain"], cwd=engine)),
+        "engine_commit": command([*git, "rev-parse", "HEAD"], cwd=engine),
+        "engine_dirty": bool(command([*git, "status", "--porcelain"], cwd=engine)),
     }
     write_json(ROOT / ".cache/runtime.json", record)
     return record
