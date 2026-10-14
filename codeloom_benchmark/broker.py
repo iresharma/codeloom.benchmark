@@ -225,7 +225,13 @@ class Broker:
                         broker.record(
                             trial,
                             {
-                                "status": "budget_exhausted",
+                                "status": "call_cost_limit"
+                                if exc.reason == "call_cost_limit"
+                                else "budget_exhausted",
+                                "refusal_reason": exc.reason,
+                                "detail": str(exc),
+                                "estimated_cost_usd": amount / 1_000_000,
+                                "request_blob": broker.blob(canonical(body)),
                                 "elapsed_s": 0,
                                 "started_at": time.time(),
                             },
@@ -238,6 +244,7 @@ class Broker:
                     "id": call_id,
                     "trial_id": trial,
                     "reserved_usd": amount / 1_000_000,
+                    "budget_policy": broker.ledger.snapshot()["budget_policy"],
                     "request_blob": broker.blob(canonical(body)),
                     "started_at": time.time(),
                     "admission_queue_s": time.monotonic() - admission_started,

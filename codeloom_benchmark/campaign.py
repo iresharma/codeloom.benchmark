@@ -57,6 +57,8 @@ def services(root, calibration=None):
         ROOT / ".cache/campaign/ledger.sqlite",
         settings["campaign_limit_usd"],
         settings["stage_limits"],
+        budget_policy=settings.get("budget_policy", "strict-reservation"),
+        call_limit_multiplier=settings.get("call_limit_multiplier", 3),
     )
     if (
         ledger.snapshot()["unknown_calls"]
@@ -308,6 +310,8 @@ def calibrate(root, engine):
                 "image"
             ],
             "parallel_attempts": config().get("parallel_attempts", 1),
+            "budget_policy": config().get("budget_policy", "strict-reservation"),
+            "call_limit_multiplier": config().get("call_limit_multiplier", 3),
             "watchdog_s": watchdog,
             "request_timeout_s": timeout,
             "observed_generated_tokens_per_elapsed_s": throughput,

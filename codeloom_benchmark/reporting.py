@@ -165,6 +165,9 @@ def summarize(manifest: dict, attempts: list[dict]):
                 "budget_hits": sum(
                     r["termination"] == "budget_exhausted" for r in rows
                 ),
+                "call_cost_limit_hits": sum(
+                    r["termination"] == "call_cost_limit" for r in rows
+                ),
                 "watchdog_hits": sum(r["termination"] == "watchdog" for r in rows),
                 "unknown_costs": unknown[system],
                 "regressions": sum(r["regressions"] or 0 for r in rows),
@@ -192,6 +195,14 @@ def summarize(manifest: dict, attempts: list[dict]):
         "repo_count": len({t["repo"] for t in task_rows}),
         "repeat_count": 0,
         "budget_usd": 50,
+        "budget_is_hard_ceiling": manifest["settings"].get(
+            "budget_policy", "strict-reservation"
+        )
+        != "actual-spend",
+        "budget_policy": manifest["settings"].get(
+            "budget_policy", "strict-reservation"
+        ),
+        "call_limit_multiplier": manifest["settings"].get("call_limit_multiplier", 3),
         "pairs": pairs,
         "systems": systems,
         "tasks": task_rows,
@@ -254,7 +265,7 @@ def report(root: Path):
         ]
         for system in summary["systems"]:
             lines.append(
-                f"- {system['id']}: {system['budget_hits']} budget stops, {system['watchdog_hits']} watchdog stops, {system['regressions']} newly failing trusted check commands."
+                f"- {system['id']}: {system['budget_hits']} budget stops, {system['call_cost_limit_hits']} call estimate stops, {system['watchdog_hits']} watchdog stops, {system['regressions']} newly failing trusted check commands."
             )
         for system in SYSTEMS:
             for outcome in ("pass", "fail"):

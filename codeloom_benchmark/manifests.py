@@ -70,6 +70,15 @@ def task_limit(task, settings=None):
 
 
 def validate_suite(suite="v1"):
+    settings = config()
+    if settings.get("budget_policy", "strict-reservation") not in (
+        "strict-reservation",
+        "actual-spend",
+    ):
+        raise ValueError("Unknown budget policy")
+    multiplier = settings.get("call_limit_multiplier", 3)
+    if type(multiplier) is not int or multiplier < 1:
+        raise ValueError("Call multiplier must be a positive integer")
     for setting in ("parallel_attempts", "certification_workers"):
         if config().get(setting, 1) not in (1, 2):
             raise ValueError(f"{setting} must be 1 or 2 for this protocol")

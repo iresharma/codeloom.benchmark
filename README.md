@@ -4,7 +4,7 @@
 
 ## Current status
 
-The owner authorized running the harness on Railway on 2026-10-14. Paid commands remain subject to certification, native compatibility, pricing, calibration, preregistration and the unchanged $50 total budget.
+The owner authorized running the harness on Railway on 2026-10-14. Official paid commands remain held until the requested summary, certification, native compatibility, pricing, calibration and preregistration. The owner subsequently authorized actual-spend stopping with a 3x per-call estimate gate; the $50 allocation is now a target that final calls may overshoot.
 
 The initial native compatibility check passes: both adapters preserve reasoning history and explicitly send the same High effort, including an Engine child. Railway rebuilds and repeats this check before calibration. `reports/compatibility.json` contains synthetic evidence, not coding scores. The live campaign state is at https://benchmark-monitor-production.up.railway.app/ and is authoritative for current progress.
 
@@ -84,7 +84,7 @@ Conservative admission rates are **$1.32/M input and $3.96/M output**, 4.4× the
 
 Refresh the read-only analysis with `./scripts/benchmark cost-analysis`. Versioned settings and model metadata are in `configs/core.yaml` and `configs/model.json`; dependency pins are in `uv.lock` and `engine-requirements.lock`.
 
-| Allocation | Ceiling |
+| Allocation | Actual-spend stopping target |
 | --- | ---: |
 | Development/calibration (four $1.50 runs + probes) | $8 |
 | 20 measured attempts (shared envelope) | $32 |
@@ -92,9 +92,9 @@ Refresh the read-only analysis with `./scripts/benchmark cost-analysis`. Version
 | OpenRouter fees / rounding buffer | $5 |
 | Total | **$50** |
 
-Individual attempt caps are **$1 light, $2 medium and $4 heavy**, identical for both systems on each task. Their maxima total $50, but share the $32 measurement envelope; these are ceilings rather than guaranteed allocations. Pair admission can stop with scheduled tasks unrun. Exhausting all attempt maxima plus the development/recovery/fees reserves would require $68, which is not authorized. The overall ceiling stays $50.
+Individual attempt spending targets are **$1 light, $2 medium and $4 heavy**, identical for both systems on each task. A call is rejected if its conservative estimate is strictly above **3x the full trial target** ($3/$6/$12), not 3x remaining headroom. Otherwise, while actual provider charges remain below trial, stage and campaign targets, it is admitted even when its estimate exceeds remaining headroom. After its bill settles, no next call is admitted if actual spending has reached a target. The final admitted call may overshoot; this policy intentionally does not guarantee a $50 hard ceiling. Shared stage/campaign targets remain $8/$32/$5 and $45 inference plus $5 fees/buffer. Pair admission can leave scheduled tasks unrun; allocations are not guaranteed.
 
-The host-only broker owns the real key and durable SQLite ledger. It reserves conservative input/output upper bounds transactionally before every request, covering concurrent children. Agents receive only opaque per-attempt tokens. Unknown bills retain their full reservations; new paid calls stop until reconciled. Any price overrun halts admission. Defaults cannot be increased when resuming a campaign. A campaign binds measurement to one run directory; renaming a run cannot create another set of primary attempts. The campaign ledger is `.cache/campaign/ledger.sqlite`; do not delete it to reset spent budget. Actual charges come from provider usage, not a second client-side estimate.
+The host-only broker owns the real key and durable SQLite ledger. Conservative byte-input/full-output estimates remain recorded, but actual provider usage controls budget stopping. Engine children queue behind any in-flight inference in the same trial so they cannot multiply a final-call overshoot before the bill arrives; the other benchmark arm can still run concurrently. Agents receive only opaque per-attempt tokens. Unknown bills retain their full reservations; new paid calls stop until reconciled. A charge above the conservative request bound or wrong provider/model still halts admission. Policy and targets cannot silently change on resume; explicit migration of the settled development-only ledger preserves every historical charge. A campaign binds measurement to one run directory; renaming a run cannot create another set of primary attempts. The campaign ledger is `.cache/campaign/ledger.sqlite`; do not delete it to reset spent budget. `call_cost_limit` records distinguish expensive-call refusal from `budget_exhausted` actual stopping.
 
 Each task’s two systems run concurrently in separate Docker containers; one matched task pair is admitted at a time. Calibration uses the same two-attempt parallelism. Fixture grading uses two workers after serialized image preparation. Execution never mounts the Docker socket or host home. Mini's native controller sits on the host and uses only the attempt token; its shell is isolated in Docker. The whole Engine process, children, worktrees and LSP live in its task container. An internal network offers one fixed inference relay, with no general Internet access. The agent-visible build context excludes the evaluator and references. Target libraries resolve to the task checkout, not separately installed fixed copies.
 

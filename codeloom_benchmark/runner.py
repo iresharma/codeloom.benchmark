@@ -57,6 +57,8 @@ def attempt(
             "stage": stage,
             "difficulty": task.get("difficulty"),
             "limit_usd": limit,
+            "budget_policy": broker.settings.get("budget_policy", "strict-reservation"),
+            "call_limit_multiplier": broker.settings.get("call_limit_multiplier", 3),
             "retry_of": retry_of,
             "started_at": time.time(),
         },
@@ -173,6 +175,8 @@ def attempt(
         statuses = {r["status"] for r in journal(root)}
         if "budget_exhausted" in statuses:
             termination = "budget_exhausted"
+        elif "call_cost_limit" in statuses:
+            termination = "call_cost_limit"
         elif statuses & {"model_mismatch", "provider_mismatch"}:
             termination = "protocol_violation"
         elif "request_error" in statuses:
@@ -256,6 +260,9 @@ def attempt(
         "task_id": task["id"],
         "system": system,
         "stage": stage,
+        "budget_policy": broker.settings.get("budget_policy", "strict-reservation"),
+        "limit_usd": limit,
+        "call_limit_multiplier": broker.settings.get("call_limit_multiplier", 3),
         "termination": termination,
         "verification": verification,
         "upstream_check_failures": sorted(failures),
