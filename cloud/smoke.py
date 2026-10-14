@@ -1,7 +1,9 @@
 """One unscored light fixture, both systems; $0.50 per arm from development."""
 
 import fcntl
+import argparse
 import json
+import re
 import sys
 import threading
 from pathlib import Path
@@ -18,10 +20,15 @@ from codeloom_benchmark.runner import attempt  # noqa: E402
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--run-id", default="railway-smoke")
+    args = parser.parse_args()
+    if not re.fullmatch(r"railway-smoke(?:-[a-z0-9]+(?:-[a-z0-9]+)*)?", args.run_id):
+        raise ValueError("Use a railway-smoke run ID with lowercase letters, numbers and hyphens")
     monitoring.STATE.mkdir(parents=True, exist_ok=True)
     lock = (monitoring.STATE / "worker.lock").open("w")
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    root = ROOT / "runs/railway-smoke"
+    root = ROOT / "runs" / args.run_id
     if (root / "trials").exists():
         raise RuntimeError("Smoke already attempted; preserve its costs and evidence")
     draft(root)
@@ -31,7 +38,7 @@ def main():
     try:
         monitoring.state.update(
             phase="smoke_preparing",
-            message="Unscored light Python fixture; $0.50 per arm, $1 total. Official study remains held.",
+            message="Unscored light Python fixture; $0.50 actual target per arm, $1.50 call gates. Official study remains held.",
         )
         task = tasks("smoke")[0]
         image = task_image(task)
@@ -49,7 +56,7 @@ def main():
         broker, network = services(root)
         monitoring.state.update(
             phase="smoke_running",
-            message="Two unscored light attempts running concurrently; $1 combined ceiling from development",
+            message="Two unscored light attempts running concurrently; $1 combined actual-spend target, final calls may overshoot",
         )
         try:
 
@@ -61,7 +68,7 @@ def main():
                     broker,
                     network,
                     root,
-                    f"railway-smoke-{task['id']}-{system}",
+                    f"{args.run_id}-{task['id']}-{system}",
                     "development",
                     600,
                     0.5,

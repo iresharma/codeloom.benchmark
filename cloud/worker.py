@@ -24,7 +24,6 @@ from codeloom_benchmark.ledger import Ledger  # noqa: E402
 
 RUN = ROOT / "runs/railway-v1"
 CALIBRATION = ROOT / "runs/railway-calibration"
-EXTRA_RUNS = [ROOT / "runs/railway-smoke"]
 STATE = ROOT / ".cache/cloud"
 URL = os.environ["MONITOR_URL"].rstrip("/")
 TOKEN = os.environ["MONITOR_UPLOAD_TOKEN"]
@@ -36,6 +35,14 @@ state = {
 }
 state_lock = threading.Lock()
 stop = threading.Event()
+
+
+def smoke_runs():
+    # Keep every separately authorized smoke run when publishing a new snapshot.
+    return sorted(
+        p for p in (ROOT / "runs").glob("railway-smoke*")
+        if p.is_dir() and (p / "manifest.json").exists()
+    )
 
 
 def read(path, default=None):
@@ -141,7 +148,7 @@ def publish():
         else:
             dev_runs = []
         extra_runs = []
-        for root in EXTRA_RUNS:
+        for root in smoke_runs():
             if (root / "manifest.json").exists():
                 import_site(visible_input(root), pages)
                 extra_runs.extend(
@@ -173,7 +180,7 @@ def heartbeat():
     while not stop.is_set():
         try:
             active = []
-            for root in (CALIBRATION, RUN, *EXTRA_RUNS):
+            for root in (CALIBRATION, RUN, *smoke_runs()):
                 for trial in sorted((root / "trials").glob("*")):
                     if not (trial / "result.json").exists():
                         row = read(trial / "attempt.json", {})
@@ -210,7 +217,7 @@ def heartbeat():
             upload("status", json.dumps(snapshot).encode())
             signature = [
                 (str(p), p.stat().st_mtime_ns)
-                for root in (RUN, CALIBRATION, *EXTRA_RUNS)
+                for root in (RUN, CALIBRATION, *smoke_runs())
                 for p in (root / "trials").glob("*/result.json")
             ]
             signature += [
