@@ -14,6 +14,7 @@ prompt: 'The supplied dotenv.main.selected_values(values:Mapping[str,Optional[st
   Work autonomously. Leave the final output on the main checkout. Existing tests/configuration and .bench
   files are immutable.'
 allowed_paths:
+- tests/*.py
 - benchmark_tests/*
 verification:
 - python -m pytest -q tests

@@ -14,6 +14,7 @@ prompt: 'Searching a cached predicate after update/remove returns stale document
   .bench files are immutable.'
 allowed_paths:
 - tinydb/*.py
+- tests/*.py
 - benchmark_tests/*
 verification:
 - python -m pytest -o addopts= -q tests

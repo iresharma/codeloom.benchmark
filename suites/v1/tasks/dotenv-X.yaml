@@ -16,6 +16,7 @@ prompt: 'Add strict: bool=False to DotEnv, load_dotenv and dotenv_values. In str
   .bench files are immutable.'
 allowed_paths:
 - src/dotenv/*.py
+- tests/*.py
 - benchmark_tests/*
 verification:
 - python -m pytest -q tests

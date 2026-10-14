@@ -11,6 +11,7 @@ prompt: Add Table.snapshot()->list[Document] and TinyDB.snapshot()->dict[str,lis
   two classes, preserve existing tests, and leave the main checkout ready for grading.
 allowed_paths:
 - tinydb/*.py
+- tests/*.py
 - benchmark_tests/*
 verification:
 - python -m pytest -o addopts= -q tests

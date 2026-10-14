@@ -15,6 +15,7 @@ prompt: 'When override=False, substitutions must prefer existing environment val
   .bench files are immutable.'
 allowed_paths:
 - src/dotenv/*.py
+- tests/*.py
 - benchmark_tests/*
 verification:
 - python -m pytest -q tests

@@ -13,6 +13,7 @@ prompt: Add Queue.pendingIds():readonly string[], PriorityQueue.pendingIds() and
   does not support it.
 allowed_paths:
 - source/*.ts
+- test/*.ts
 - benchmark_tests/*
 verification:
 - npm run build

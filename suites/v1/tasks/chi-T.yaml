@@ -16,6 +16,8 @@ prompt: 'The supplied middleware.SnapshotResponseWriter(w WrapResponseWriter) re
   The supplied feature implementation has its reference tests withheld; unrelated upstream tests remain
   intact. Use Go testing.'
 allowed_paths:
+- '*.go'
+- middleware/*.go
 - benchmark_tests/*
 verification:
 - go test ./...

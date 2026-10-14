@@ -15,6 +15,7 @@ prompt: 'The supplied CachingMiddleware.flush_if_pending(min_writes=1)->bool flu
   The supplied feature implementation has its reference tests withheld; unrelated upstream tests remain
   intact. Use pytest.'
 allowed_paths:
+- tests/*.py
 - benchmark_tests/*
 verification:
 - python -m pytest -o addopts= -q tests

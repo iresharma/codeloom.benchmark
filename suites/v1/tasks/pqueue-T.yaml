@@ -16,6 +16,7 @@ prompt: 'The supplied PQueue.settleAll(tasks) schedules every callback through t
   The supplied feature implementation has its reference tests withheld; unrelated upstream tests remain
   intact. Use node:test.'
 allowed_paths:
+- test/*.ts
 - benchmark_tests/*
 verification:
 - npm run build

@@ -14,6 +14,7 @@ prompt: 'setPriority(id, priority) updates a different queued task and may accep
   files are immutable.'
 allowed_paths:
 - source/*.ts
+- test/*.ts
 - benchmark_tests/*
 verification:
 - npm run build
