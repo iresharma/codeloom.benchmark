@@ -47,7 +47,7 @@ def check(engine: Path, destination: Path):
         }
     ):
         raise ValueError(
-            "Runtime does not match the engine checkout or public driver; rebuild with certify before compatibility"
+            "Runtime does not match the engine checkout or public driver; rebuild with prepare-runtime before compatibility"
         )
     # Execute the exact pinned runtime, not the host's possibly different SDK/dependencies.
     result = subprocess.run(

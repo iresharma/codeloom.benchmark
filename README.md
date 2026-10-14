@@ -128,6 +128,15 @@ The broker tests use a local synthetic provider and make no paid calls. Mutation
 
 The Engine driver socket tests use the sibling `../engine` checkout (or `ENGINE_CHECKOUT`) and its runtime dependencies. Install `engine-requirements.lock` into the test environment to run them; they skip when that checkout or its dependencies are unavailable.
 
+After an Engine or public-driver change, rebuild only the agent runtime before calibration:
+
+```sh
+uv run codeloom-benchmark prepare-runtime --engine ../engine
+uv run codeloom-benchmark calibrate --engine ../engine --run-dir runs/<unique-name>
+```
+
+`prepare-runtime` rebuilds the Docker runtime and records its source digests. `calibrate` checks native compatibility and certifies its two development fixtures before paid attempts. It does not require the ten-task v1 suite to be recertified. Full `certify` remains the gate before v1 preregistration/measurement; its current cache includes the agent image, so an Engine change invalidates that evidence too.
+
 ## Static website publication
 
 The main homelab site intentionally has no live Railway dependency. The live monitor is separate. Once the selected campaign is finished, run `./scripts/benchmark import-site --run-dir runs/railway-v1 --pages ../pages` to generate static summaries, charts, run indexes, inspector pages and downloads. Import calibration separately into a temporary pages directory if its recordings are also wanted; they never enter scored totals. Build/push `iresharma/codeloom-web:latest` for AMD64 and ARM64, then restart `deployment/codeloom-web` in namespace `iresharma`. The homelab Kubernetes API is LAN-only; a Railway worker cannot directly restart it.

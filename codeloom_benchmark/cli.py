@@ -403,7 +403,7 @@ def main():
         description="Budgeted CodeLoom benchmark: fixed gates before scoring"
     )
     sub = parser.add_subparsers(dest="command", required=True)
-    for name in ("validate", "certify", "compatibility", "preregister"):
+    for name in ("validate", "prepare-runtime", "certify", "compatibility", "preregister"):
         p = sub.add_parser(name)
         p.add_argument("--engine", type=Path, default=ROOT.parent / "engine")
     for name in ("draft", "report", "run", "import-site", "calibrate", "cost-analysis"):
@@ -415,6 +415,9 @@ def main():
     try:
         if args.command == "validate":
             result = {"tasks": len(validate_suite()), "status": "valid"}
+        elif args.command == "prepare-runtime":
+            print("Preparing Engine runtime without fixture certification", flush=True)
+            result = {"status": "ready", "runtime": prepare_runtime(args.engine)}
         elif args.command == "certify":
             result = certification(args.engine)
         elif args.command == "compatibility":
