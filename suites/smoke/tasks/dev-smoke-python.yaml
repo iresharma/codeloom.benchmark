@@ -9,6 +9,7 @@ difficulty: light
 prompt: Add a public Table.document_ids()->list[int] method in tinydb/table.py. Return the current table's document IDs in ascending order, with an empty list for an empty table. Preserve sparse IDs after removals, keep tables independent, and do not change stored documents or existing APIs. Preserve all existing tests and leave the main checkout ready for grading.
 allowed_paths:
   - tinydb/table.py
+  - tests/test_tables.py
 verification:
   - python -m pytest -o addopts= -q tests
 provenance: new_feature
