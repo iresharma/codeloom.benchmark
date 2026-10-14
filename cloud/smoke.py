@@ -4,7 +4,6 @@ import fcntl
 import json
 import sys
 import threading
-import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -94,9 +93,7 @@ def main():
         monitoring.backup()
         monitoring.upload(
             "status",
-            json.dumps(
-                dict(monitoring.state, active=[], finished_at=time.time())
-            ).encode(),
+            json.dumps(monitoring.final_status()).encode(),
         )
 
 

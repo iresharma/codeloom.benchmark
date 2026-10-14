@@ -68,6 +68,18 @@ def archive(folder):
     return output.getvalue()
 
 
+def final_status():
+    snapshot = dict(state, active=[], heartbeat_at=time.time(), finished_at=time.time())
+    ledger = ROOT / ".cache/campaign/ledger.sqlite"
+    if ledger.exists():
+        settings = config()
+        snapshot["budget"] = Ledger(
+            ledger, settings["campaign_limit_usd"], settings["stage_limits"]
+        ).snapshot()
+    (STATE / "state.json").write_text(json.dumps(snapshot))
+    return snapshot
+
+
 def backup():
     with tempfile.TemporaryDirectory() as folder:
         stage = Path(folder)
@@ -259,10 +271,26 @@ def main():
             )
         if ledger.exists():
             settings = config()
-            if Ledger(
+            account = Ledger(
                 ledger, settings["campaign_limit_usd"], settings["stage_limits"]
-            ).snapshot()["trials"]:
-                raise RuntimeError("Paid attempts exist; setup-only restart is refused")
+            )
+            snapshot = account.snapshot()
+            if (
+                account.active_trials()
+                or snapshot["unknown_calls"]
+                or snapshot["overrun"]
+                or snapshot["protocol_violation"]
+            ):
+                raise RuntimeError(
+                    "Unsettled paid work exists; reconcile it before setup resumption"
+                )
+            if any(
+                not trial["id"].startswith("railway-smoke-")
+                for trial in snapshot["trials"]
+            ):
+                raise RuntimeError(
+                    "Calibration/measurement already started; setup-only restart is refused"
+                )
     (STATE / "started").write_text(str(time.time()))
     draft(RUN)
     draft(CALIBRATION)
@@ -341,9 +369,7 @@ def main():
             publish()
             backup()
             with state_lock:
-                final = dict(
-                    state, heartbeat_at=time.time(), finished_at=time.time(), active=[]
-                )
+                final = final_status()
             upload("status", json.dumps(final).encode())
         except Exception as exc:
             print("Final publication failed:", exc, flush=True)

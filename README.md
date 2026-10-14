@@ -10,7 +10,7 @@ The initial native compatibility check passes: both adapters preserve reasoning 
 
 ## Railway execution
 
-The worker runs in a Docker-enabled x86-64 Railway sandbox with idle destruction disabled. `cloud/worker.py` runs offline certification, compatibility, four paid development attempts, commits setup evidence, preregisters and pushes the timestamped tag, then runs measurement. Any failed gate stops the campaign. After offline setup, the supervisor waits for `.cache/cloud/paid-start-authorized`; the operator creates this marker only after delivering the requested owner-facing summary, before any paid calibration. `--resume-setup` is allowed only if no paid trial exists. Starting it twice is refused; interrupted paid trials require reconciliation before resumption.
+The worker runs in a Docker-enabled x86-64 Railway sandbox with idle destruction disabled. `cloud/worker.py` runs offline certification, compatibility, four paid development attempts, commits setup evidence, preregisters and pushes the timestamped tag, then runs measurement. Any failed gate stops the campaign. After offline setup, the supervisor waits for `.cache/cloud/paid-start-authorized`; the operator creates this marker only after delivering the requested owner-facing summary, before any paid calibration. `--resume-setup` permits CPU-only preparation after a fully settled unscored smoke test; it refuses active/unknown bills or existing official calibration/measurement trials. Starting it twice is refused; interrupted paid trials require reconciliation before resumption.
 
 The `cloud/` Dockerfile deploys the separate monitoring service. Mount a Railway volume at `/data` and set a randomly generated `MONITOR_UPLOAD_TOKEN`; never commit this value. The worker needs the same token, `MONITOR_URL`, `OPENROUTER_API_KEY`, and a host-only Git credential helper for preregistration publication. Agents receive only broker tokens, never deployment credentials.
 
@@ -125,3 +125,9 @@ uv run ruff check .
 ```
 
 The broker tests use a local synthetic provider and make no paid calls. Mutation/reference certification uses trusted, separate Docker evaluator containers. Synthetic adapter traces are labeled as integration checks and must never be included as measured attempts.
+
+## Static website publication
+
+The main homelab site intentionally has no live Railway dependency. The live monitor is separate. Once the selected campaign is finished, run `./scripts/benchmark import-site --run-dir runs/railway-v1 --pages ../pages` to generate static summaries, charts, run indexes, inspector pages and downloads. Import calibration separately into a temporary pages directory if its recordings are also wanted; they never enter scored totals. Build/push `iresharma/codeloom-web:latest` for AMD64 and ARM64, then restart `deployment/codeloom-web` in namespace `iresharma`. The homelab Kubernetes API is LAN-only; a Railway worker cannot directly restart it.
+
+The authorized smoke test is `cloud/smoke.py`, using `suites/smoke/tasks/dev-smoke-python.yaml`, outside both v1 and calibration suites. It runs two arms concurrently at $0.50 each, sharing the development ledger. Every failure is retained. Official calibration/measurement stay behind the summary marker.
