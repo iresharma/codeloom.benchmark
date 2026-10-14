@@ -74,7 +74,7 @@ Bug/features require private behavior checks **and** trusted upstream regression
 
 Test generation supplies a correct newly added feature with reference tests withheld (explicitly disclosed in the brief), preserving all upstream tests. Tests must pass three times on correct code and stably kill at least 80% of five valid mutants, with the same behavioral assertion failing on all three mutant runs. Import/build/collection failures do not count as kills. Certification confirms these mutants survive the trusted upstream suite; Python, Node/AVA and Go have separate parsers. Ky candidates were excluded before freezing after their upstream browser/timing checks failed under emulation; `reports/excluded-ky.json` records this. The original 16-task pool is retained; six fixtures are unselected reserves in this smaller study.
 
-Only changes on the main `/task` checkout are submitted, including commits and allowed untracked files. Child branches are submitted only after native settlement merges them. The controller answers settlement prompts `merge` and continuation prompts `continue`; it waits for the native idle barrier to include queued reports and child settlements. The filesystem is sealed before a clean, separate evaluator reconstructs allowed changes. It never trusts the agent's installed tools or Git hooks.
+Only changes on the main `/task` checkout are submitted, including commits and allowed untracked files. Engine agents share that checkout and one LSP manager. The controller delegates prompt answers and completion detection to the pinned Engine's `clients/headless.py`: it waits for orchestrator idle, no live children, and the native post-child grace period for follow-up turns. Legacy isolated worktrees are submitted only after native settlement merges them; settlement prompts use `merge` and continuation prompts use `continue`. The filesystem is sealed before a clean, separate evaluator reconstructs allowed changes. It never trusts the agent's installed tools or Git hooks.
 
 ## Model and budget
 
@@ -125,6 +125,8 @@ uv run ruff check .
 ```
 
 The broker tests use a local synthetic provider and make no paid calls. Mutation/reference certification uses trusted, separate Docker evaluator containers. Synthetic adapter traces are labeled as integration checks and must never be included as measured attempts.
+
+The Engine driver socket tests use the sibling `../engine` checkout (or `ENGINE_CHECKOUT`) and its runtime dependencies. Install `engine-requirements.lock` into the test environment to run them; they skip when that checkout or its dependencies are unavailable.
 
 ## Static website publication
 

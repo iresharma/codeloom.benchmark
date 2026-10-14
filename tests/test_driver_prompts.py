@@ -26,9 +26,11 @@ def native_client(monkeypatch):
     if not (checkout / "clients/headless.py").is_file():
         pytest.skip("requires the pinned Engine checkout (set ENGINE_CHECKOUT)")
     monkeypatch.syspath_prepend(str(checkout))
-    from clients import headless
-
-    return headless
+    return pytest.importorskip(
+        "clients.headless",
+        reason="requires Engine runtime dependencies (engine-requirements.lock)",
+        exc_type=ModuleNotFoundError,
+    )
 
 
 async def exercise(script, events_path):
