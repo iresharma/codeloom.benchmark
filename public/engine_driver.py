@@ -1,124 +1,130 @@
-"""Native IPC controller. Runs inside the task container; contains no evaluator."""
+"""Native headless IPC adapter. Runs inside the task container; no evaluator."""
 
+import asyncio
 import json
-import select
-import socket
 import subprocess
 import sys
 import time
+from pathlib import Path
 
 
-def prompt_answer(event):
-    """Unattended task execution, including the native client's yes to confirmations."""
-    if event["kind"] == "mcp_auth":
-        return "no"
-    if event["kind"] == "confirm":
-        return "yes"
-    if event["kind"] == "settlement" or "merge" in event.get("choices", []):
-        return "merge"
-    if event["kind"] in ("continue", "turn_continue") or "continue" in event.get(
-        "choices", []
-    ):
-        return "continue"
-    return (
-        event.get("default")
-        or (event.get("choices") or ["Proceed using the task specification."])[0]
+async def drive(
+    options,
+    process,
+    *,
+    workspace=Path("/task"),
+    startup_timeout=120,
+    events_path=Path("/tmp/engine-events.jsonl"),
+):
+    # Use the client shipped with the pinned Engine, rather than copying its
+    # prompt policy and session-completion logic into the benchmark.
+    sys.path.insert(0, "/opt/engine")
+    from clients.headless import HeadlessError, wait_until_idle
+    from protocol.codec import STREAM_LIMIT, decode_event, encode
+    from protocol.commands import StartSession, SubmitUserMessage
+    from protocol.events import (
+        AgentStateChanged,
+        ChatMessageAdded,
+        ErrorOccurred,
+        SnapshotReady,
     )
+
+    deadline = time.monotonic() + startup_timeout
+    while True:
+        try:
+            reader, writer = await asyncio.open_unix_connection(
+                str(workspace / ".engine/engine.sock"), limit=STREAM_LIMIT
+            )
+            break
+        except (FileNotFoundError, ConnectionRefusedError):
+            if process.poll() is not None or time.monotonic() >= deadline:
+                raise HeadlessError("engine startup failed")
+            await asyncio.sleep(0.2)
+
+    try:
+        with events_path.open("w") as events:
+            main_finished = False
+
+            async def send(command):
+                writer.write(encode(command))
+                await writer.drain()
+
+            async def get_event():
+                line = await reader.readline()
+                if not line:
+                    raise HeadlessError("engine IPC disconnected")
+                event = decode_event(line)
+                events.write(line.decode())
+                events.flush()
+                return event
+
+            def on_event(event):
+                nonlocal main_finished
+                if (
+                    isinstance(event, AgentStateChanged)
+                    and not event.agent_id
+                    and event.state == "thinking"
+                    and event.turn == 0
+                ):
+                    main_finished = False
+                if (
+                    isinstance(event, ChatMessageAdded)
+                    and event.role == "assistant"
+                    and not event.agent_id
+                ):
+                    main_finished = True
+
+            await send(StartSession(workspace=str(workspace)))
+            # StartSession is asynchronous: submit only after its snapshot.
+            while True:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise HeadlessError("timed out waiting for SnapshotReady")
+                event = await asyncio.wait_for(get_event(), timeout=remaining)
+                if isinstance(event, ErrorOccurred):
+                    raise HeadlessError(event.message)
+                if isinstance(event, SnapshotReady):
+                    break
+            await send(
+                SubmitUserMessage(
+                    text=options["prompt"],
+                    model=options["model"],
+                    reasoning_effort=options["reasoning_effort"],
+                )
+            )
+            # The runner owns the watchdog. Native defaults include the 8s
+            # post-child grace and auto_answer(), including legacy settlements.
+            await wait_until_idle(get_event, send, settle="merge", on_event=on_event)
+            if not main_finished:
+                raise HeadlessError("engine went idle without a final assistant reply")
+    finally:
+        writer.close()
+        await writer.wait_closed()
 
 
 def main():
     options = json.loads(sys.stdin.readline())
-    log = open("/tmp/engine-process.log", "w")
-    process = subprocess.Popen(
-        [sys.executable, "/opt/engine/app.py", "/task"], stdout=log, stderr=log
-    )
-    sock = socket.socket(socket.AF_UNIX)
-    try:
-        deadline = time.monotonic() + 120
-        while True:
-            try:
-                sock.connect("/task/.engine/engine.sock")
-                break
-            except (FileNotFoundError, ConnectionRefusedError):
-                if process.poll() is not None or time.monotonic() > deadline:
-                    raise RuntimeError("engine startup failed")
-                time.sleep(0.2)
-
-        def send(kind, **fields):
-            sock.sendall((json.dumps({"type": kind, **fields}) + "\n").encode())
-
-        send("StartSession", workspace="/task")
-        send(
-            "SubmitUserMessage",
-            text=options["prompt"],
-            model=options["model"],
-            reasoning_effort=options["reasoning_effort"],
+    with open("/tmp/engine-process.log", "w") as log:
+        process = subprocess.Popen(
+            [sys.executable, "/opt/engine/app.py", "/task"], stdout=log, stderr=log
         )
-        buffered = b""
-        started = False
-        main_finished = False
-        idle = 0
-        with open("/tmp/engine-events.jsonl", "w") as events:
-            while True:
-                send("RequestRunState")
-                ready, _, _ = select.select([sock], [], [], 0.5)
-                if not ready:
-                    continue
-                data = sock.recv(65536)
-                if not data:
-                    raise RuntimeError("engine IPC disconnected")
-                buffered += data
-                while b"\n" in buffered:
-                    line, buffered = buffered.split(b"\n", 1)
-                    event = json.loads(line)
-                    events.write(json.dumps(event) + "\n")
-                    events.flush()
-                    kind = event["type"]
-                    if (
-                        kind == "AgentStateChanged"
-                        and not event.get("agent_id")
-                        and event.get("state") == "thinking"
-                        and event.get("turn") == 0
-                    ):
-                        main_finished = False
-                    if (
-                        kind == "ChatMessageAdded"
-                        and event.get("role") == "assistant"
-                        and not event.get("agent_id")
-                    ):
-                        main_finished = True
-                    if kind == "ChatMessageStarted" or (
-                        kind == "AgentStateChanged"
-                        and event.get("state") not in ("idle", "done")
-                    ):
-                        started = True
-                    if kind == "UserPromptRequested":
-                        send(
-                            "AnswerPrompt",
-                            prompt_id=event["prompt_id"],
-                            text=prompt_answer(event),
-                        )
-                    if kind == "RunStateReady":
-                        idle = idle + 1 if started and event["idle"] else 0
-                        if idle >= 3:
-                            if not main_finished:
-                                print(
-                                    json.dumps({"termination": "agent_crash"}),
-                                    flush=True,
-                                )
-                                raise SystemExit(3)
-                            print(json.dumps({"termination": "completed"}), flush=True)
-                            return
-                time.sleep(0.3)
-    finally:
-        sock.close()
-        process.terminate()
         try:
-            process.wait(timeout=10)
-        except subprocess.TimeoutExpired:
-            process.kill()
-        log.close()
+            asyncio.run(drive(options, process))
+        except Exception as exc:
+            print(f"{type(exc).__name__}: {exc}", file=sys.stderr, flush=True)
+            print(json.dumps({"termination": "agent_crash"}), flush=True)
+            return 3
+        else:
+            print(json.dumps({"termination": "completed"}), flush=True)
+            return 0
+        finally:
+            process.terminate()
+            try:
+                process.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait()
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

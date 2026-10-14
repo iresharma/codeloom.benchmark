@@ -23,13 +23,16 @@ def test_patch_includes_committed_changes_new_files_and_deletions(tmp_path):
     assert not (base / "tinydb/version.py").exists()
 
 
-def test_existing_test_edits_are_disallowed(tmp_path):
+def test_native_tests_are_allowed_but_configuration_edits_are_disallowed(tmp_path):
     task = next(t for t in tasks() if t["id"] == "tinydb-B")
     base = snapshot(task, tmp_path / "base")
     candidate = snapshot(task, tmp_path / "candidate")
-    (candidate / "tests/test_new.py").write_text("def test_cheat(): pass\n")
-    _, bad = output_changes(base, candidate, task)
-    assert bad == ["tests/test_new.py"]
+    (candidate / "tests/test_new.py").write_text("def test_feature(): pass\n")
+    config = candidate / "setup.cfg"
+    config.write_text("# outside allowed paths\n")
+    changes, bad = output_changes(base, candidate, task)
+    assert "tests/test_new.py" in changes
+    assert bad == ["setup.cfg"]
 
 
 def test_stock_dotenv_links_are_sealable_but_new_links_are_rejected(tmp_path):
