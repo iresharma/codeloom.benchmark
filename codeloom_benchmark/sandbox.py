@@ -43,6 +43,11 @@ def prepare_runtime(engine: Path):
     }
     record = {
         "engine_files": engine_files,
+        "public_files": {
+            str(p.relative_to(ROOT / "public")): digest(p)
+            for p in (ROOT / "public").rglob("*")
+            if p.is_file() and "__pycache__" not in p.parts
+        },
         "platform": PLATFORM,
         "image": image,
         "engine_commit": command(["git", "rev-parse", "HEAD"], cwd=engine),

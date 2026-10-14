@@ -33,12 +33,21 @@ def check(engine: Path, destination: Path):
     current_image = subprocess.check_output(
         ["docker", "image", "inspect", BASE_TAG, "--format", "{{.Id}}"], text=True
     ).strip()
-    if current_image != runtime["image"] or any(
-        not (engine / rel).is_file() or digest(engine / rel) != sha
-        for rel, sha in runtime["engine_files"].items()
+    if (
+        current_image != runtime["image"]
+        or any(
+            not (engine / rel).is_file() or digest(engine / rel) != sha
+            for rel, sha in runtime["engine_files"].items()
+        )
+        or runtime.get("public_files")
+        != {
+            str(p.relative_to(ROOT / "public")): digest(p)
+            for p in (ROOT / "public").rglob("*")
+            if p.is_file() and "__pycache__" not in p.parts
+        }
     ):
         raise ValueError(
-            "Runtime does not match the engine checkout; rebuild with certify before compatibility"
+            "Runtime does not match the engine checkout or public driver; rebuild with certify before compatibility"
         )
     # Execute the exact pinned runtime, not the host's possibly different SDK/dependencies.
     result = subprocess.run(
