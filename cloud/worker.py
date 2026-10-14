@@ -319,7 +319,7 @@ def main():
         run_phase(
             "calibrating",
             cli + ["calibrate", "--run-dir", str(CALIBRATION)],
-            "Four development attempts; fixed $8 development ceiling",
+            "Four development attempts; $8 actual-spend target, final calls may overshoot",
         )
         run_phase(
             "recording_setup",
