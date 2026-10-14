@@ -26,3 +26,13 @@ schedule_seed: 20261014
 systems: [mini-swe-agent, engine-core]
 excluded: [ky-B, ky-N, ky-T, ky-X]
 recovery_max_per_system_task: 1
+# Support agents a system runs on its own (e.g. Engine's tester sub-agent)
+# may call a fixed cheap model instead of the frozen generator. Allowlisted
+# here with its own pricing for the upfront reservation estimate; actual
+# billing always comes from the provider's own reported usage cost.
+secondary_models:
+  anthropic/claude-haiku-4.5:
+    provider: anthropic
+    provider_name: Anthropic
+    input_per_million: 1.00
+    output_per_million: 5.00

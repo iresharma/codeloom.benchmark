@@ -40,6 +40,18 @@ class Broker:
         self.admission = threading.Condition()
         self.server = None
 
+    def spec_for(self, model_id):
+        """Pricing/validation settings for a requested model: the frozen
+        generator, or one of a small allowlist of secondary models used by
+        a system's own support agents (e.g. a tester sub-agent). Unlisted
+        keys fall back to the primary study settings."""
+        if model_id == self.settings["model"]:
+            return self.settings
+        entry = self.settings.get("secondary_models", {}).get(model_id)
+        if entry is None:
+            return None
+        return {**self.settings, **entry, "model": model_id}
+
     def prepare(self, body: dict):
         allowed = {
             "messages",
@@ -61,8 +73,11 @@ class Broker:
             raise ValueError("Unsupported inference parameter")
         if not isinstance(body.get("messages"), list) or not body["messages"]:
             raise ValueError("Messages required")
-        if body.get("model") != self.settings["model"]:
-            raise ValueError("Native model does not match the frozen generator")
+        spec = self.spec_for(body.get("model"))
+        if spec is None:
+            raise ValueError(
+                "Native model does not match the frozen generator or an approved secondary model"
+            )
         supplied = [
             value
             for value in (
@@ -72,15 +87,13 @@ class Broker:
             if value is not None
         ]
         if not supplied or any(
-            value != self.settings["reasoning_effort"] for value in supplied
+            value != spec["reasoning_effort"] for value in supplied
         ):
             raise ValueError("Native reasoning effort must explicitly match the study")
         reasoning = body.get("reasoning", {})
         if set(reasoning) - {"effort", "enabled", "exclude"}:
             raise ValueError("Only frozen reasoning controls are admitted")
-        enabled = self.settings.get(
-            "thinking_enabled", self.settings["reasoning_effort"] != "none"
-        )
+        enabled = spec.get("thinking_enabled", spec["reasoning_effort"] != "none")
         if (
             reasoning.get("exclude") is True
             or ("enabled" in reasoning and reasoning["enabled"] != enabled)
@@ -97,22 +110,22 @@ class Broker:
         body = dict(body)
         body.pop("reasoning_effort", None)
         body.update(
-            model=self.settings["model"],
+            model=spec["model"],
             temperature=1.0,
             top_p=0.95,
-            max_tokens=self.settings["max_tokens"],
+            max_tokens=spec["max_tokens"],
             reasoning={
-                "effort": self.settings["reasoning_effort"],
+                "effort": spec["reasoning_effort"],
                 "enabled": enabled,
                 "exclude": False,
             },
             provider={
-                "only": [self.settings["provider"]],
+                "only": [spec["provider"]],
                 "allow_fallbacks": False,
                 "require_parameters": True,
                 "max_price": {
-                    "prompt": self.settings["input_per_million"],
-                    "completion": self.settings["output_per_million"],
+                    "prompt": spec["input_per_million"],
+                    "completion": spec["output_per_million"],
                 },
             },
             usage={"include": True},
@@ -129,9 +142,9 @@ class Broker:
             + 4096
         )
         reserve = Decimal(upper_input) * Decimal(
-            str(self.settings["input_per_million"])
+            str(spec["input_per_million"])
         ) + Decimal(body["max_tokens"]) * Decimal(
-            str(self.settings["output_per_million"])
+            str(spec["output_per_million"])
         )
         return body, int(reserve.to_integral_value(rounding=ROUND_CEILING))
 
@@ -204,6 +217,7 @@ class Broker:
                 admission_started = time.monotonic()
                 try:
                     body, amount = broker.prepare(json.loads(self.rfile.read(size)))
+                    spec = broker.spec_for(body["model"])
                     while True:
                         try:
                             call_id, trial = broker.ledger.reserve(token, amount)
@@ -333,11 +347,11 @@ class Broker:
                         or response.status_code >= 500
                         else "request_error"
                     )
-                    if response.ok and models - {None, broker.settings["model"]}:
+                    if response.ok and models - {None, spec["model"]}:
                         status = "model_mismatch"
                         broker.ledger.revoke(trial)
-                    expected_provider = broker.settings.get(
-                        "provider_name", broker.settings["provider"].split("/")[0]
+                    expected_provider = spec.get(
+                        "provider_name", spec["provider"].split("/")[0]
                     )
                     if response.ok and providers - {None, expected_provider}:
                         status = "provider_mismatch"

@@ -72,6 +72,46 @@ def test_wrong_model_cannot_be_silently_fixed(tmp_path):
         )
 
 
+SETTINGS_WITH_SECONDARY = {
+    **SETTINGS,
+    "secondary_models": {
+        "test/cheap-model": {
+            "provider": "cheap-provider",
+            "provider_name": "CheapProvider",
+            "input_per_million": 1.0,
+            "output_per_million": 5.0,
+        }
+    },
+}
+
+
+def test_approved_secondary_model_is_admitted_with_its_own_pricing(tmp_path):
+    broker = Broker(Ledger(tmp_path / "ledger"), tmp_path, "fake", SETTINGS_WITH_SECONDARY)
+    wire, reserved = broker.prepare(
+        {
+            "model": "test/cheap-model",
+            "reasoning_effort": "high",
+            "messages": [{"role": "user", "content": "write a test"}],
+        }
+    )
+    assert wire["model"] == "test/cheap-model"
+    assert wire["provider"]["only"] == ["cheap-provider"]
+    assert wire["provider"]["max_price"] == {"prompt": 1.0, "completion": 5.0}
+    assert reserved > 0
+
+
+def test_unlisted_secondary_model_is_still_rejected(tmp_path):
+    broker = Broker(Ledger(tmp_path / "ledger"), tmp_path, "fake", SETTINGS_WITH_SECONDARY)
+    with pytest.raises(ValueError, match="model"):
+        broker.prepare(
+            {
+                "model": "test/unapproved-model",
+                "reasoning_effort": "high",
+                "messages": [{"role": "user", "content": "task"}],
+            }
+        )
+
+
 def test_pinned_catalog_is_local_authenticated_and_revocable(tmp_path):
     ledger = Ledger(tmp_path / "ledger")
     token = ledger.create_trial("trial", "development", 1)
