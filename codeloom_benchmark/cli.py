@@ -276,7 +276,84 @@ def import_site(root, pages):
         )
     (assets / "evidence.zip").unlink(missing_ok=True)
     export_traces(root, assets)
+    from .trace_view import export_run_views
     from .artifacts import checksum_tree
+
+    run_views = export_run_views(
+        assets, summary["run_id"], f"/benchmarks/{summary['run_id']}"
+    )
+    adapter = setup / "adapter-check"
+    if adapter.exists():
+        run_views += export_run_views(
+            adapter,
+            "adapter-check",
+            f"/benchmarks/{summary['run_id']}/setup/adapter-check",
+            synthetic=True,
+        )
+    write_json(
+        pages / "packages/ui/src/landings/engine/results/data/run-index.json", run_views
+    )
+    write_json(assets / "runs.json", run_views)
+    certification = (
+        json.loads((setup / "certification.json").read_text())
+        if (setup / "certification.json").exists()
+        else {}
+    )
+    compatibility = (
+        json.loads((setup / "compatibility.json").read_text())
+        if (setup / "compatibility.json").exists()
+        else {}
+    )
+    pricing = (
+        json.loads((setup / "pricing.json").read_text())
+        if (setup / "pricing.json").exists()
+        else {}
+    )
+    manifest_limits = json.loads((root / "manifest.json").read_text())["settings"].get(
+        "stage_limits", {}
+    )
+    setup_summary = {
+        "certification_status": certification.get("status", "not_run"),
+        "certified_tasks": sum(
+            t.get("status") == "certified" for t in certification.get("tasks", [])
+        ),
+        "tasks": [
+            {
+                "id": t["id"],
+                "status": t["status"],
+                "audit": t.get("audit", {}).get("status", "unknown"),
+                "mutation_score": t.get("reference", {}).get("mutation_score"),
+            }
+            for t in certification.get("tasks", [])
+        ],
+        "compatibility_status": compatibility.get("status", "not_run"),
+        "compatibility_checks": compatibility.get("checks", {}),
+        "pricing_status": pricing.get("status", "not_run"),
+        "published_attempts": sum(1 for r in run_views if not r["synthetic"]),
+        "budget": [
+            {
+                "label": name,
+                "value": summary["budget_usd"] - sum(manifest_limits.values())
+                if name == "Fees / buffer"
+                else manifest_limits[stage],
+            }
+            for name, stage in (
+                ("Calibration", "development"),
+                ("Measurement", "measured"),
+                ("Recovery", "recovery"),
+                ("Fees / buffer", "fees"),
+            )
+        ]
+        if manifest_limits
+        else [],
+    }
+    write_json(
+        pages / "packages/ui/src/landings/engine/results/data/setup.json", setup_summary
+    )
+    write_json(assets / "setup-summary.json", setup_summary)
+    if adapter.exists():
+        checksum_tree(adapter)
+    checksum_tree(assets)
     import zipfile
 
     archive = assets / "evidence.zip"

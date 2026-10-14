@@ -4,6 +4,8 @@
 
 ## Current status
 
+**Paid calibration and measurement are paused at the owner's request while Engine thinking/effort support is developed.** Do not start paid runs until the updated adapters and settings have been reviewed and the owner explicitly authorizes them.
+
 **No paid or measured model calls have run.** Native conformance found that Engine drops reasoning state returned by DeepSeek's Max thinking mode before the next tool continuation. The runner stops before reading credentials or charging the model. `reports/compatibility.json` contains the reproducible synthetic check; it is not a coding result. Do not bypass this gate, turn thinking off in one arm, or reconstruct histories in the broker. Resolve the native model integration, review the change before calibration, and freeze that revision before measurement.
 
 Fixture certification and website output are separate from scored outcomes. `reports/certification.json` records every task's actual certification status. `reports/v1-not-run/` is a truthful empty results report, not fabricated performance data.
@@ -44,6 +46,8 @@ Rebuild the results-page data and public downloads:
 ```
 
 This explicitly imports the selected run; it never silently promotes a partial run as the latest completed result. The existing repository case-study URLs remain available beneath the benchmark overview.
+
+The importer also builds `runs.json`, per-attempt `view.json`, and the website's run index. These are offline projections of sealed evidence, not extra model calls. Each run opens at `/engine/results/runs/<run>/<attempt>` with filterable model/tool timelines, agent-parent relationships, request timing and effort, grader output, and submitted patches. Engine results are labeled as tool-output previews; unavailable traces and unknown charges remain unavailable. The synthetic checks have their own labels and never enter scored totals. Historical case studies only have agent summaries and published tool counts; their missing individual call logs are not reconstructed.
 
 ## Corpus and grading
 
