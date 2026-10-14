@@ -1,6 +1,7 @@
 """Read-only endpoint preflight. Never substitutes a provider or raises budget limits."""
 
 from datetime import datetime, timezone
+from decimal import Decimal
 import requests
 from .artifacts import write_json
 from .manifests import ROOT, config
@@ -40,8 +41,10 @@ def check(destination=None):
             parameters_ok
             and completion_ok
             and all(
-                float(p["prompt"]) * 1_000_000 <= settings["input_per_million"]
-                and float(p["completion"]) * 1_000_000 <= settings["output_per_million"]
+                Decimal(str(p["prompt"])) * 1_000_000
+                <= Decimal(str(settings["input_per_million"]))
+                and Decimal(str(p["completion"])) * 1_000_000
+                <= Decimal(str(settings["output_per_million"]))
                 for p in variants
             )
         )
