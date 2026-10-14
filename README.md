@@ -4,9 +4,17 @@
 
 ## Current status
 
-**Paid calibration and measurement are paused at the owner's request pending review of the updated benchmark integration.** Do not start paid runs until the updated adapters and settings have been reviewed and the owner explicitly authorizes them.
+The owner authorized running the harness on Railway on 2026-10-14. Paid commands remain subject to certification, native compatibility, pricing, calibration, preregistration and the unchanged $50 total budget.
 
-**No paid or measured model calls have run.** The updated native compatibility check passes: both adapters preserve reasoning history and explicitly send the same High effort, including an Engine child. `reports/compatibility.json` contains synthetic evidence, not coding scores. The previous fixture certification is archived and marked stale; recertification, live development calibration and clean preregistration remain required. `paid_runs_authorized: false` stops paid commands before credentials are read.
+The initial native compatibility check passes: both adapters preserve reasoning history and explicitly send the same High effort, including an Engine child. Railway rebuilds and repeats this check before calibration. `reports/compatibility.json` contains synthetic evidence, not coding scores. The live campaign state is at https://benchmark-monitor-production.up.railway.app/ and is authoritative for current progress.
+
+## Railway execution
+
+The worker runs in a Docker-enabled x86-64 Railway sandbox with idle destruction disabled. `cloud/worker.py` runs offline certification, compatibility, four paid development attempts, commits setup evidence, preregisters and pushes the timestamped tag, then runs measurement. Any failed gate stops the campaign. Starting it twice is refused; interrupted paid trials require reconciliation before resumption.
+
+The `cloud/` Dockerfile deploys the separate monitoring service. Mount a Railway volume at `/data` and set a randomly generated `MONITOR_UPLOAD_TOKEN`; never commit this value. The worker needs the same token, `MONITOR_URL`, `OPENROUTER_API_KEY`, and a host-only Git credential helper for preregistration publication. Agents receive only broker tokens, never deployment credentials.
+
+Public snapshots stream over `/api/events` (SSE) and are available at `/api/status`. The existing importer produces all summary, setup, patches and inspector views; only sealed evidence is published, atomically, after each completion. Calibration recordings remain labeled development and do not enter measurement totals. Private authenticated `/api/backup` holds a consistent SQLite backup and full journals for recovery; it is never under the public artifact root. Publication retries transient errors and the final snapshot remains available after the worker exits. Railway infrastructure costs are separate from the inference ceiling. The sandbox remains billable until explicitly destroyed after retaining its final checkpoint/backup.
 
 Fixture certification and website output are separate from scored outcomes. `reports/certification.json` records every task's actual certification status. `reports/v1-not-run/` is a truthful empty results report, not fabricated performance data.
 
