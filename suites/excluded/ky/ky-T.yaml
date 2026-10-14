@@ -1,0 +1,64 @@
+id: ky-T
+repo: ky
+upstream: https://github.com/sindresorhus/ky.git
+commit: 3541888878c4d303a8bc2ad61815f4e048f55a5d
+category: test-generation
+language: typescript
+title: Test request header removal and cloning
+prompt: 'The supplied exported withoutHeaders(input:Request,names:readonly string[]):Request removes named
+  headers case-insensitively, preserves all other headers, URL, method and body, and must not consume
+  or mutate the original request. Add AVA tests for this supplied feature without external network or
+  timing sleeps.
+
+
+  Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree. Only
+  add tests under benchmark_tests/. Do not edit production code, existing tests or test/config files.
+  The supplied feature implementation has its reference tests withheld; unrelated upstream tests remain
+  intact. Use AVA.'
+allowed_paths:
+- benchmark_tests/*
+verification:
+- npm run build
+- ./node_modules/.bin/tsc --project tsconfig.test.json
+- ./node_modules/.bin/ava --timeout=2m --concurrency=2
+provenance: new_feature_tests_withheld
+setup:
+  source/utils/redact-request.ts: "export const withoutHeaders = (input: Request, names: readonly string[]):\
+    \ Request => {\n const headers = new Headers(input.headers);\n for (const name of names) { headers.delete(name);\
+    \ }\n return new Request(input.clone(), {headers});\n};\n"
+  source/index.ts:
+  - old: export {HTTPError}
+    new: 'export {withoutHeaders} from ''./utils/redact-request.js'';
+
+      export {HTTPError}'
+reference:
+  benchmark_tests/request.test.ts: "import test from 'ava';import {withoutHeaders} from '../source/index.ts';\n\
+    test('withoutHeaders preserves source, body, method and unlisted names',async t=>{\n const input=new\
+    \ Request('https://example.test',{method:'POST',body:'payload',headers:{Authorization:'s','X-Key':'k','X-Public':'p'}});\n\
+    \ const output=withoutHeaders(input,['AUTHORIZATION','x-key']);\n t.is(output.headers.get('authorization'),null);t.is(output.headers.get('x-key'),null);t.is(output.headers.get('x-public'),'p');\n\
+    \ t.is(input.headers.get('authorization'),'s');t.is(output.method,'POST');t.is(output.url,input.url);\n\
+    \ t.is(await output.text(),'payload');t.is(await input.text(),'payload');\n});\n"
+mutants:
+- source/utils/redact-request.ts:
+  - old: const headers = new Headers(input.headers);
+    new: const headers = input.headers;
+    count: 1
+- source/utils/redact-request.ts:
+  - old: for (const name of names)
+    new: for (const name of names.slice(0,1))
+    count: 1
+- source/utils/redact-request.ts:
+  - old: new Headers(input.headers)
+    new: new Headers()
+    count: 1
+- source/utils/redact-request.ts:
+  - old: '{headers});'
+    new: '{headers, method: ''PUT''});'
+    count: 1
+- source/utils/redact-request.ts:
+  - old: new Request(input.clone(), {headers})
+    new: new Request(input.url, {headers, method:input.method})
+    count: 1
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

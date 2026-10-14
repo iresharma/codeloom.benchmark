@@ -1,0 +1,42 @@
+id: chi-X
+repo: chi
+upstream: https://github.com/go-chi/chi.git
+commit: c9744a3641452cfe4fbb9929ceb554659d6bd950
+category: cross-file
+language: go
+title: Immutable bulk response-header middleware
+prompt: 'Add middleware.SetHeaders(headers http.Header) func(http.Handler) http.Handler. Snapshot the
+  configuration at factory creation (map and slices), replace selected response headers with all supplied
+  values before calling the next handler, canonicalize names using net/http semantics, preserve unlisted
+  headers, and copy values per response so handler mutation cannot alter later requests. Nil/empty input
+  is a no-op. Inputs have no duplicate names under case folding. Refactor existing SetHeader(key,value)
+  to delegate to SetHeaders while preserving its behavior. Implement in a new middleware file and update
+  the existing SetHeader definition.
+
+
+  Work autonomously. Leave the final output on the main checkout. Existing tests/configuration and .bench
+  files are immutable.'
+allowed_paths:
+- '*.go'
+- middleware/*.go
+- benchmark_tests/*
+verification:
+- go test ./...
+provenance: new_feature
+setup: {}
+reference:
+  middleware/bulk_headers.go: "package middleware\n\nimport \"net/http\"\n\n// SetHeaders snapshots configuration\
+    \ and replaces selected response header values.\nfunc SetHeaders(headers http.Header) func(http.Handler)\
+    \ http.Handler {\n snapshot := headers.Clone()\n return func(next http.Handler) http.Handler {\n \
+    \ return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n   for name, values := range\
+    \ snapshot {\n    w.Header().Del(name)\n    for _, value := range values { w.Header().Add(name, value)\
+    \ }\n   }\n   next.ServeHTTP(w, r)\n  })\n }\n}\n"
+  middleware/content_type.go:
+  - old: "func SetHeader(key, value string) func(http.Handler) http.Handler {\n\treturn func(next http.Handler)\
+      \ http.Handler {\n\t\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\
+      \t\tw.Header().Set(key, value)\n\t\t\tnext.ServeHTTP(w, r)\n\t\t})\n\t}\n}\n"
+    new: "func SetHeader(key, value string) func(http.Handler) http.Handler {\n return SetHeaders(http.Header{key:\
+      \ []string{value}})\n}\n"
+certification:
+  status: pending
+  reason: Activated reserve before freeze; certification required.

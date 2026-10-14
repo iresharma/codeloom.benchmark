@@ -1,0 +1,4 @@
+{
+  "id": "pqueue-T",
+  "prompt": "The supplied PQueue.settleAll(tasks) schedules every callback through this queue and returns all settled outcomes in input order, preserving rejection reasons. Empty batches resolve to []; concurrency and completion counters remain correct. Test this supplied feature, including rejection and deterministic concurrency cases.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. Only add tests under benchmark_tests/. Do not edit production code, existing tests or test/config files. The supplied feature implementation has its reference tests withheld; unrelated upstream tests remain intact. Use node:test."
+}

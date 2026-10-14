@@ -1,0 +1,4 @@
+{
+  "id": "ky-X",
+  "prompt": "Add errorHeaderRedaction?: readonly string[] to Ky options and the option registry. Add readonly requestHeaderSummary: Record<string,string> on HTTPError. It snapshots error.request.headers, redacting Authorization and Cookie by default plus specified names case-insensitively to [REDACTED]. Preserve unlisted headers. Redaction must not mutate the actual request or its headers; error.options retains normalized options. Keep existing error behavior and exports.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You may edit production source and add tests under benchmark_tests/, but existing tests/configuration and .bench files are immutable."
+}

@@ -1,0 +1,43 @@
+{
+  "authors": [
+    "Codex-assisted fixture author; not independently reviewed"
+  ],
+  "claims": {
+    "execution": "exec/subprocess",
+    "override_precedence": "file when true; environment when false",
+    "unassigned": "excluded"
+  },
+  "edges": [
+    {
+      "from": "run",
+      "to": "DotEnv.dict"
+    },
+    {
+      "from": "DotEnv.dict",
+      "to": "resolve_variables"
+    },
+    {
+      "from": "run",
+      "to": "run_command"
+    }
+  ],
+  "equivalents": {},
+  "symbols": [
+    {
+      "name": "run",
+      "path": "src/dotenv/cli.py"
+    },
+    {
+      "name": "run_command",
+      "path": "src/dotenv/cli.py"
+    },
+    {
+      "name": "DotEnv.dict",
+      "path": "src/dotenv/main.py"
+    },
+    {
+      "name": "resolve_variables",
+      "path": "src/dotenv/main.py"
+    }
+  ]
+}

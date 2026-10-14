@@ -1,0 +1,4 @@
+{
+  "id": "pqueue-B",
+  "prompt": "setPriority(id, priority) updates a different queued task and may accept a missing ID. Restore matching by ID, including queue entries after previous dequeues. Preserve FIFO behavior at equal priority and missing-ID errors.\n\nWork autonomously. Leave the final output on the main checkout. Existing tests/configuration and .bench files are immutable."
+}

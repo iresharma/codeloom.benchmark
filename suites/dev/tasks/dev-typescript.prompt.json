@@ -1,0 +1,4 @@
+{
+  "id": "dev-typescript",
+  "prompt": "Add Queue.pendingIds():readonly string[], PriorityQueue.pendingIds() and PQueue.pendingIds():readonly string[]. Return IDs for queued tasks in execution order, excluding started/removed tasks. Return a detached snapshot that cannot change the queue. Reordering/clearing/dequeuing must be reflected in future snapshots. Preserve existing test behavior and leave the main checkout ready for grading. Make the Queue capability optional for existing custom queues; PQueue.pendingIds throws TypeError when a custom queue does not support it."
+}

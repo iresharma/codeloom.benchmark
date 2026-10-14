@@ -1,0 +1,52 @@
+id: ky-X
+repo: ky
+upstream: https://github.com/sindresorhus/ky.git
+commit: 3541888878c4d303a8bc2ad61815f4e048f55a5d
+category: cross-file
+language: typescript
+title: Safe HTTP error header summaries
+prompt: 'Add errorHeaderRedaction?: readonly string[] to Ky options and the option registry. Add readonly
+  requestHeaderSummary: Record<string,string> on HTTPError. It snapshots error.request.headers, redacting
+  Authorization and Cookie by default plus specified names case-insensitively to [REDACTED]. Preserve
+  unlisted headers. Redaction must not mutate the actual request or its headers; error.options retains
+  normalized options. Keep existing error behavior and exports.
+
+
+  Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You
+  may edit production source and add tests under benchmark_tests/, but existing tests/configuration and
+  .bench files are immutable.'
+allowed_paths:
+- source/**/*.ts
+- source/*.ts
+- benchmark_tests/*
+verification:
+- npm run build
+- ./node_modules/.bin/tsc --project tsconfig.test.json
+- ./node_modules/.bin/ava --timeout=2m --concurrency=2
+provenance: cross-file
+setup: {}
+reference:
+  source/types/options.ts:
+  - old: export type KyOptions = {
+    new: "export type KyOptions = {\n\terrorHeaderRedaction?: readonly string[];"
+    count: 1
+  - old: "\treadonly retry: NormalizedRetryOptions;"
+    new: "\treadonly errorHeaderRedaction?: readonly string[];\n\treadonly retry: NormalizedRetryOptions;"
+    count: 1
+  source/core/constants.ts:
+  - old: "\tthrowHttpErrors: true,"
+    new: "\tthrowHttpErrors: true,\n\terrorHeaderRedaction: true,"
+    count: 1
+  source/errors/HTTPError.ts:
+  - old: "\tdata: T | string | undefined;"
+    new: "\tdata: T | string | undefined;\n\treadonly requestHeaderSummary: Record<string, string>;"
+    count: 1
+  - old: "\t\tthis.options = options;"
+    new: "\t\tthis.options = options;\n\t\tconst hidden = new Set(['authorization', 'cookie', ...(options.errorHeaderRedaction\
+      \ ?? []).map(name => name.toLowerCase())]);\n\t\tthis.requestHeaderSummary = Object.fromEntries([...request.headers].map(([name,\
+      \ value]) => [name, hidden.has(name.toLowerCase()) ? '[REDACTED]' : value]));"
+    count: 1
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

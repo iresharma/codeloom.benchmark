@@ -1,0 +1,37 @@
+id: tinydb-X
+repo: tinydb
+upstream: https://github.com/msiemens/tinydb.git
+commit: 6d7c4fc3e04d398b1282876514660a33a7897b41
+category: cross-file
+language: python
+title: Public storage flush contract
+prompt: 'Add TinyDB.flush() -> None and Storage.flush() -> None. Default Storage.flush is a no-op; JSONStorage
+  remains usable. TinyDB delegates to storage so CachingMiddleware.flush persists pending writes without
+  closing. Calling flush repeatedly is safe; flushing a closed caching middleware still raises ValueError.
+
+
+  Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You
+  may edit production source and add tests under benchmark_tests/, but existing tests/configuration and
+  .bench files are immutable.'
+allowed_paths:
+- tinydb/*.py
+- benchmark_tests/*
+verification:
+- python -m pytest -o addopts= -q tests
+provenance: cross-file
+setup: {}
+reference:
+  tinydb/database.py:
+  - old: '    def close(self) -> None:'
+    new: "    def flush(self) -> None:\n        \"\"\"Persist buffered writes without closing the database.\"\
+      \"\"\n        self._storage.flush()\n\n    def close(self) -> None:"
+    count: 1
+  tinydb/storages.py:
+  - old: '    def close(self) -> None:'
+    new: "    def flush(self) -> None:\n        \"\"\"Default storage flush: writes are already synchronous.\"\
+      \"\"\n        return None\n\n    def close(self) -> None:"
+    count: 2
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

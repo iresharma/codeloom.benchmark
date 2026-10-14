@@ -1,0 +1,4 @@
+{
+  "id": "dotenv-X",
+  "prompt": "Add strict: bool=False to DotEnv, load_dotenv and dotenv_values. In strict mode a malformed binding raises public dotenv.DotEnvParseError(ValueError), with .line (1-based int) and .path (input path or None for streams), before setting any environment variable. Lenient defaults remain unchanged. Add dotenv run --strict that uses this API and exits nonzero on invalid input; valid files still run the command.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You may edit production source and add tests under benchmark_tests/, but existing tests/configuration and .bench files are immutable."
+}

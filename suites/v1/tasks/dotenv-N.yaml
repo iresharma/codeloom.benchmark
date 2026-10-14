@@ -1,0 +1,37 @@
+id: dotenv-N
+repo: dotenv
+upstream: https://github.com/theskumar/python-dotenv.git
+commit: 0b2880591780a426b0551436f47a17e7a76d954f
+category: navigation
+language: python
+title: Code path and lifecycle navigation
+prompt: 'Trace CLI environment construction and override semantics. Explain why unassigned keys are excluded
+  and identify the final environment merge. Write the call graph and select each claim value from these
+  public choices: {"override_precedence": ["environment always", "file always", "file when true; environment
+  when false"], "unassigned": ["excluded", "empty string", "literal null"], "execution": ["exec/subprocess",
+  "in-process eval", "shell source"]}
+
+
+  Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree. Write
+  navigation-answer.json using the schema in .bench/navigation-answer.schema.json; run python /opt/benchmark-public/validate_answer.py
+  navigation-answer.json. Do not edit source code.'
+allowed_paths:
+- navigation-answer.json
+verification:
+- python -m pytest -q tests
+provenance: navigation
+setup: {}
+reference:
+  navigation-answer.json: "{\n  \"task_id\": \"dotenv-N\",\n  \"symbols\": [\n    {\n      \"path\": \"\
+    src/dotenv/cli.py\",\n      \"name\": \"run\"\n    },\n    {\n      \"path\": \"src/dotenv/cli.py\"\
+    ,\n      \"name\": \"run_command\"\n    },\n    {\n      \"path\": \"src/dotenv/main.py\",\n     \
+    \ \"name\": \"DotEnv.dict\"\n    },\n    {\n      \"path\": \"src/dotenv/main.py\",\n      \"name\"\
+    : \"resolve_variables\"\n    }\n  ],\n  \"edges\": [\n    {\n      \"from\": \"run\",\n      \"to\"\
+    : \"DotEnv.dict\"\n    },\n    {\n      \"from\": \"DotEnv.dict\",\n      \"to\": \"resolve_variables\"\
+    \n    },\n    {\n      \"from\": \"run\",\n      \"to\": \"run_command\"\n    }\n  ],\n  \"claims\"\
+    : {\n    \"override_precedence\": \"file when true; environment when false\",\n    \"unassigned\"\
+    : \"excluded\",\n    \"execution\": \"exec/subprocess\"\n  }\n}\n"
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

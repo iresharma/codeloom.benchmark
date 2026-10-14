@@ -1,0 +1,69 @@
+id: dotenv-T
+repo: dotenv
+upstream: https://github.com/theskumar/python-dotenv.git
+commit: 0b2880591780a426b0551436f47a17e7a76d954f
+category: test-generation
+language: python
+title: Test selection of assigned dotenv values
+prompt: 'The supplied dotenv.main.selected_values(values:Mapping[str,Optional[str]], names:Iterable[str])->dict[str,str]
+  selects requested names, omits None values, preserves empty strings, supports repeated names/generators,
+  returns a detached mapping and raises KeyError for any missing name. Add deterministic pytest tests
+  under benchmark_tests/ for this correct new helper; its reference tests are withheld.
+
+
+  Work autonomously. Leave the final output on the main checkout. Existing tests/configuration and .bench
+  files are immutable.'
+allowed_paths:
+- benchmark_tests/*
+verification:
+- python -m pytest -q tests
+provenance: new_feature
+setup:
+  src/dotenv/main.py:
+  - old: def resolve_variables(
+    new: "def selected_values(values, names):\n    result = {}\n    for name in names:\n        value\
+      \ = values[name]\n        if value is not None:\n            result[name] = value\n    return result\n\
+      \n\ndef resolve_variables("
+reference:
+  benchmark_tests/test_selection.py: "import pytest\nfrom dotenv.main import selected_values\n\ndef test_selection_and_copy():\n\
+    \    values={'a':'one','blank':'','nil':None,'other':'two'}\n    selected=selected_values(values,iter(['a','blank','nil','a']))\n\
+    \    assert selected=={'a':'one','blank':''}\n    selected['a']='changed'\n    assert values=={'a':'one','blank':'','nil':None,'other':'two'}\n\
+    \    assert selected_values(values,[])=={}\n\ndef test_missing_name():\n    with pytest.raises(KeyError):\
+    \ selected_values({'a':'one'},['a','missing'])\n"
+certification:
+  status: pending
+  reason: Activated reserve before freeze; certification required.
+mutants:
+- src/dotenv/main.py:
+  - old: "def selected_values(values, names):\n    result = {}\n    for name in names:\n        value\
+      \ = values[name]\n        if value is not None:\n            result[name] = value\n    return result\n\
+      \n\n"
+    new: "def selected_values(values, names):\n    result = {}\n    for name in names:\n        value\
+      \ = values[name]\n        if True:\n            result[name] = value\n    return result\n\n\n"
+- src/dotenv/main.py:
+  - old: "def selected_values(values, names):\n    result = {}\n    for name in names:\n        value\
+      \ = values[name]\n        if value is not None:\n            result[name] = value\n    return result\n\
+      \n\n"
+    new: "def selected_values(values, names):\n    result = {}\n    for name in names:\n        value\
+      \ = values[name]\n        if value:\n            result[name] = value\n    return result\n\n\n"
+- src/dotenv/main.py:
+  - old: "def selected_values(values, names):\n    result = {}\n    for name in names:\n        value\
+      \ = values[name]\n        if value is not None:\n            result[name] = value\n    return result\n\
+      \n\n"
+    new: "def selected_values(values, names):\n    result = {}\n    for name in names:\n        value\
+      \ = values.get(name)\n        if value is not None:\n            result[name] = value\n    return\
+      \ result\n\n\n"
+- src/dotenv/main.py:
+  - old: "def selected_values(values, names):\n    result = {}\n    for name in names:\n        value\
+      \ = values[name]\n        if value is not None:\n            result[name] = value\n    return result\n\
+      \n\n"
+    new: "def selected_values(values, names):\n    result = {}\n    for name in names:\n        value\
+      \ = values[name]\n        if value is not None:\n            result[name] = name\n    return result\n\
+      \n\n"
+- src/dotenv/main.py:
+  - old: "def selected_values(values, names):\n    result = {}\n    for name in names:\n        value\
+      \ = values[name]\n        if value is not None:\n            result[name] = value\n    return result\n\
+      \n\n"
+    new: "def selected_values(values, names):\n    result = {}\n    for name in names:\n        value\
+      \ = values[name]\n        if value is not None:\n            result[name] = value\n    return values\n\
+      \n\n"

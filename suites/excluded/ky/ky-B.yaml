@@ -1,0 +1,38 @@
+id: ky-B
+repo: ky
+upstream: https://github.com/sindresorhus/ky.git
+commit: 3541888878c4d303a8bc2ad61815f4e048f55a5d
+category: bug
+language: typescript
+title: Inherited headers disappear
+prompt: 'Extending a Ky instance loses inherited headers. Preserve inherited headers while supporting
+  request overrides and undefined deletion markers, including case-insensitive names. Do not mutate parent
+  headers.
+
+
+  Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You
+  may edit production source and add tests under benchmark_tests/, but existing tests/configuration and
+  .bench files are immutable.'
+allowed_paths:
+- source/**/*.ts
+- source/*.ts
+- benchmark_tests/*
+verification:
+- npm run build
+- ./node_modules/.bin/tsc --project tsconfig.test.json
+- ./node_modules/.bin/ava --timeout=2m --concurrency=2
+provenance: fabricated
+setup:
+  source/utils/merge.ts:
+  - old: const result = new globalThis.Headers(source1 as RequestInit['headers']);
+    new: const result = new globalThis.Headers();
+    count: 1
+reference:
+  source/utils/merge.ts:
+  - old: const result = new globalThis.Headers();
+    new: const result = new globalThis.Headers(source1 as RequestInit['headers']);
+    count: 1
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

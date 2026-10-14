@@ -1,0 +1,34 @@
+id: tinydb-B
+repo: tinydb
+upstream: https://github.com/msiemens/tinydb.git
+commit: 6d7c4fc3e04d398b1282876514660a33a7897b41
+category: bug
+language: python
+title: Query cache survives writes
+prompt: 'Searching a cached predicate after update/remove returns stale documents. Restore invalidation
+  for every successful mutation, preserving copy-on-search and unaffected tables.
+
+
+  Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You
+  may edit production source and add tests under benchmark_tests/, but existing tests/configuration and
+  .bench files are immutable.'
+allowed_paths:
+- tinydb/*.py
+- benchmark_tests/*
+verification:
+- python -m pytest -o addopts= -q tests
+provenance: fabricated
+setup:
+  tinydb/table.py:
+  - old: "        # Clear the query cache, as the table contents have changed\n        self.clear_cache()"
+    new: "        # Clear the query cache, as the table contents have changed\n        pass"
+    count: 1
+reference:
+  tinydb/table.py:
+  - old: "        # Clear the query cache, as the table contents have changed\n        pass"
+    new: "        # Clear the query cache, as the table contents have changed\n        self.clear_cache()"
+    count: 1
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

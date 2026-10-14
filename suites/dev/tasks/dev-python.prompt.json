@@ -1,0 +1,4 @@
+{
+  "id": "dev-python",
+  "prompt": "Add Table.snapshot()->list[Document] and TinyDB.snapshot()->dict[str,list[Document]]. Deep-copy document values and preserve IDs, include all table names, return empty structures for empty storage, and leave database contents untouched when snapshots are mutated. Add public methods in the appropriate two classes, preserve existing tests, and leave the main checkout ready for grading."
+}

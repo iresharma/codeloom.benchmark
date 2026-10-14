@@ -1,0 +1,4 @@
+{
+  "id": "chi-T",
+  "prompt": "The supplied middleware.SnapshotResponseWriter(w WrapResponseWriter) returns ResponseSnapshot{Status,Bytes,Headers}, where counters match w and Headers is a deep snapshot. Test counters, multi-value headers, and independence from later map/slice mutation. Add Go tests under benchmark_tests/ using an external package importing github.com/go-chi/chi/v5/middleware; do not change supplied code.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. Only add tests under benchmark_tests/. Do not edit production code, existing tests or test/config files. The supplied feature implementation has its reference tests withheld; unrelated upstream tests remain intact. Use Go testing."
+}

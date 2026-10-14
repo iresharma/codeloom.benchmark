@@ -1,0 +1,12 @@
+evaluator/
+references/
+reports/
+runs/
+.cache/
+.venv/
+.git/
+env.sh
+.env*
+**/*secret*
+**/mutants/
+**/answers/

@@ -1,0 +1,32 @@
+id: pqueue-B
+repo: pqueue
+upstream: https://github.com/sindresorhus/p-queue.git
+commit: 7f272ab5ff2254c0dc2537b7977e88ede1cd55e8
+category: bug
+language: typescript
+title: Priority updates target the wrong queued task
+prompt: 'setPriority(id, priority) updates a different queued task and may accept a missing ID. Restore
+  matching by ID, including queue entries after previous dequeues. Preserve FIFO behavior at equal priority
+  and missing-ID errors.
+
+
+  Work autonomously. Leave the final output on the main checkout. Existing tests/configuration and .bench
+  files are immutable.'
+allowed_paths:
+- source/*.ts
+- benchmark_tests/*
+verification:
+- npm run build
+- node --import=tsx/esm --test --test-timeout=60000 test/*.ts
+provenance: fabricated
+setup:
+  source/priority-queue.ts:
+  - old: const index = this.#findIndex(element => element.id === id);
+    new: const index = this.#findIndex(element => element.id !== id);
+reference:
+  source/priority-queue.ts:
+  - old: const index = this.#findIndex(element => element.id !== id);
+    new: const index = this.#findIndex(element => element.id === id);
+certification:
+  status: pending
+  reason: Activated reserve before freeze; certification required.

@@ -1,0 +1,31 @@
+id: dev-python
+repo: tinydb
+upstream: https://github.com/msiemens/tinydb.git
+commit: 6d7c4fc3e04d398b1282876514660a33a7897b41
+category: cross-file
+language: python
+title: Independent database and table snapshots
+prompt: Add Table.snapshot()->list[Document] and TinyDB.snapshot()->dict[str,list[Document]]. Deep-copy
+  document values and preserve IDs, include all table names, return empty structures for empty storage,
+  and leave database contents untouched when snapshots are mutated. Add public methods in the appropriate
+  two classes, preserve existing tests, and leave the main checkout ready for grading.
+allowed_paths:
+- tinydb/*.py
+- benchmark_tests/*
+verification:
+- python -m pytest -o addopts= -q tests
+provenance: cross-file
+setup: {}
+reference:
+  tinydb/table.py:
+  - old: '    def all(self)'
+    new: "    def snapshot(self):\n        from copy import deepcopy\n        return deepcopy(self.all())\n\
+      \n    def all(self)"
+  tinydb/database.py:
+  - old: '    def tables(self)'
+    new: "    def snapshot(self):\n        return {name: self.table(name).snapshot() for name in sorted(self.tables())}\n\
+      \n    def tables(self)"
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

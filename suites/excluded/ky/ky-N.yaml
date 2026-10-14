@@ -1,0 +1,40 @@
+id: ky-N
+repo: ky
+upstream: https://github.com/sindresorhus/ky.git
+commit: 3541888878c4d303a8bc2ad61815f4e048f55a5d
+category: navigation
+language: typescript
+title: Code path and lifecycle navigation
+prompt: 'Trace timeout and cancellation from Ky request construction through retry/delay utilities and
+  exported error types. Write the call graph and select each claim value from these public choices: {"timeout_error":
+  ["TimeoutError", "AbortError", "HTTPError"], "abort_signal": ["AbortSignal", "CancellationToken", "none"],
+  "retry_delay": ["abortable", "ignores cancellation", "synchronous sleep"]}
+
+
+  Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree. Write
+  navigation-answer.json using the schema in .bench/navigation-answer.schema.json; run python /opt/benchmark-public/validate_answer.py
+  navigation-answer.json. Do not edit source code.'
+allowed_paths:
+- navigation-answer.json
+verification:
+- npm run build
+- ./node_modules/.bin/tsc --project tsconfig.test.json
+- ./node_modules/.bin/ava --timeout=2m --concurrency=2
+provenance: navigation
+setup: {}
+reference:
+  navigation-answer.json: "{\n  \"task_id\": \"ky-N\",\n  \"symbols\": [\n    {\n      \"path\": \"source/core/Ky.ts\"\
+    ,\n      \"name\": \"Ky\"\n    },\n    {\n      \"path\": \"source/core/Ky.ts\",\n      \"name\":\
+    \ \"Ky.#fetch\"\n    },\n    {\n      \"path\": \"source/core/Ky.ts\",\n      \"name\": \"Ky.#retryFromError\"\
+    \n    },\n    {\n      \"path\": \"source/utils/timeout.ts\",\n      \"name\": \"timeout\"\n    },\n\
+    \    {\n      \"path\": \"source/utils/delay.ts\",\n      \"name\": \"delay\"\n    },\n    {\n   \
+    \   \"path\": \"source/errors/TimeoutError.ts\",\n      \"name\": \"TimeoutError\"\n    }\n  ],\n\
+    \  \"edges\": [\n    {\n      \"from\": \"Ky.#fetch\",\n      \"to\": \"timeout\"\n    },\n    {\n\
+    \      \"from\": \"Ky.#retryFromError\",\n      \"to\": \"delay\"\n    },\n    {\n      \"from\":\
+    \ \"timeout\",\n      \"to\": \"TimeoutError\"\n    }\n  ],\n  \"claims\": {\n    \"timeout_error\"\
+    : \"TimeoutError\",\n    \"abort_signal\": \"AbortSignal\",\n    \"retry_delay\": \"abortable\"\n\
+    \  }\n}\n"
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

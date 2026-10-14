@@ -1,0 +1,4 @@
+{
+  "id": "tinydb-X",
+  "prompt": "Add TinyDB.flush() -> None and Storage.flush() -> None. Default Storage.flush is a no-op; JSONStorage remains usable. TinyDB delegates to storage so CachingMiddleware.flush persists pending writes without closing. Calling flush repeatedly is safe; flushing a closed caching middleware still raises ValueError.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You may edit production source and add tests under benchmark_tests/, but existing tests/configuration and .bench files are immutable."
+}

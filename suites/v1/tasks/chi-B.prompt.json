@@ -1,0 +1,4 @@
+{
+  "id": "chi-B",
+  "prompt": "Context.Reset leaves request URL parameters behind. Restore reset semantics so reused contexts have no parameters and other reset state is preserved. Preserve capacity reuse and nested parameter precedence.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You may edit production source and add tests under benchmark_tests/, but existing tests/configuration and .bench files are immutable."
+}

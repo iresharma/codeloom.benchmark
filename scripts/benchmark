@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+if command -v uv >/dev/null 2>&1; then
+  uv sync --frozen
+  exec uv run --frozen codeloom-benchmark "${@:-run}"
+fi
+if [[ -x .venv/bin/codeloom-benchmark ]]; then
+  exec .venv/bin/codeloom-benchmark "${@:-run}"
+fi
+printf '%s\n' 'Install uv (https://docs.astral.sh/uv/) then rerun this command.' >&2
+exit 2

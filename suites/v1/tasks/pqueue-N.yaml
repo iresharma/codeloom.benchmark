@@ -1,0 +1,39 @@
+id: pqueue-N
+repo: pqueue
+upstream: https://github.com/sindresorhus/p-queue.git
+commit: 7f272ab5ff2254c0dc2537b7977e88ede1cd55e8
+category: navigation
+language: typescript
+title: Code path and lifecycle navigation
+prompt: 'Trace PQueue.add through priority enqueue, execution and completion bookkeeping. Write the call
+  graph and select each claim value from these public choices: {"concurrency": ["pending less than concurrency",
+  "queue size less than concurrency", "pending equal concurrency"], "completion": ["finally", "only fulfillment",
+  "before execution"], "idle": ["pending and queue both zero", "queue empty regardless of pending", "pending
+  zero regardless of queue"]}
+
+
+  Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree. Write
+  navigation-answer.json using the schema in .bench/navigation-answer.schema.json; run python /opt/benchmark-public/validate_answer.py
+  navigation-answer.json. Do not edit source code.'
+allowed_paths:
+- navigation-answer.json
+verification:
+- npm run build
+- node --import=tsx/esm --test --test-timeout=60000 test/*.ts
+provenance: navigation
+setup: {}
+reference:
+  navigation-answer.json: "{\n  \"task_id\": \"pqueue-N\",\n  \"symbols\": [\n    {\n      \"path\": \"\
+    source/index.ts\",\n      \"name\": \"PQueue.add\"\n    },\n    {\n      \"path\": \"source/index.ts\"\
+    ,\n      \"name\": \"PQueue.#next\"\n    },\n    {\n      \"path\": \"source/priority-queue.ts\",\n\
+    \      \"name\": \"PriorityQueue.enqueue\"\n    },\n    {\n      \"path\": \"source/index.ts\",\n\
+    \      \"name\": \"PQueue.#tryToStartAnother\"\n    }\n  ],\n  \"edges\": [\n    {\n      \"from\"\
+    : \"PQueue.add\",\n      \"to\": \"PriorityQueue.enqueue\"\n    },\n    {\n      \"from\": \"PQueue.add\"\
+    ,\n      \"to\": \"PQueue.#next\"\n    },\n    {\n      \"from\": \"PQueue.#next\",\n      \"to\"\
+    : \"PQueue.#processQueue\"\n    }\n  ],\n  \"claims\": {\n    \"concurrency\": \"pending less than\
+    \ concurrency\",\n    \"completion\": \"finally\",\n    \"idle\": \"pending and queue both zero\"\n\
+    \  }\n}\n"
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

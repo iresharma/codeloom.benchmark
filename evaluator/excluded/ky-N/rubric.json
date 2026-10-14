@@ -1,0 +1,51 @@
+{
+  "authors": [
+    "Codex-assisted fixture author; not independently reviewed"
+  ],
+  "claims": {
+    "abort_signal": "AbortSignal",
+    "retry_delay": "abortable",
+    "timeout_error": "TimeoutError"
+  },
+  "edges": [
+    {
+      "from": "Ky.#fetch",
+      "to": "timeout"
+    },
+    {
+      "from": "Ky.#retryFromError",
+      "to": "delay"
+    },
+    {
+      "from": "timeout",
+      "to": "TimeoutError"
+    }
+  ],
+  "equivalents": {},
+  "symbols": [
+    {
+      "name": "Ky",
+      "path": "source/core/Ky.ts"
+    },
+    {
+      "name": "Ky.#fetch",
+      "path": "source/core/Ky.ts"
+    },
+    {
+      "name": "Ky.#retryFromError",
+      "path": "source/core/Ky.ts"
+    },
+    {
+      "name": "timeout",
+      "path": "source/utils/timeout.ts"
+    },
+    {
+      "name": "delay",
+      "path": "source/utils/delay.ts"
+    },
+    {
+      "name": "TimeoutError",
+      "path": "source/errors/TimeoutError.ts"
+    }
+  ]
+}

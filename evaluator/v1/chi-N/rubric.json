@@ -1,0 +1,43 @@
+{
+  "authors": [
+    "Codex-assisted fixture author; not independently reviewed"
+  ],
+  "claims": {
+    "pool": "Get and Put around request",
+    "precedence": "last matching parameter",
+    "reset": "clear parameters"
+  },
+  "edges": [
+    {
+      "from": "URLParamFromCtx",
+      "to": "RouteContext"
+    },
+    {
+      "from": "URLParamFromCtx",
+      "to": "Context.URLParam"
+    },
+    {
+      "from": "Mux.ServeHTTP",
+      "to": "Context.Reset"
+    }
+  ],
+  "equivalents": {},
+  "symbols": [
+    {
+      "name": "Context.URLParam",
+      "path": "context.go"
+    },
+    {
+      "name": "Context.Reset",
+      "path": "context.go"
+    },
+    {
+      "name": "URLParamFromCtx",
+      "path": "context.go"
+    },
+    {
+      "name": "Mux.ServeHTTP",
+      "path": "mux.go"
+    }
+  ]
+}

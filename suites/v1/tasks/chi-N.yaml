@@ -1,0 +1,37 @@
+id: chi-N
+repo: chi
+upstream: https://github.com/go-chi/chi.git
+commit: c9744a3641452cfe4fbb9929ceb554659d6bd950
+category: navigation
+language: go
+title: Code path and lifecycle navigation
+prompt: 'Explain nested route parameter lookup, pooled routing-context reuse and request context access.
+  Write the call graph and select each claim value from these public choices: {"precedence": ["last matching
+  parameter", "first matching parameter", "all matching values joined"], "reset": ["clear parameters",
+  "retain parameters", "drop context object"], "pool": ["Get and Put around request", "one context shared
+  by all requests", "new context without reuse"]}
+
+
+  Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree. Write
+  navigation-answer.json using the schema in .bench/navigation-answer.schema.json; run python /opt/benchmark-public/validate_answer.py
+  navigation-answer.json. Do not edit source code.'
+allowed_paths:
+- navigation-answer.json
+verification:
+- go test ./...
+provenance: navigation
+setup: {}
+reference:
+  navigation-answer.json: "{\n  \"task_id\": \"chi-N\",\n  \"symbols\": [\n    {\n      \"path\": \"context.go\"\
+    ,\n      \"name\": \"Context.URLParam\"\n    },\n    {\n      \"path\": \"context.go\",\n      \"\
+    name\": \"Context.Reset\"\n    },\n    {\n      \"path\": \"context.go\",\n      \"name\": \"URLParamFromCtx\"\
+    \n    },\n    {\n      \"path\": \"mux.go\",\n      \"name\": \"Mux.ServeHTTP\"\n    }\n  ],\n  \"\
+    edges\": [\n    {\n      \"from\": \"URLParamFromCtx\",\n      \"to\": \"RouteContext\"\n    },\n\
+    \    {\n      \"from\": \"URLParamFromCtx\",\n      \"to\": \"Context.URLParam\"\n    },\n    {\n\
+    \      \"from\": \"Mux.ServeHTTP\",\n      \"to\": \"Context.Reset\"\n    }\n  ],\n  \"claims\": {\n\
+    \    \"precedence\": \"last matching parameter\",\n    \"reset\": \"clear parameters\",\n    \"pool\"\
+    : \"Get and Put around request\"\n  }\n}\n"
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

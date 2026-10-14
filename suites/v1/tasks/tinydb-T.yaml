@@ -1,0 +1,62 @@
+id: tinydb-T
+repo: tinydb
+upstream: https://github.com/msiemens/tinydb.git
+commit: 6d7c4fc3e04d398b1282876514660a33a7897b41
+category: test-generation
+language: python
+title: Test a conditional middleware flush
+prompt: 'The supplied CachingMiddleware.flush_if_pending(min_writes=1)->bool flushes only at the threshold,
+  returns whether it flushed, rejects nonpositive thresholds and closed storage, preserves pending data
+  below threshold, and is safe after a flush. Add deterministic regression tests for this supplied feature.
+
+
+  Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree. Only
+  add tests under benchmark_tests/. Do not edit production code, existing tests or test/config files.
+  The supplied feature implementation has its reference tests withheld; unrelated upstream tests remain
+  intact. Use pytest.'
+allowed_paths:
+- benchmark_tests/*
+verification:
+- python -m pytest -o addopts= -q tests
+provenance: new_feature_tests_withheld
+setup:
+  tinydb/middlewares.py:
+  - old: '    def flush(self):'
+    new: "    def flush_if_pending(self, min_writes: int = 1) -> bool:\n        if self._closed:\n   \
+      \         raise ValueError('I/O operation on closed storage')\n        if min_writes < 1:\n    \
+      \        raise ValueError('min_writes must be positive')\n        if self._cache_modified_count\
+      \ < min_writes:\n            return False\n        self.flush()\n        return True\n\n    def\
+      \ flush(self):"
+    count: 1
+reference:
+  benchmark_tests/test_flush.py: "from tinydb.middlewares import CachingMiddleware\nfrom tinydb.storages\
+    \ import MemoryStorage\nimport pytest\n\ndef test_flush_if_pending():\n s=CachingMiddleware(MemoryStorage)();assert\
+    \ s.flush_if_pending() is False\n s.write({'x':1});assert s.flush_if_pending(2) is False\n assert\
+    \ s.flush_if_pending(1) is True;assert s.storage.read()=={'x':1};assert s.flush_if_pending() is False\n\
+    \ s.write({'x':2});assert s.flush_if_pending() is True\n with pytest.raises(ValueError):s.flush_if_pending(0)\n\
+    \ s.close()\n with pytest.raises(ValueError):s.flush_if_pending()\n"
+mutants:
+- tinydb/middlewares.py:
+  - old: "        self.flush()\n        return True"
+    new: "        pass\n        return True"
+    count: 1
+- tinydb/middlewares.py:
+  - old: '        if self._cache_modified_count < min_writes:'
+    new: '        if self._cache_modified_count <= min_writes:'
+    count: 1
+- tinydb/middlewares.py:
+  - old: '        if min_writes < 1:'
+    new: '        if min_writes < 0:'
+    count: 1
+- tinydb/middlewares.py:
+  - old: "        self.flush()\n        return True"
+    new: "        self.flush()\n        return False"
+    count: 1
+- tinydb/middlewares.py:
+  - old: "        if self._closed:\n            raise ValueError('I/O operation on closed storage')\n\
+      \        if min_writes"
+    new: '        if min_writes'
+    count: 1
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

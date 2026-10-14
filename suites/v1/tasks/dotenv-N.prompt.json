@@ -1,0 +1,4 @@
+{
+  "id": "dotenv-N",
+  "prompt": "Trace CLI environment construction and override semantics. Explain why unassigned keys are excluded and identify the final environment merge. Write the call graph and select each claim value from these public choices: {\"override_precedence\": [\"environment always\", \"file always\", \"file when true; environment when false\"], \"unassigned\": [\"excluded\", \"empty string\", \"literal null\"], \"execution\": [\"exec/subprocess\", \"in-process eval\", \"shell source\"]}\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. Write navigation-answer.json using the schema in .bench/navigation-answer.schema.json; run python /opt/benchmark-public/validate_answer.py navigation-answer.json. Do not edit source code."
+}

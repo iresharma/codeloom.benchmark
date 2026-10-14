@@ -1,0 +1,4 @@
+{
+  "id": "chi-N",
+  "prompt": "Explain nested route parameter lookup, pooled routing-context reuse and request context access. Write the call graph and select each claim value from these public choices: {\"precedence\": [\"last matching parameter\", \"first matching parameter\", \"all matching values joined\"], \"reset\": [\"clear parameters\", \"retain parameters\", \"drop context object\"], \"pool\": [\"Get and Put around request\", \"one context shared by all requests\", \"new context without reuse\"]}\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. Write navigation-answer.json using the schema in .bench/navigation-answer.schema.json; run python /opt/benchmark-public/validate_answer.py navigation-answer.json. Do not edit source code."
+}

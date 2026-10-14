@@ -1,0 +1,4 @@
+{
+  "id": "chi-X",
+  "prompt": "Add middleware.SetHeaders(headers http.Header) func(http.Handler) http.Handler. Snapshot the configuration at factory creation (map and slices), replace selected response headers with all supplied values before calling the next handler, canonicalize names using net/http semantics, preserve unlisted headers, and copy values per response so handler mutation cannot alter later requests. Nil/empty input is a no-op. Inputs have no duplicate names under case folding. Refactor existing SetHeader(key,value) to delegate to SetHeaders while preserving its behavior. Implement in a new middleware file and update the existing SetHeader definition.\n\nWork autonomously. Leave the final output on the main checkout. Existing tests/configuration and .bench files are immutable."
+}

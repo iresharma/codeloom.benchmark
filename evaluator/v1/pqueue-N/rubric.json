@@ -1,0 +1,43 @@
+{
+  "authors": [
+    "Codex-assisted fixture author; not independently reviewed"
+  ],
+  "claims": {
+    "completion": "finally",
+    "concurrency": "pending less than concurrency",
+    "idle": "pending and queue both zero"
+  },
+  "edges": [
+    {
+      "from": "PQueue.add",
+      "to": "PriorityQueue.enqueue"
+    },
+    {
+      "from": "PQueue.add",
+      "to": "PQueue.#next"
+    },
+    {
+      "from": "PQueue.#next",
+      "to": "PQueue.#processQueue"
+    }
+  ],
+  "equivalents": {},
+  "symbols": [
+    {
+      "name": "PQueue.add",
+      "path": "source/index.ts"
+    },
+    {
+      "name": "PQueue.#next",
+      "path": "source/index.ts"
+    },
+    {
+      "name": "PriorityQueue.enqueue",
+      "path": "source/priority-queue.ts"
+    },
+    {
+      "name": "PQueue.#tryToStartAnother",
+      "path": "source/index.ts"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+id: pqueue-X
+repo: pqueue
+upstream: https://github.com/sindresorhus/p-queue.git
+commit: 7f272ab5ff2254c0dc2537b7977e88ede1cd55e8
+category: cross-file
+language: typescript
+title: Atomic bulk queue priority updates
+prompt: 'Add setPriorities(updates: ReadonlyArray<{id:string;priority:number}>): void to PQueue, the Queue
+  interface and PriorityQueue. Make the Queue capability optional to preserve existing custom queue types;
+  PQueue must fall back to validated single updates when a custom queue lacks the bulk method. Validate
+  the entire batch before any mutation: nonfinite priority -> TypeError; unknown or already-running ID
+  -> ReferenceError. Empty batch is a no-op; duplicate IDs apply in order (last wins). Reuse single-update
+  ordering, keep waiting-task metadata consistent, and preserve other queued tasks.
+
+
+  Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You
+  may edit production source and add tests under benchmark_tests/, but existing tests/configuration and
+  .bench files are immutable.'
+allowed_paths:
+- source/*.ts
+- benchmark_tests/*
+verification:
+- npm run build
+- node --import=tsx/esm --test --test-timeout=60000 test/*.ts
+provenance: cross-file
+setup: {}
+reference:
+  source/queue.ts:
+  - old: "\tsetPriority: (id: string, priority: number) => void;"
+    new: "\tsetPriorities?: (updates: ReadonlyArray<{id: string; priority: number}>) => void;\n\tsetPriority:\
+      \ (id: string, priority: number) => void;"
+    count: 1
+  source/priority-queue.ts:
+  - old: "\tsetPriority(id: string, priority: number) {"
+    new: "\tsetPriorities(updates: ReadonlyArray<{id: string; priority: number}>): void {\n\t\tfor (const\
+      \ {id, priority} of updates) {\n\t\t\tif (!Number.isFinite(priority)) { throw new TypeError('priority\
+      \ must be finite'); }\n\t\t\tif (this.#findIndex(element => element.id === id) === -1) { throw new\
+      \ ReferenceError('unknown queued id'); }\n\t\t}\n\t\tfor (const {id, priority} of updates) { this.setPriority(id,\
+      \ priority); }\n\t}\n\n\tsetPriority(id: string, priority: number) {"
+    count: 1
+  source/index.ts:
+  - old: "\tsetPriority(id: string, priority: number) {"
+    new: "\tsetPriorities(updates: ReadonlyArray<{id: string; priority: number}>): void {\n\t\tfor (const\
+      \ {id, priority} of updates) {\n\t\t\tif (!Number.isFinite(priority)) { throw new TypeError('priority\
+      \ must be finite'); }\n\t\t\tif (![...this.#waitingTasks].some(task => task.id === id)) { throw\
+      \ new ReferenceError('unknown queued id'); }\n\t\t}\n\t\tif (this.#queue.setPriorities) { this.#queue.setPriorities(updates);\
+      \ }\n\t\telse { for (const {id, priority} of updates) { this.#queue.setPriority(id, priority); }\
+      \ }\n\t\tfor (const {id, priority} of updates) {\n\t\t\tfor (const task of this.#waitingTasks) {\
+      \ if (task.id === id) { task.priority = priority; } }\n\t\t}\n\t}\n\n\tsetPriority(id: string, priority:\
+      \ number) {"
+    count: 1
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

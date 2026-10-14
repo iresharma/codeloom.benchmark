@@ -1,0 +1,39 @@
+id: tinydb-N
+repo: tinydb
+upstream: https://github.com/msiemens/tinydb.git
+commit: 6d7c4fc3e04d398b1282876514660a33a7897b41
+category: navigation
+language: python
+title: Trace query-cache invalidation and buffered persistence
+prompt: 'For TinyDB(storage=CachingMiddleware(JSONStorage)), trace writes from Table through middleware
+  into JSON persistence. Explain when the query cache is invalidated and whether cached search results
+  protect list membership or nested values. Write navigation-answer.json using .bench/navigation-answer.schema.json
+  and run python .bench/validate_answer.py. Choose each claim value from {"cached_results": ["same list",
+  "shallow list copy", "deep copy"], "invalidation": ["after storage write", "only on close", "never"],
+  "persistence": ["every write", "on flush", "only on close"]}
+
+
+  Work autonomously. Leave the final output on the main checkout. Existing tests/configuration and .bench
+  files are immutable.'
+allowed_paths:
+- navigation-answer.json
+verification:
+- python -m pytest -o addopts= -q tests
+provenance: navigation
+setup: {}
+reference:
+  navigation-answer.json: "{\n  \"task_id\": \"tinydb-N\",\n  \"symbols\": [\n    {\n      \"path\": \"\
+    tinydb/table.py\",\n      \"name\": \"Table.search\"\n    },\n    {\n      \"path\": \"tinydb/table.py\"\
+    ,\n      \"name\": \"Table._update_table\"\n    },\n    {\n      \"path\": \"tinydb/middlewares.py\"\
+    ,\n      \"name\": \"CachingMiddleware.write\"\n    },\n    {\n      \"path\": \"tinydb/middlewares.py\"\
+    ,\n      \"name\": \"CachingMiddleware.flush\"\n    },\n    {\n      \"path\": \"tinydb/storages.py\"\
+    ,\n      \"name\": \"JSONStorage.write\"\n    }\n  ],\n  \"edges\": [\n    {\n      \"from\": \"Table._update_table\"\
+    ,\n      \"to\": \"CachingMiddleware.write\"\n    },\n    {\n      \"from\": \"Table._update_table\"\
+    ,\n      \"to\": \"Table.clear_cache\"\n    },\n    {\n      \"from\": \"CachingMiddleware.write\"\
+    ,\n      \"to\": \"CachingMiddleware.flush\"\n    },\n    {\n      \"from\": \"CachingMiddleware.flush\"\
+    ,\n      \"to\": \"JSONStorage.write\"\n    }\n  ],\n  \"claims\": {\n    \"cached_results\": \"shallow\
+    \ list copy\",\n    \"invalidation\": \"after storage write\",\n    \"persistence\": \"on flush\"\n\
+    \  }\n}\n"
+certification:
+  status: pending
+  reason: Activated reserve before freeze; certification required.

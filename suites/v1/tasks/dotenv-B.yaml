@@ -1,0 +1,37 @@
+id: dotenv-B
+repo: dotenv
+upstream: https://github.com/theskumar/python-dotenv.git
+commit: 0b2880591780a426b0551436f47a17e7a76d954f
+category: bug
+language: python
+title: Interpolation override precedence
+prompt: 'When override=False, substitutions must prefer existing environment values over earlier file
+  bindings; override=True must prefer earlier file bindings. Preserve empty values, default substitutions
+  and unassigned keys.
+
+
+  Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You
+  may edit production source and add tests under benchmark_tests/, but existing tests/configuration and
+  .bench files are immutable.'
+allowed_paths:
+- src/dotenv/*.py
+- benchmark_tests/*
+verification:
+- python -m pytest -q tests
+provenance: fabricated
+setup:
+  src/dotenv/main.py:
+  - old: "            else:\n                env.update(new_values)\n                env.update(os.environ)\
+      \  # type: ignore"
+    new: "            else:\n                env.update(os.environ)  # type: ignore\n                env.update(new_values)"
+    count: 1
+reference:
+  src/dotenv/main.py:
+  - old: "            else:\n                env.update(os.environ)  # type: ignore\n                env.update(new_values)"
+    new: "            else:\n                env.update(new_values)\n                env.update(os.environ)\
+      \  # type: ignore"
+    count: 1
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

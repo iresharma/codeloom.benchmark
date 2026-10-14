@@ -1,0 +1,4 @@
+{
+  "id": "ky-N",
+  "prompt": "Trace timeout and cancellation from Ky request construction through retry/delay utilities and exported error types. Write the call graph and select each claim value from these public choices: {\"timeout_error\": [\"TimeoutError\", \"AbortError\", \"HTTPError\"], \"abort_signal\": [\"AbortSignal\", \"CancellationToken\", \"none\"], \"retry_delay\": [\"abortable\", \"ignores cancellation\", \"synchronous sleep\"]}\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. Write navigation-answer.json using the schema in .bench/navigation-answer.schema.json; run python /opt/benchmark-public/validate_answer.py navigation-answer.json. Do not edit source code."
+}

@@ -1,0 +1,4 @@
+{
+  "id": "tinydb-N",
+  "prompt": "For TinyDB(storage=CachingMiddleware(JSONStorage)), trace writes from Table through middleware into JSON persistence. Explain when the query cache is invalidated and whether cached search results protect list membership or nested values. Write navigation-answer.json using .bench/navigation-answer.schema.json and run python .bench/validate_answer.py. Choose each claim value from {\"cached_results\": [\"same list\", \"shallow list copy\", \"deep copy\"], \"invalidation\": [\"after storage write\", \"only on close\", \"never\"], \"persistence\": [\"every write\", \"on flush\", \"only on close\"]}\n\nWork autonomously. Leave the final output on the main checkout. Existing tests/configuration and .bench files are immutable."
+}

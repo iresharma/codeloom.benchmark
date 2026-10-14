@@ -1,0 +1,4 @@
+{
+  "id": "dotenv-B",
+  "prompt": "When override=False, substitutions must prefer existing environment values over earlier file bindings; override=True must prefer earlier file bindings. Preserve empty values, default substitutions and unassigned keys.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You may edit production source and add tests under benchmark_tests/, but existing tests/configuration and .bench files are immutable."
+}

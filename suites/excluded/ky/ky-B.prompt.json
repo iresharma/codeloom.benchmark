@@ -1,0 +1,4 @@
+{
+  "id": "ky-B",
+  "prompt": "Extending a Ky instance loses inherited headers. Preserve inherited headers while supporting request overrides and undefined deletion markers, including case-insensitive names. Do not mutate parent headers.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You may edit production source and add tests under benchmark_tests/, but existing tests/configuration and .bench files are immutable."
+}

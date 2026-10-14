@@ -1,0 +1,59 @@
+id: chi-T
+repo: chi
+upstream: https://github.com/go-chi/chi.git
+commit: c9744a3641452cfe4fbb9929ceb554659d6bd950
+category: test-generation
+language: go
+title: Test immutable writer snapshots
+prompt: 'The supplied middleware.SnapshotResponseWriter(w WrapResponseWriter) returns ResponseSnapshot{Status,Bytes,Headers},
+  where counters match w and Headers is a deep snapshot. Test counters, multi-value headers, and independence
+  from later map/slice mutation. Add Go tests under benchmark_tests/ using an external package importing
+  github.com/go-chi/chi/v5/middleware; do not change supplied code.
+
+
+  Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree. Only
+  add tests under benchmark_tests/. Do not edit production code, existing tests or test/config files.
+  The supplied feature implementation has its reference tests withheld; unrelated upstream tests remain
+  intact. Use Go testing.'
+allowed_paths:
+- benchmark_tests/*
+verification:
+- go test ./...
+provenance: new_feature_tests_withheld
+setup:
+  middleware/response_snapshot.go: "package middleware\n\nimport \"net/http\"\n\ntype ResponseSnapshot\
+    \ struct {\n Status int\n Bytes int\n Headers http.Header\n}\n\nfunc SnapshotResponseWriter(w WrapResponseWriter)\
+    \ ResponseSnapshot {\n return ResponseSnapshot{Status:w.Status(), Bytes:w.BytesWritten(), Headers:w.Header().Clone()}\n\
+    }\n"
+reference:
+  benchmark_tests/snapshot_test.go: "package benchmark_tests\nimport(\"testing\";\"net/http/httptest\"\
+    ; . \"github.com/go-chi/chi/v5/middleware\")\nfunc TestBenchmarkSnapshot(t *testing.T){\n w:=NewWrapResponseWriter(httptest.NewRecorder(),1);w.Header().Add(\"\
+    X-Test\",\"one\");w.Header().Add(\"X-Test\",\"two\");w.WriteHeader(418);w.Write([]byte(\"abc\"))\n\
+    \ s:=SnapshotResponseWriter(w);if s.Status!=418 || s.Bytes!=3 || len(s.Headers.Values(\"X-Test\"))!=2{t.Fatal(\"\
+    snapshot fields\")}\n s.Headers[\"X-Test\"][0]=\"changed\";if w.Header().Values(\"X-Test\")[0]!=\"\
+    one\"{t.Fatal(\"snapshot shares header slice\")}\n w.Header().Add(\"X-New\",\"v\");if s.Headers.Get(\"\
+    X-New\")!=\"\"{t.Fatal(\"snapshot shares map\")}\n}\n"
+mutants:
+- middleware/response_snapshot.go:
+  - old: Status:w.Status()
+    new: Status:200
+    count: 1
+- middleware/response_snapshot.go:
+  - old: Bytes:w.BytesWritten()
+    new: Bytes:0
+    count: 1
+- middleware/response_snapshot.go:
+  - old: Headers:w.Header().Clone()
+    new: Headers:w.Header()
+    count: 1
+- middleware/response_snapshot.go:
+  - old: Headers:w.Header().Clone()
+    new: Headers:http.Header{}
+    count: 1
+- middleware/response_snapshot.go:
+  - old: Status:w.Status()
+    new: Status:w.Status()+1
+    count: 1
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

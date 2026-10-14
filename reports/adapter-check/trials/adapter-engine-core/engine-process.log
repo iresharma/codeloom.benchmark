@@ -1,0 +1,28 @@
+=== Engine Server Startup ===
+workspace: /task
+engine dir: /task/.engine
+db path: /task/.engine/session.db
+socket path: /task/.engine/engine.sock
+python version: 3.12.12
+platform: Linux-6.12.76-linuxkit-x86_64-with-glibc2.36
+==============================
+judge: off
+listening on /task/.engine/engine.sock
+Task exception was never retrieved
+future: <Task finished name='Task-4' coro=<EngineServer._read_commands() done, defined at /opt/engine/runtime/server.py:71> exception=ConnectionResetError(104, 'Connection reset by peer')>
+Traceback (most recent call last):
+  File "/opt/engine/runtime/server.py", line 56, in _on_client
+    await asyncio.gather(*pending, return_exceptions=True)
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/engine/runtime/server.py", line 69, in _on_client
+    await writer.wait_closed()
+  File "/usr/local/lib/python3.12/asyncio/streams.py", line 364, in wait_closed
+    await self._protocol._get_close_waiter(self)
+  File "/usr/local/lib/python3.12/asyncio/selector_events.py", line 1013, in _read_ready__data_received
+    data = self._sock.recv(self.max_size)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer

@@ -1,0 +1,36 @@
+id: chi-B
+repo: chi
+upstream: https://github.com/go-chi/chi.git
+commit: c9744a3641452cfe4fbb9929ceb554659d6bd950
+category: bug
+language: go
+title: Pooled context leaks URL params
+prompt: 'Context.Reset leaves request URL parameters behind. Restore reset semantics so reused contexts
+  have no parameters and other reset state is preserved. Preserve capacity reuse and nested parameter
+  precedence.
+
+
+  Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You
+  may edit production source and add tests under benchmark_tests/, but existing tests/configuration and
+  .bench files are immutable.'
+allowed_paths:
+- '*.go'
+- middleware/*.go
+- benchmark_tests/*
+verification:
+- go test ./...
+provenance: fabricated
+setup:
+  context.go:
+  - old: "\tx.URLParams.Keys = x.URLParams.Keys[:0]\n\tx.URLParams.Values = x.URLParams.Values[:0]"
+    new: "\t// Regression: accumulated URLParams were not cleared."
+    count: 1
+reference:
+  context.go:
+  - old: "\t// Regression: accumulated URLParams were not cleared."
+    new: "\tx.URLParams.Keys = x.URLParams.Keys[:0]\n\tx.URLParams.Values = x.URLParams.Values[:0]"
+    count: 1
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

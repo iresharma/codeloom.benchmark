@@ -1,0 +1,51 @@
+{
+  "authors": [
+    "Codex-assisted fixture author; not independently reviewed"
+  ],
+  "claims": {
+    "cached_results": "shallow list copy",
+    "invalidation": "after storage write",
+    "persistence": "on flush"
+  },
+  "edges": [
+    {
+      "from": "Table._update_table",
+      "to": "CachingMiddleware.write"
+    },
+    {
+      "from": "Table._update_table",
+      "to": "Table.clear_cache"
+    },
+    {
+      "from": "CachingMiddleware.write",
+      "to": "CachingMiddleware.flush"
+    },
+    {
+      "from": "CachingMiddleware.flush",
+      "to": "JSONStorage.write"
+    }
+  ],
+  "equivalents": {},
+  "symbols": [
+    {
+      "name": "Table.search",
+      "path": "tinydb/table.py"
+    },
+    {
+      "name": "Table._update_table",
+      "path": "tinydb/table.py"
+    },
+    {
+      "name": "CachingMiddleware.write",
+      "path": "tinydb/middlewares.py"
+    },
+    {
+      "name": "CachingMiddleware.flush",
+      "path": "tinydb/middlewares.py"
+    },
+    {
+      "name": "JSONStorage.write",
+      "path": "tinydb/storages.py"
+    }
+  ]
+}

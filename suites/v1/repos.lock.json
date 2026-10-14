@@ -1,0 +1,27 @@
+{
+  "chi": {
+    "commit": "c9744a3641452cfe4fbb9929ceb554659d6bd950",
+    "language": "go",
+    "upstream": "go-chi/chi"
+  },
+  "dotenv": {
+    "commit": "0b2880591780a426b0551436f47a17e7a76d954f",
+    "language": "python",
+    "upstream": "theskumar/python-dotenv"
+  },
+  "ky": {
+    "commit": "3541888878c4d303a8bc2ad61815f4e048f55a5d",
+    "language": "typescript",
+    "upstream": "sindresorhus/ky"
+  },
+  "pqueue": {
+    "commit": "7f272ab5ff2254c0dc2537b7977e88ede1cd55e8",
+    "language": "typescript",
+    "upstream": "sindresorhus/p-queue"
+  },
+  "tinydb": {
+    "commit": "6d7c4fc3e04d398b1282876514660a33a7897b41",
+    "language": "python",
+    "upstream": "msiemens/tinydb"
+  }
+}

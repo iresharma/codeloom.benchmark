@@ -1,0 +1,38 @@
+id: dev-typescript
+repo: pqueue
+upstream: https://github.com/sindresorhus/p-queue.git
+commit: 7f272ab5ff2254c0dc2537b7977e88ede1cd55e8
+category: cross-file
+language: typescript
+title: Detached queued-ID snapshots
+prompt: Add Queue.pendingIds():readonly string[], PriorityQueue.pendingIds() and PQueue.pendingIds():readonly
+  string[]. Return IDs for queued tasks in execution order, excluding started/removed tasks. Return a
+  detached snapshot that cannot change the queue. Reordering/clearing/dequeuing must be reflected in future
+  snapshots. Preserve existing test behavior and leave the main checkout ready for grading. Make the Queue
+  capability optional for existing custom queues; PQueue.pendingIds throws TypeError when a custom queue
+  does not support it.
+allowed_paths:
+- source/*.ts
+- benchmark_tests/*
+verification:
+- npm run build
+- node --import=tsx/esm --test --test-timeout=60000 test/*.ts
+provenance: cross-file
+setup: {}
+reference:
+  source/queue.ts:
+  - old: "\tsize: number;"
+    new: "\tpendingIds?: () => readonly string[];\n\tsize: number;"
+  source/priority-queue.ts:
+  - old: "\tenqueue(run: RunFunction,"
+    new: "\tpendingIds(): readonly string[] {\n\t\treturn this.#queue.slice(this.#head).filter(item =>\
+      \ item?.id !== undefined).map(item => item!.id!);\n\t}\n\n\tenqueue(run: RunFunction,"
+  source/index.ts:
+  - old: "\tsetPriority(id: string, priority: number) {"
+    new: "\tpendingIds(): readonly string[] { if (!this.#queue.pendingIds) { throw new TypeError('queue\
+      \ does not support pending IDs'); } return [...this.#queue.pendingIds()]; }\n\n\tsetPriority(id:\
+      \ string, priority: number) {"
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

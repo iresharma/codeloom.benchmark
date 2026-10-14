@@ -1,0 +1,4 @@
+{
+  "id": "dotenv-T",
+  "prompt": "The supplied dotenv.main.selected_values(values:Mapping[str,Optional[str]], names:Iterable[str])->dict[str,str] selects requested names, omits None values, preserves empty strings, supports repeated names/generators, returns a detached mapping and raises KeyError for any missing name. Add deterministic pytest tests under benchmark_tests/ for this correct new helper; its reference tests are withheld.\n\nWork autonomously. Leave the final output on the main checkout. Existing tests/configuration and .bench files are immutable."
+}
