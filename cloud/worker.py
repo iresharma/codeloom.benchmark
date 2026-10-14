@@ -24,6 +24,7 @@ from codeloom_benchmark.ledger import Ledger  # noqa: E402
 
 RUN = ROOT / "runs/railway-v1"
 CALIBRATION = ROOT / "runs/railway-calibration"
+EXTRA_RUNS = [ROOT / "runs/railway-smoke"]
 STATE = ROOT / ".cache/cloud"
 URL = os.environ["MONITOR_URL"].rstrip("/")
 TOKEN = os.environ["MONITOR_UPLOAD_TOKEN"]
@@ -127,16 +128,29 @@ def publish():
             )
         else:
             dev_runs = []
+        extra_runs = []
+        for root in EXTRA_RUNS:
+            if (root / "manifest.json").exists():
+                import_site(visible_input(root), pages)
+                extra_runs.extend(
+                    read(
+                        pages
+                        / "packages/ui/src/landings/engine/results/data/run-index.json",
+                        [],
+                    )
+                )
         out = stage / "public"
         out.mkdir()
         shutil.copytree(pages / "apps/web/public/benchmarks", out / "benchmarks")
         (out / "summary.json").write_text(json.dumps(summary))
         setup = read(out / "benchmarks" / RUN.name / "setup-summary.json", {})
         setup["published_attempts"] = sum(
-            not r["synthetic"] for r in measured_runs + dev_runs
+            not r["synthetic"] for r in measured_runs + dev_runs + extra_runs
         )
         (out / "setup.json").write_text(json.dumps(setup))
-        unique = {(r["run_id"], r["id"]): r for r in measured_runs + dev_runs}
+        unique = {
+            (r["run_id"], r["id"]): r for r in measured_runs + dev_runs + extra_runs
+        }
         (out / "runs.json").write_text(json.dumps(list(unique.values())))
         upload("public", archive(out))
 
@@ -147,7 +161,7 @@ def heartbeat():
     while not stop.is_set():
         try:
             active = []
-            for root in (CALIBRATION, RUN):
+            for root in (CALIBRATION, RUN, *EXTRA_RUNS):
                 for trial in sorted((root / "trials").glob("*")):
                     if not (trial / "result.json").exists():
                         row = read(trial / "attempt.json", {})
@@ -184,7 +198,7 @@ def heartbeat():
             upload("status", json.dumps(snapshot).encode())
             signature = [
                 (str(p), p.stat().st_mtime_ns)
-                for root in (RUN, CALIBRATION)
+                for root in (RUN, CALIBRATION, *EXTRA_RUNS)
                 for p in (root / "trials").glob("*/result.json")
             ]
             signature += [

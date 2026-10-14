@@ -1,0 +1,20 @@
+id: dev-smoke-python
+repo: tinydb
+upstream: https://github.com/msiemens/tinydb.git
+commit: 6d7c4fc3e04d398b1282876514660a33a7897b41
+category: cross-file
+language: python
+title: Read-only document ID listing
+difficulty: light
+prompt: Add a public Table.document_ids()->list[int] method in tinydb/table.py. Return the current table's document IDs in ascending order, with an empty list for an empty table. Preserve sparse IDs after removals, keep tables independent, and do not change stored documents or existing APIs. Preserve all existing tests and leave the main checkout ready for grading.
+allowed_paths:
+  - tinydb/table.py
+verification:
+  - python -m pytest -o addopts= -q tests
+provenance: new_feature
+setup: {}
+reference:
+  tinydb/table.py:
+    - old: '    def all(self)'
+      new: "    def document_ids(self):\n        return sorted(document.doc_id for document in self.all())\n\n    def all(self)"
+mutants: []
