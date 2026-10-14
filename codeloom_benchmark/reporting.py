@@ -188,9 +188,7 @@ def summarize(manifest: dict, attempts: list[dict]):
         "classifier": "off",
         "platform": manifest.get("platform", "linux/amd64"),
         "task_count": len(task_rows),
-        "difficulty_mix": dict(
-            __import__("collections").Counter(t["difficulty"] for t in task_rows)
-        ),
+        "difficulty_mix": dict(Counter(t["difficulty"] for t in task_rows)),
         "repo_count": len({t["repo"] for t in task_rows}),
         "repeat_count": 0,
         "budget_usd": 50,
