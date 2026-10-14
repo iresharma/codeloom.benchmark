@@ -103,6 +103,8 @@ def test_pinned_catalog_is_local_authenticated_and_revocable(tmp_path):
 
 
 def test_paid_hold_stops_before_credentials_or_network(tmp_path, monkeypatch):
+    settings = {**campaign.config(), "paid_runs_authorized": False}
+    monkeypatch.setattr(campaign, "config", lambda: settings)
     monkeypatch.setattr(
         campaign, "credentials", lambda: pytest.fail("Read real key during hold")
     )
