@@ -1,14 +1,30 @@
 {
-  "created_at": "2026-10-14T08:13:39.783096+00:00",
+  "created_at": "2026-10-14T13:15:37.406154+00:00",
+  "max_completion_tokens": 393216,
   "pricing": {
-    "completion": "0.00000396",
-    "discount": 0,
-    "input_cache_read": "0.000000042",
-    "prompt": "0.00000132"
+    "completion": "0.00000060588",
+    "discount": 0.847,
+    "input_cache_read": "0.000000006426",
+    "prompt": "0.00000020196"
   },
   "provider": "Baidu",
-  "reason": "Pinned endpoint exceeds configured admission rates. No provider fallback or budget increase is permitted.",
-  "status": "failed",
+  "quantization": "fp8",
+  "reason": "Pinned endpoint is within reservation rates.",
+  "reasoning_effort": "high",
+  "status": "passed",
+  "supported_parameters": [
+    "reasoning",
+    "include_reasoning",
+    "temperature",
+    "top_p",
+    "max_tokens",
+    "stop",
+    "response_format",
+    "structured_outputs",
+    "tools",
+    "tool_choice",
+    "reasoning_effort"
+  ],
   "tag": "baidu/fp8",
   "url": "https://openrouter.ai/api/v1/models/deepseek/deepseek-v4-pro-0813/endpoints"
 }

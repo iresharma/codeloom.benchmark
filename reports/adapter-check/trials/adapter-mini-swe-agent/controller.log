@@ -1,10 +1,10 @@
 minisweagent.environment: DEBUG: Starting container with command: docker run -d 
---name minisweagent-d3c045f6 -w /task --platform linux/amd64 --cap-drop=ALL     
+--name minisweagent-570d512e -w /task --platform linux/amd64 --cap-drop=ALL     
 --security-opt=no-new-privileges --pids-limit=512 --memory=3g --cpus=2 --network
-bench-d91b3edfb6d5                                                              
-sha256:62131b7c0e27bb34bab2dc6256f86ba9a3b6532ca310ae7b036f34ca0ccaf45b sleep   
+bench-606aa09e9065                                                              
+sha256:65de4d7948cac76861a2c7883f4f36ab46ab09c77364e04990762a90b31f946e sleep   
 720s                                                                            
-minisweagent.environment: INFO: Started container minisweagent-d3c045f6 with ID 
-933210b72d7eb9af4aeb51e22aaa99aeb3ab2a72b5b108b8cc15cfe74e05faad                
-15:05:34 - LiteLLM:WARNING: litellm_logging.py:1991 - Billable request priced at $0 and logged as such (model_group=openrouter/deepseek/deepseek-v4-pro-0813 model=openrouter/deepseek/deepseek-v4-pro-0813 provider=openrouter prompt_tokens=10 completion_tokens=1): pricing entry 'openrouter/deepseek/deepseek-v4-pro-0813' declares non-zero rates for this usage, but the cost calculator returned $0. Counted in litellm_zero_cost_requests_total{reason="pricing_not_applied"}
-15:05:34 - LiteLLM:WARNING: litellm_logging.py:1991 - Billable request priced at $0 and logged as such (model_group=openrouter/deepseek/deepseek-v4-pro-0813 model=openrouter/deepseek/deepseek-v4-pro-0813 provider=openrouter prompt_tokens=10 completion_tokens=1): pricing entry 'openrouter/deepseek/deepseek-v4-pro-0813' declares non-zero rates for this usage, but the cost calculator returned $0. Counted in litellm_zero_cost_requests_total{reason="pricing_not_applied"}
+minisweagent.environment: INFO: Started container minisweagent-570d512e with ID 
+9bd1c0ac0daf31041526af79f3b00cbbaf73f9b1977575754b7111e6c90edbad                
+18:46:38 - LiteLLM:WARNING: litellm_logging.py:1991 - Billable request priced at $0 and logged as such (model_group=openrouter/deepseek/deepseek-v4-pro-0813 model=openrouter/deepseek/deepseek-v4-pro-0813 provider=openrouter prompt_tokens=10 completion_tokens=1): pricing entry 'openrouter/deepseek/deepseek-v4-pro-0813' declares non-zero rates for this usage, but the cost calculator returned $0. Counted in litellm_zero_cost_requests_total{reason="pricing_not_applied"}
+18:46:38 - LiteLLM:WARNING: litellm_logging.py:1991 - Billable request priced at $0 and logged as such (model_group=openrouter/deepseek/deepseek-v4-pro-0813 model=openrouter/deepseek/deepseek-v4-pro-0813 provider=openrouter prompt_tokens=10 completion_tokens=1): pricing entry 'openrouter/deepseek/deepseek-v4-pro-0813' declares non-zero rates for this usage, but the cost calculator returned $0. Counted in litellm_zero_cost_requests_total{reason="pricing_not_applied"}

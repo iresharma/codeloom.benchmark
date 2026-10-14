@@ -1,0 +1,165 @@
+{
+  "captured_at": "2026-10-14T13:03:10.473099+00:00",
+  "model": {
+    "architecture": {
+      "input_modalities": [
+        "text"
+      ],
+      "instruct_type": null,
+      "modality": "text->text",
+      "output_modalities": [
+        "text"
+      ],
+      "tokenizer": "DeepSeek"
+    },
+    "benchmarks": {
+      "artificial_analysis": {
+        "agentic_index": 41.3,
+        "coding_index": 68.8,
+        "intelligence_index": 36
+      },
+      "design_arena": []
+    },
+    "canonical_slug": "deepseek/deepseek-v4-pro-20260813",
+    "context_length": 1048576,
+    "created": 1786549364,
+    "default_parameters": {
+      "temperature": 1,
+      "top_p": 1
+    },
+    "description": "DeepSeek V4 Pro 0813 is a large-scale mixture-of-experts model from DeepSeek. This is the GA release of DeepSeek V4 Pro.",
+    "expiration_date": null,
+    "hugging_face_id": "deepseek-ai/DeepSeek-V4-Pro-0813",
+    "id": "deepseek/deepseek-v4-pro-0813",
+    "knowledge_cutoff": null,
+    "links": {
+      "details": "/api/v1/models/deepseek/deepseek-v4-pro-20260813/endpoints"
+    },
+    "name": "DeepSeek: DeepSeek V4 Pro 0813",
+    "per_request_limits": null,
+    "pricing": {
+      "completion": "0.00000198",
+      "input_cache_read": "0.000000022",
+      "overrides": [
+        {
+          "completion": "0.00000198",
+          "input_cache_read": "0.000000022",
+          "prompt": "0.00000066",
+          "utc_days": [
+            "saturday",
+            "sunday"
+          ]
+        },
+        {
+          "completion": "0.00000198",
+          "input_cache_read": "0.000000022",
+          "prompt": "0.00000066",
+          "utc_days": [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday"
+          ],
+          "utc_end": 100,
+          "utc_start": 0
+        },
+        {
+          "completion": "0.00000396",
+          "input_cache_read": "0.000000044",
+          "prompt": "0.00000132",
+          "utc_days": [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday"
+          ],
+          "utc_end": 400,
+          "utc_start": 100
+        },
+        {
+          "completion": "0.00000198",
+          "input_cache_read": "0.000000022",
+          "prompt": "0.00000066",
+          "utc_days": [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday"
+          ],
+          "utc_end": 600,
+          "utc_start": 400
+        },
+        {
+          "completion": "0.00000396",
+          "input_cache_read": "0.000000044",
+          "prompt": "0.00000132",
+          "utc_days": [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday"
+          ],
+          "utc_end": 1000,
+          "utc_start": 600
+        },
+        {
+          "completion": "0.00000198",
+          "input_cache_read": "0.000000022",
+          "prompt": "0.00000066",
+          "utc_days": [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday"
+          ],
+          "utc_end": 0,
+          "utc_start": 1000
+        }
+      ],
+      "prompt": "0.00000066"
+    },
+    "reasoning": {
+      "default_effort": "high",
+      "mandatory": false,
+      "supported_efforts": [
+        "max",
+        "high",
+        "low"
+      ]
+    },
+    "supported_parameters": [
+      "frequency_penalty",
+      "include_reasoning",
+      "logit_bias",
+      "logprobs",
+      "max_tokens",
+      "min_p",
+      "presence_penalty",
+      "reasoning",
+      "reasoning_effort",
+      "repetition_penalty",
+      "response_format",
+      "seed",
+      "stop",
+      "structured_outputs",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_k",
+      "top_logprobs",
+      "top_p"
+    ],
+    "supported_voices": null,
+    "top_provider": {
+      "context_length": 1048576,
+      "is_moderated": false,
+      "max_completion_tokens": 393216
+    }
+  },
+  "source": "https://openrouter.ai/api/v1/models"
+}

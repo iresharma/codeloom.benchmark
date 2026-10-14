@@ -267,9 +267,14 @@ def import_site(root, pages):
         "certification.json",
         "excluded-ky.json",
         "authoring-failures.json",
+        "cost-analysis.json",
+        "cost-analysis.md",
+        "provider-snapshot.json",
     ):
         if (ROOT / "reports" / name).exists():
             shutil.copy2(ROOT / "reports" / name, setup / name)
+    if (ROOT / "reports/history").exists():
+        shutil.copytree(ROOT / "reports/history", setup / "history", dirs_exist_ok=True)
     if (ROOT / "reports/adapter-check").exists():
         shutil.copytree(
             ROOT / "reports/adapter-check", setup / "adapter-check", dirs_exist_ok=True
@@ -378,7 +383,7 @@ def main():
     for name in ("validate", "certify", "compatibility", "preregister"):
         p = sub.add_parser(name)
         p.add_argument("--engine", type=Path, default=ROOT.parent / "engine")
-    for name in ("draft", "report", "run", "import-site", "calibrate"):
+    for name in ("draft", "report", "run", "import-site", "calibrate", "cost-analysis"):
         p = sub.add_parser(name)
         p.add_argument("--run-dir", type=Path, default=ROOT / "reports/v1-not-run")
         p.add_argument("--engine", type=Path, default=ROOT.parent / "engine")
@@ -397,6 +402,10 @@ def main():
             from .campaign import calibrate
 
             result = calibrate(args.run_dir, args.engine)
+        elif args.command == "cost-analysis":
+            from .cost_analysis import analyze
+
+            result = analyze()
         elif args.command == "draft":
             result = draft(args.run_dir)
         elif args.command == "report":

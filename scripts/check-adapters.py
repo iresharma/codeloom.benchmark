@@ -7,7 +7,7 @@ import threading
 
 from codeloom_benchmark.broker import Broker
 from codeloom_benchmark.ledger import Ledger
-from codeloom_benchmark.manifests import config, tasks
+from codeloom_benchmark.manifests import config, tasks, model_metadata
 from codeloom_benchmark.runner import attempt
 from codeloom_benchmark.sandbox import Network, task_image
 from codeloom_benchmark.artifacts import write_json, digest
@@ -35,7 +35,8 @@ class Fake(BaseHTTPRequestHandler):
         native_mini = any(
             t["function"]["name"] == "bash" for t in body.get("tools", [])
         )
-        name = "bash" if native_mini else "run_command"
+        root_engine = any(t["function"]["name"] == "ask" for t in body.get("tools", []))
+        name = "bash" if native_mini else "ask" if root_engine else "list_files"
         cmd = (
             "echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT"
             if native_mini and has_tool
@@ -45,6 +46,15 @@ class Fake(BaseHTTPRequestHandler):
             "role": "assistant",
             "content": "Synthetic adapter check; no live model.",
         }
+        arguments = (
+            {"command": cmd}
+            if native_mini
+            else {
+                "task": "Inspect a directory listing without editing, then report. Synthetic integration check."
+            }
+            if root_engine
+            else {"path": "."}
+        )
         if not has_tool:
             message["reasoning_details"] = OPAQUE
             message["reasoning"] = "synthetic retained state"
@@ -55,7 +65,7 @@ class Fake(BaseHTTPRequestHandler):
                     "type": "function",
                     "function": {
                         "name": name,
-                        "arguments": json.dumps({"command": cmd}),
+                        "arguments": json.dumps(arguments),
                     },
                 }
             ]
@@ -134,6 +144,7 @@ def main():
             "SYNTHETIC_NOT_REAL",
             settings,
             f"http://127.0.0.1:{server.server_port}",
+            model_metadata=model_metadata(),
         )
         port = broker.start("0.0.0.0")
         network = Network(port)
@@ -154,19 +165,31 @@ def main():
                     "adapter-" + arm,
                     "development",
                     120,
-                    0.1,
+                    0.5,
                 )
                 assert result["termination"] == "completed", result
-                assert result["request_count"] == 2, result
+                assert (
+                    result["request_count"] == 2
+                    if arm == "mini-swe-agent"
+                    else result["request_count"] >= 4
+                ), result
                 assert not result["verification"]["pass"], (
                     "Synthetic no-op must not pass a feature task"
                 )
-                assistant = next(
-                    m for m in SEEN[-1]["messages"] if m["role"] == "assistant"
+                continuations = [
+                    m
+                    for body in SEEN
+                    for m in body["messages"]
+                    if m["role"] == "assistant" and m.get("tool_calls")
+                ]
+                fidelity[arm] = bool(continuations) and all(
+                    m.get("reasoning_details") == OPAQUE
+                    or m.get("reasoning_content") == "synthetic retained state"
+                    for m in continuations
                 )
-                fidelity[arm] = (
-                    assistant.get("reasoning_details") == OPAQUE
-                    or assistant.get("reasoning_content") == "synthetic retained state"
+                assert all(
+                    body["reasoning"]["effort"] == settings["reasoning_effort"]
+                    for body in SEEN
                 )
                 results.append(result)
             destination = Path("reports/adapter-check")
@@ -187,10 +210,15 @@ def main():
                         "worker": digest(Path("codeloom_benchmark/worker.py")),
                         "runner": digest(Path("codeloom_benchmark/runner.py")),
                         "probe": digest(Path("scripts/check-adapters.py")),
+                        "broker": digest(Path("codeloom_benchmark/broker.py")),
+                        "settings": digest(Path("configs/core.yaml")),
+                        "model": digest(Path("configs/model.json")),
                     },
                     "mini_backend": "native LiteLLM OpenRouter",
                     "required_field": "DeepSeek reasoning_content; opaque top-level equality is also accepted",
                     "results": results,
+                    "reasoning_effort": settings["reasoning_effort"],
+                    "native_effort_matches": True,
                 },
             )
             from codeloom_benchmark.artifacts import checksum_tree

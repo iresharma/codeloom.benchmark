@@ -11,7 +11,7 @@ Generator: deepseek/deepseek-v4-pro-0813 / baidu/fp8; classifier off.
 
 Paired outcomes: engine_only: 0; mini_only: 0; both_pass: 0; both_fail: 0; unresolved: 0; unrun: 16
 
-Run gate: Engine streaming/history drops provider-required reasoning state; measured calls are disabled.
+Run gate: Paid calibration/measurement paused pending owner approval; fixture recertification and live calibration required for updated Engine.
 
 ## Observations from traces
 

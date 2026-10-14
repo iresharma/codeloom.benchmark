@@ -1,5 +1,5 @@
 {
-  "blocked_reason": "Engine streaming/history drops provider-required reasoning state; measured calls are disabled.",
+  "blocked_reason": "Paid calibration/measurement paused pending owner approval; fixture recertification and live calibration required for updated Engine.",
   "calibration_status": "not_run",
   "host_architecture": "arm64",
   "limitations": [
@@ -14,35 +14,37 @@
   "platform": "linux/amd64",
   "run_id": "v1-not-run",
   "settings": {
+    "suite": "v1",
+    "platform": "linux/amd64",
+    "model": "deepseek/deepseek-v4-pro-0813",
+    "provider": "baidu/fp8",
+    "provider_name": "Baidu",
+    "reasoning_effort": "high",
+    "thinking_enabled": true,
+    "paid_runs_authorized": false,
+    "max_tokens": 32768,
+    "input_per_million": 1.32,
+    "output_per_million": 3.96,
+    "request_timeout_s": 2400,
     "campaign_limit_usd": 45,
+    "trial_limit_usd": 1,
+    "stage_limits": {
+      "development": 8,
+      "measured": 32,
+      "recovery": 5
+    },
+    "schedule_seed": 20261014,
+    "systems": [
+      "mini-swe-agent",
+      "engine-core"
+    ],
     "excluded": [
       "ky-B",
       "ky-N",
       "ky-T",
       "ky-X"
     ],
-    "input_per_million": 0.3,
-    "max_tokens": 32768,
-    "model": "deepseek/deepseek-v4-pro-0813",
-    "output_per_million": 0.9,
-    "platform": "linux/amd64",
-    "provider": "baidu/fp8",
-    "provider_name": "Baidu",
-    "reasoning_effort": "xhigh",
-    "recovery_max_per_system_task": 1,
-    "request_timeout_s": 2400,
-    "schedule_seed": 20261014,
-    "stage_limits": {
-      "development": 8,
-      "measured": 32,
-      "recovery": 5
-    },
-    "suite": "v1",
-    "systems": [
-      "mini-swe-agent",
-      "engine-core"
-    ],
-    "trial_limit_usd": 1
+    "recovery_max_per_system_task": 1
   },
   "suite": "v1",
   "tasks": [

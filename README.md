@@ -4,9 +4,9 @@
 
 ## Current status
 
-**Paid calibration and measurement are paused at the owner's request while Engine thinking/effort support is developed.** Do not start paid runs until the updated adapters and settings have been reviewed and the owner explicitly authorizes them.
+**Paid calibration and measurement are paused at the owner's request pending review of the updated benchmark integration.** Do not start paid runs until the updated adapters and settings have been reviewed and the owner explicitly authorizes them.
 
-**No paid or measured model calls have run.** Native conformance found that Engine drops reasoning state returned by DeepSeek's Max thinking mode before the next tool continuation. The runner stops before reading credentials or charging the model. `reports/compatibility.json` contains the reproducible synthetic check; it is not a coding result. Do not bypass this gate, turn thinking off in one arm, or reconstruct histories in the broker. Resolve the native model integration, review the change before calibration, and freeze that revision before measurement.
+**No paid or measured model calls have run.** The updated native compatibility check passes: both adapters preserve reasoning history and explicitly send the same High effort, including an Engine child. `reports/compatibility.json` contains synthetic evidence, not coding scores. The previous fixture certification is archived and marked stale; recertification, live development calibration and clean preregistration remain required. `paid_runs_authorized: false` stops paid commands before credentials are read.
 
 Fixture certification and website output are separate from scored outcomes. `reports/certification.json` records every task's actual certification status. `reports/v1-not-run/` is a truthful empty results report, not fabricated performance data.
 
@@ -20,7 +20,7 @@ One command to attempt the frozen protocol (with mandatory gates):
 ./scripts/benchmark run --run-dir runs/v1
 ```
 
-At this revision this command exits 2 with the documented compatibility failure, before any inference spending. A successful study requires the following setup stages to pass first:
+At this revision this command stops at the explicit paid-run hold, before any inference spending. A successful study requires the following setup stages to pass first:
 
 ```sh
 ./scripts/benchmark validate
@@ -68,7 +68,11 @@ Only changes on the main `/task` checkout are submitted, including commits and a
 
 ## Model and budget
 
-Generator: `deepseek/deepseek-v4-pro-0813`, Max thinking (`xhigh` via OpenRouter), fixed provider `baidu/fp8`, no provider fallback, same model for every Engine child. Conservative admission prices are $0.30/M input and $0.90/M output. Current promotions are not assumed to persist. The latest read-only price preflight failed: Baidu now advertises $1.32/M input and $3.96/M output, above these admission bounds. `reports/pricing.json` records the observation. Provider choice/rates require review and fresh calibration before freezing; no fallback is automatic. Versioned model and dependency settings are in `configs/core.yaml`, `uv.lock`, `engine-requirements.lock` and image metadata.
+Generator: `deepseek/deepseek-v4-pro-0813`, thinking enabled at **High** effort, fixed provider `baidu/fp8`, no provider fallback, same model/effort for every Engine child and mini-SWE-agent. High is the model’s advertised default; its captured metadata supports `low`, `high` and `max`, so generic unsupported efforts are rejected. Both native controllers must send the agreed model/effort; the broker rejects mismatches and preserves opaque histories. The shared 32,768 combined-output ceiling remains unchanged.
+
+Conservative admission rates are **$1.32/M input and $3.96/M output**, 4.4× the old rates. The captured promotional endpoint rates are $0.20196/$0.60588; the budget does not depend on the promotion. Reasoning and visible output are billed once together, and all child requests and replayed inputs count. [Cost analysis](reports/cost-analysis.md) gives token-sensitivity scenarios, not measured forecasts: the moderate scenario costs $17.74 for 32 attempts at conservative rates, while the heavy scenario exceeds the $1 attempt cap. No High-vs-Max savings or quality improvement is claimed without paid calibration.
+
+Refresh the read-only analysis with `./scripts/benchmark cost-analysis`. Versioned settings and model metadata are in `configs/core.yaml` and `configs/model.json`; dependency pins are in `uv.lock` and `engine-requirements.lock`.
 
 | Allocation | Ceiling |
 | --- | ---: |

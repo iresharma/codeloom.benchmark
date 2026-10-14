@@ -17,7 +17,7 @@
         "env": {},
         "executable": "docker",
         "forward_env": [],
-        "image": "sha256:62131b7c0e27bb34bab2dc6256f86ba9a3b6532ca310ae7b036f34ca0ccaf45b",
+        "image": "sha256:65de4d7948cac76861a2c7883f4f36ab46ab09c77364e04990762a90b31f946e",
         "interpreter": [
           "bash",
           "-lc"
@@ -32,7 +32,7 @@
           "--memory=3g",
           "--cpus=2",
           "--network",
-          "bench-d91b3edfb6d5"
+          "bench-606aa09e9065"
         ],
         "timeout": 120
       },
@@ -42,9 +42,10 @@
         "format_error_template": "{{ error }}",
         "litellm_model_registry": null,
         "model_kwargs": {
-          "api_base": "http://127.0.0.1:50557/v1",
+          "api_base": "http://127.0.0.1:54495/v1",
           "api_key": "<redacted>",
           "num_retries": 0,
+          "reasoning_effort": "high",
           "timeout": 2400
         },
         "model_name": "openrouter/deepseek/deepseek-v4-pro-0813",
@@ -58,7 +59,7 @@
     "mini_version": "2.4.6",
     "model_stats": {
       "api_calls": 2,
-      "instance_cost": 3.4320000000000003e-05
+      "instance_cost": 1.7160000000000002e-05
     },
     "submission": ""
   },
@@ -80,7 +81,7 @@
             "tool_call_id": "t1"
           }
         ],
-        "cost": 1.7160000000000002e-05,
+        "cost": 8.580000000000001e-06,
         "response": {
           "choices": [
             {
@@ -131,7 +132,7 @@
             "total_tokens": 11
           }
         },
-        "timestamp": 1791970534.476751
+        "timestamp": 1791983798.171883
       },
       "function_call": null,
       "provider_specific_fields": {
@@ -164,7 +165,7 @@
         "exception_info": "",
         "raw_output": "/task\n",
         "returncode": 0,
-        "timestamp": 1791970534.599762
+        "timestamp": 1791983798.309099
       },
       "role": "tool",
       "tool_call_id": "t1"
@@ -178,7 +179,7 @@
             "tool_call_id": "t2"
           }
         ],
-        "cost": 1.7160000000000002e-05,
+        "cost": 8.580000000000001e-06,
         "response": {
           "choices": [
             {
@@ -217,7 +218,7 @@
             "total_tokens": 11
           }
         },
-        "timestamp": 1791970534.6090162
+        "timestamp": 1791983798.317832
       },
       "function_call": null,
       "provider_specific_fields": null,

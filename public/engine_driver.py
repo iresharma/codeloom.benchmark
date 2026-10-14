@@ -30,7 +30,12 @@ def main():
             sock.sendall((json.dumps({"type": kind, **fields}) + "\n").encode())
 
         send("StartSession", workspace="/task")
-        send("SubmitUserMessage", text=options["prompt"], model=options["model"])
+        send(
+            "SubmitUserMessage",
+            text=options["prompt"],
+            model=options["model"],
+            reasoning_effort=options["reasoning_effort"],
+        )
         buffered = b""
         started = False
         main_finished = False

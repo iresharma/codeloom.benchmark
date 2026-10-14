@@ -1,5 +1,5 @@
 {
-  "blocked_reason": "Engine streaming/history drops provider-required reasoning state; measured calls are disabled.",
+  "blocked_reason": "Paid calibration/measurement paused pending owner approval; fixture recertification and live calibration required for updated Engine.",
   "budget_usd": 50,
   "calibration_status": "not_run",
   "classifier": "off",
@@ -13,6 +13,7 @@
     "Ky candidates were excluded before freeze after reference browser/timing certification failed; four reserve tasks maintain the category balance."
   ],
   "model": "deepseek/deepseek-v4-pro-0813",
+  "paid_runs_authorized": false,
   "pairs": {
     "both_fail": 0,
     "both_pass": 0,
@@ -24,6 +25,7 @@
   "platform": "linux/amd64",
   "preregistration_commit": null,
   "provider": "baidu/fp8",
+  "reasoning_effort": "high",
   "repeat_count": 0,
   "repo_count": 4,
   "run_id": "v1-not-run",
@@ -516,5 +518,6 @@
       },
       "title": "Public storage flush contract"
     }
-  ]
+  ],
+  "thinking_enabled": true
 }

@@ -72,6 +72,9 @@ def check(engine: Path, destination: Path):
         "worker": digest(ROOT / "codeloom_benchmark/worker.py"),
         "runner": digest(ROOT / "codeloom_benchmark/runner.py"),
         "probe": digest(ROOT / "scripts/check-adapters.py"),
+        "broker": digest(ROOT / "codeloom_benchmark/broker.py"),
+        "settings": digest(ROOT / "configs/core.yaml"),
+        "model": digest(ROOT / "configs/model.json"),
     }
     adapter = json.loads(adapter_path.read_text()) if adapter_path.exists() else {}
     if (
@@ -96,10 +99,12 @@ def check(engine: Path, destination: Path):
             for arm, retained in adapter["wire_reasoning_state_retained"].items()
         }
     )
+    checks["native_effort_matches"] = adapter.get("native_effort_matches", False)
     passed = all(checks.values())
     record = {
         "status": "passed" if passed else "failed",
         "model": config()["model"],
+        "reasoning_effort": config()["reasoning_effort"],
         "paid_calls": 0,
         "checks": checks,
         "reason": "Native reasoning-state continuation conformance passed."
@@ -109,7 +114,7 @@ def check(engine: Path, destination: Path):
             "https://api-docs.deepseek.com/guides/thinking_mode/",
             "https://openrouter.ai/docs/guides/best-practices/reasoning-tokens",
         ],
-        "policy": "Do not silently tune one arm, disable Max reasoning, or reconstruct history in the broker.",
+        "policy": "Both native adapters must explicitly select the same model/effort; the broker rejects mismatches and never reconstructs histories.",
         "engine_source_commit": subprocess.check_output(
             ["git", "rev-parse", "HEAD"], cwd=engine, text=True
         ).strip(),

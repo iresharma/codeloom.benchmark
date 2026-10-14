@@ -15,6 +15,27 @@ def config():
     return yaml.safe_load((ROOT / "configs/core.yaml").read_text())
 
 
+def model_metadata():
+    record = json.loads((ROOT / "configs/model.json").read_text())
+    model = record["model"]
+    settings = config()
+    if model["id"] != settings["model"]:
+        raise ValueError("Model metadata does not match the pinned generator")
+    reasoning = model.get("reasoning", {})
+    effort = settings["reasoning_effort"]
+    supported = reasoning.get("supported_efforts")
+    if effort == "none":
+        if reasoning.get("mandatory") or settings["thinking_enabled"]:
+            raise ValueError("Thinking-disabled configuration is inconsistent")
+    elif not settings["thinking_enabled"] or (
+        supported is not None and effort not in supported
+    ):
+        raise ValueError("Unsupported or inconsistent model reasoning effort")
+    if not {"tools", "reasoning"}.issubset(model.get("supported_parameters", [])):
+        raise ValueError("Pinned model must support reasoning and tools")
+    return model
+
+
 def tasks(suite="v1"):
     path = ROOT / "suites" / suite / "tasks"
     return [yaml.safe_load(p.read_text()) for p in sorted(path.glob("*.yaml"))]
@@ -57,13 +78,18 @@ def validate_suite(suite="v1"):
 def fingerprint(suite="v1"):
     paths = [
         ROOT / "configs/core.yaml",
+        ROOT / "configs/model.json",
         ROOT / "uv.lock",
         ROOT / "engine-requirements.lock",
     ]
     paths += sorted((ROOT / "suites" / suite).rglob("*.yaml"))
     paths += sorted((ROOT / "suites" / suite / "dependencies").rglob("*.json"))
     paths += sorted((ROOT / "codeloom_benchmark").rglob("*.py"))
-    paths += [ROOT / "pyproject.toml", ROOT / "Dockerfile", ROOT / "scripts/check-adapters.py"]
+    paths += [
+        ROOT / "pyproject.toml",
+        ROOT / "Dockerfile",
+        ROOT / "scripts/check-adapters.py",
+    ]
     paths += sorted((ROOT / "runtime-node").glob("*.json"))
     paths += sorted((ROOT / "suites/dev").rglob("*.yaml"))
     paths += sorted((ROOT / "evaluator/dev").rglob("*"))
@@ -105,6 +131,9 @@ def check_frozen(suite="v1"):
     if fingerprint(suite)[0] != lock["fingerprint"]:
         raise ValueError("Suite changed since preregistration")
     runtime = json.loads((ROOT / ".cache/runtime.json").read_text())
-    if runtime["image"] != lock["runtime"]["image"] or runtime["engine_commit"] != lock["runtime"]["engine_commit"]:
+    if (
+        runtime["image"] != lock["runtime"]["image"]
+        or runtime["engine_commit"] != lock["runtime"]["engine_commit"]
+    ):
         raise ValueError("Runtime changed since preregistration")
     return lock

@@ -12,6 +12,10 @@ def test_calibration_uses_broker_throughput_and_requires_completion(
     tmp_path, monkeypatch, termination, expected
 ):
     monkeypatch.setattr(campaign, "ROOT", tmp_path)
+    current = campaign.config()
+    monkeypatch.setattr(
+        campaign, "config", lambda: dict(current, paid_runs_authorized=True)
+    )
     (tmp_path / ".cache").mkdir()
     (tmp_path / ".cache/runtime.json").write_text(
         json.dumps({"image": "frozen-runtime"})

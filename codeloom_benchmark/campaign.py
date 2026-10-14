@@ -9,7 +9,7 @@ from .artifacts import write_json
 from .broker import Broker
 from .fixtures import command
 from .ledger import Ledger
-from .manifests import ROOT, config, tasks, fingerprint
+from .manifests import ROOT, config, tasks, fingerprint, model_metadata
 from .reporting import INFRA, report
 from .runner import attempt
 from .sandbox import Network
@@ -34,6 +34,8 @@ def credentials():
 
 def services(root, calibration=None):
     settings = config()
+    if not settings.get("paid_runs_authorized", False):
+        raise ValueError("Paid runs are on hold; explicit owner approval is required")
     if calibration is not None:
         settings["request_timeout_s"] = calibration["request_timeout_s"]
     from .pricing import check as check_pricing
@@ -56,7 +58,9 @@ def services(root, calibration=None):
         )
     if calibration is not None:
         ledger.claim_run("measured", root)
-    broker = Broker(ledger, root, credentials(), settings)
+    broker = Broker(
+        ledger, root, credentials(), settings, model_metadata=model_metadata()
+    )
     port = broker.start("0.0.0.0")
     try:
         network = Network(port)
@@ -169,6 +173,8 @@ def measured(root: Path, lock):
 
 
 def calibrate(root, engine):
+    if not config().get("paid_runs_authorized", False):
+        raise ValueError("Paid runs are on hold; explicit owner approval is required")
     from .compatibility import check
     from .sandbox import task_image, audit_image
 

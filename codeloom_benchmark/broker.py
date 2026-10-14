@@ -26,6 +26,7 @@ class Broker:
         key: str,
         settings: dict,
         upstream="https://openrouter.ai/api/v1",
+        model_metadata=None,
     ):
         self.ledger, self.root, self.key, self.settings, self.upstream = (
             ledger,
@@ -35,6 +36,7 @@ class Broker:
             upstream,
         )
         self.lock = threading.Lock()
+        self.model_metadata = model_metadata
         self.admission = threading.Condition()
         self.server = None
 
@@ -50,6 +52,7 @@ class Broker:
             "top_p",
             "max_tokens",
             "reasoning",
+            "reasoning_effort",
             "provider",
             "usage",
             "stream_options",
@@ -58,6 +61,32 @@ class Broker:
             raise ValueError("Unsupported inference parameter")
         if not isinstance(body.get("messages"), list) or not body["messages"]:
             raise ValueError("Messages required")
+        if body.get("model") != self.settings["model"]:
+            raise ValueError("Native model does not match the frozen generator")
+        supplied = [
+            value
+            for value in (
+                body.get("reasoning_effort"),
+                body.get("reasoning", {}).get("effort"),
+            )
+            if value is not None
+        ]
+        if not supplied or any(
+            value != self.settings["reasoning_effort"] for value in supplied
+        ):
+            raise ValueError("Native reasoning effort must explicitly match the study")
+        reasoning = body.get("reasoning", {})
+        if set(reasoning) - {"effort", "enabled", "exclude"}:
+            raise ValueError("Only frozen reasoning controls are admitted")
+        enabled = self.settings.get(
+            "thinking_enabled", self.settings["reasoning_effort"] != "none"
+        )
+        if (
+            reasoning.get("exclude") is True
+            or ("enabled" in reasoning and reasoning["enabled"] != enabled)
+            or "max_tokens" in reasoning
+        ):
+            raise ValueError("Native thinking settings conflict with the study")
         # Text-only study: image/file/audio URLs are outside the priced reservation.
         for message in body["messages"]:
             content = message.get("content")
@@ -66,12 +95,17 @@ class Broker:
             ):
                 raise ValueError("Only text content is admitted")
         body = dict(body)
+        body.pop("reasoning_effort", None)
         body.update(
             model=self.settings["model"],
             temperature=1.0,
             top_p=0.95,
             max_tokens=self.settings["max_tokens"],
-            reasoning={"effort": self.settings["reasoning_effort"]},
+            reasoning={
+                "effort": self.settings["reasoning_effort"],
+                "enabled": enabled,
+                "exclude": False,
+            },
             provider={
                 "only": [self.settings["provider"]],
                 "allow_fallbacks": False,
@@ -125,6 +159,31 @@ class Broker:
             def error(self, status, kind, detail):
                 payload = canonical({"error": {"code": kind, "message": detail}})
                 self.send_response(status)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(payload)))
+                self.end_headers()
+                self.wfile.write(payload)
+
+            def do_GET(self):
+                if self.path.split("?", 1)[0] not in ("/v1/models", "/api/v1/models"):
+                    return self.error(
+                        404, "route_denied", "Only the pinned catalog is available"
+                    )
+                token = self.headers.get("Authorization", "").removeprefix("Bearer ")
+                with broker.ledger.connection() as db:
+                    active = db.execute(
+                        "SELECT id FROM trials WHERE token=? AND active=1", (token,)
+                    ).fetchone()
+                if not active:
+                    return self.error(
+                        401, "token_denied", "Active attempt token required"
+                    )
+                if not broker.model_metadata:
+                    return self.error(
+                        503, "catalog_missing", "Pinned model metadata unavailable"
+                    )
+                payload = canonical({"data": [broker.model_metadata]})
+                self.send_response(200)
                 self.send_header("Content-Type", "application/json")
                 self.send_header("Content-Length", str(len(payload)))
                 self.end_headers()

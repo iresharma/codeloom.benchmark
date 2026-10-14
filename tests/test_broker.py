@@ -69,7 +69,8 @@ def test_broker_pins_parameters_preserves_opaque_reasoning_and_refuses(tmp_path)
             url,
             headers={"Authorization": "Bearer " + token},
             json={
-                "model": "expensive/model",
+                "model": "test/model",
+                "reasoning_effort": "high",
                 "messages": [{"role": "user", "content": "hello"}],
             },
         )
@@ -84,7 +85,11 @@ def test_broker_pins_parameters_preserves_opaque_reasoning_and_refuses(tmp_path)
         r = requests.post(
             url,
             headers={"Authorization": "Bearer " + token},
-            json={"messages": [{"role": "user", "content": "hello"}]},
+            json={
+                "model": "test/model",
+                "reasoning_effort": "high",
+                "messages": [{"role": "user", "content": "hello"}],
+            },
         )
         assert r.status_code == 402
         assert len(seen) == 1

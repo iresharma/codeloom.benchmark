@@ -29,16 +29,31 @@ def check(destination=None):
         price = endpoint["pricing"]
         # Conservatively check every advertised time/day override too; no unnoticed schedule price jump.
         variants = [price, *price.get("overrides", [])]
-        admitted = all(
-            float(p["prompt"]) * 1_000_000 <= settings["input_per_million"]
-            and float(p["completion"]) * 1_000_000 <= settings["output_per_million"]
-            for p in variants
+        parameters_ok = {"reasoning", "tools", "max_tokens"}.issubset(
+            endpoint.get("supported_parameters", [])
+        )
+        completion_ok = (
+            endpoint.get("max_completion_tokens") is None
+            or endpoint["max_completion_tokens"] >= settings["max_tokens"]
+        )
+        admitted = (
+            parameters_ok
+            and completion_ok
+            and all(
+                float(p["prompt"]) * 1_000_000 <= settings["input_per_million"]
+                and float(p["completion"]) * 1_000_000 <= settings["output_per_million"]
+                for p in variants
+            )
         )
         result = {
             "status": "passed" if admitted else "failed",
             "provider": endpoint["provider_name"],
             "tag": endpoint["tag"],
             "pricing": price,
+            "supported_parameters": endpoint.get("supported_parameters", []),
+            "max_completion_tokens": endpoint.get("max_completion_tokens"),
+            "reasoning_effort": settings["reasoning_effort"],
+            "quantization": endpoint.get("quantization"),
             "url": url,
             "created_at": datetime.now(timezone.utc).isoformat(),
             "reason": "Pinned endpoint is within reservation rates."

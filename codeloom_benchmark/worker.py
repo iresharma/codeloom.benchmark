@@ -62,6 +62,7 @@ def main():
             "api_key": cfg["token"],
             "timeout": cfg["request_timeout_s"],
             "num_retries": 0,
+            "reasoning_effort": cfg["reasoning_effort"],
         },
     )
     native["agent"]["cost_limit"] = 0

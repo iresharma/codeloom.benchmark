@@ -76,6 +76,7 @@ def attempt(
                 "OPENROUTER_CHILD_MODEL": cfg["model"],
                 "ENGINE_MODEL_CHEAP": cfg["model"],
                 "ENGINE_MODEL_STRONG": cfg["model"],
+                "ENGINE_REASONING_EFFORT": cfg["reasoning_effort"],
                 "ENGINE_JUDGE": "off",
                 "ENGINE_INTERVIEW": "0",
                 "ENGINE_TRACE_CALLS": "1",
