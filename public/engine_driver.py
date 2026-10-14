@@ -8,6 +8,24 @@ import sys
 import time
 
 
+def prompt_answer(event):
+    """Unattended task execution, including the native client's yes to confirmations."""
+    if event["kind"] == "mcp_auth":
+        return "no"
+    if event["kind"] == "confirm":
+        return "yes"
+    if event["kind"] == "settlement" or "merge" in event.get("choices", []):
+        return "merge"
+    if event["kind"] in ("continue", "turn_continue") or "continue" in event.get(
+        "choices", []
+    ):
+        return "continue"
+    return (
+        event.get("default")
+        or (event.get("choices") or ["Proceed using the task specification."])[0]
+    )
+
+
 def main():
     options = json.loads(sys.stdin.readline())
     log = open("/tmp/engine-process.log", "w")
@@ -75,24 +93,11 @@ def main():
                     ):
                         started = True
                     if kind == "UserPromptRequested":
-                        if event["kind"] == "settlement":
-                            answer = "merge"
-                        elif "merge" in event.get("choices", []):
-                            answer = "merge"
-                        elif event["kind"] in (
-                            "continue",
-                            "turn_continue",
-                        ) or "continue" in event.get("choices", []):
-                            answer = "continue"
-                        else:
-                            answer = (
-                                event.get("default")
-                                or (
-                                    event.get("choices")
-                                    or ["Proceed using the task specification."]
-                                )[0]
-                            )
-                        send("AnswerPrompt", prompt_id=event["prompt_id"], text=answer)
+                        send(
+                            "AnswerPrompt",
+                            prompt_id=event["prompt_id"],
+                            text=prompt_answer(event),
+                        )
                     if kind == "RunStateReady":
                         idle = idle + 1 if started and event["idle"] else 0
                         if idle >= 3:

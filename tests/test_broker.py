@@ -91,7 +91,8 @@ def test_broker_pins_parameters_preserves_opaque_reasoning_and_refuses(tmp_path)
                 "messages": [{"role": "user", "content": "hello"}],
             },
         )
-        assert r.status_code == 402
+        assert r.status_code == 401
+        assert r.json()["error"]["code"] == "token_denied"
         assert len(seen) == 1
     finally:
         broker.close()
@@ -99,4 +100,10 @@ def test_broker_pins_parameters_preserves_opaque_reasoning_and_refuses(tmp_path)
         upstream.server_close()
     assert (
         "REAL_KEY_NOT_LOGGED" not in (tmp_path / "trials/test/broker.jsonl").read_text()
+    )
+    assert (
+        json.loads(
+            (tmp_path / "trials/test/broker.jsonl").read_text().splitlines()[-1]
+        )["status"]
+        == "token_denied"
     )

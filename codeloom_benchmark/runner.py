@@ -59,6 +59,7 @@ def attempt(
             "limit_usd": limit,
             "budget_policy": broker.settings.get("budget_policy", "strict-reservation"),
             "call_limit_multiplier": broker.settings.get("call_limit_multiplier", 3),
+            "watchdog_s": watchdog_s,
             "retry_of": retry_of,
             "started_at": time.time(),
         },
@@ -66,6 +67,7 @@ def attempt(
     started = time.monotonic()
     container = None
     termination = "agent_crash"
+    controller_termination = None
     process = None
     agent_ended = None
     interruption = None
@@ -173,13 +175,16 @@ def attempt(
         else:
             verification = {"pass": False, "reason": "no_checkout"}
         statuses = {r["status"] for r in journal(root)}
-        if "budget_exhausted" in statuses:
+        controller_termination = termination
+        if termination == "watchdog":
+            pass  # Preserve the primary stop; shutdown requests cannot overwrite it.
+        elif "budget_exhausted" in statuses:
             termination = "budget_exhausted"
         elif "call_cost_limit" in statuses:
             termination = "call_cost_limit"
         elif statuses & {"model_mismatch", "provider_mismatch"}:
             termination = "protocol_violation"
-        elif "request_error" in statuses:
+        elif statuses & {"request_error", "request_denied"}:
             termination = "agent_crash"
         elif statuses & {"provider_error", "transport_error"}:
             termination = (
@@ -264,6 +269,8 @@ def attempt(
         "limit_usd": limit,
         "call_limit_multiplier": broker.settings.get("call_limit_multiplier", 3),
         "termination": termination,
+        "controller_termination": controller_termination or termination,
+        "watchdog_s": watchdog_s,
         "verification": verification,
         "upstream_check_failures": sorted(failures),
         "new_failing_check_commands": sorted(failures & baseline_passed),

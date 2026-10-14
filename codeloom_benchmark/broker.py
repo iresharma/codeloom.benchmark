@@ -227,6 +227,8 @@ class Broker:
                             {
                                 "status": "call_cost_limit"
                                 if exc.reason == "call_cost_limit"
+                                else "token_denied"
+                                if exc.reason == "token_denied"
                                 else "budget_exhausted",
                                 "refusal_reason": exc.reason,
                                 "detail": str(exc),
@@ -236,8 +238,21 @@ class Broker:
                                 "started_at": time.time(),
                             },
                         )
+                    if exc.reason == "token_denied":
+                        return self.error(401, "token_denied", str(exc))
                     return self.error(402, "budget_exhausted", str(exc))
                 except (ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
+                    trial = broker.ledger.trial_for_token(token)
+                    if trial:
+                        broker.record(
+                            trial,
+                            {
+                                "status": "request_denied",
+                                "detail": str(exc),
+                                "elapsed_s": 0,
+                                "started_at": time.time(),
+                            },
+                        )
                     return self.error(400, "request_denied", str(exc))
                 started = time.monotonic()
                 record = {

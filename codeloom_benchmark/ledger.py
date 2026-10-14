@@ -214,7 +214,7 @@ class Ledger:
                 "SELECT id,stage,ceiling,active FROM trials WHERE token=?", (token,)
             ).fetchone()
             if not t or not t[3]:
-                raise BudgetRefused("Unknown or revoked trial token")
+                raise BudgetRefused("Unknown or revoked trial token", "token_denied")
             campaign = db.execute(
                 "SELECT value FROM settings WHERE key='ceiling'"
             ).fetchone()[0]
