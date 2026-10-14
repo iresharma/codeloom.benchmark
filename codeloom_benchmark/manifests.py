@@ -71,6 +71,9 @@ def task_limit(task, settings=None):
 
 def validate_suite(suite="v1"):
     settings = config()
+    watchdog = settings.get("watchdog_s")
+    if watchdog is not None and (type(watchdog) not in (int, float) or watchdog <= 0):
+        raise ValueError("Task watchdog must be positive or null (disabled)")
     if settings.get("budget_policy", "strict-reservation") not in (
         "strict-reservation",
         "actual-spend",

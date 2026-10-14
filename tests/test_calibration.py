@@ -51,6 +51,7 @@ def test_calibration_uses_broker_throughput_and_requires_completion(
     )
 
     def attempt(task, system, image, broker, network, root, trial_id, *args):
+        assert args[1] is None  # development stage, then the disabled task watchdog
         trial = root / "trials" / trial_id
         trial.mkdir(parents=True)
         (trial / "broker.jsonl").write_text(
@@ -68,14 +69,14 @@ def test_calibration_uses_broker_throughput_and_requires_completion(
             "termination": termination,
             "verification": {"pass": True},
             "cost_is_conservative": False,
-            "elapsed_s": 800,
+            "elapsed_s": 45 * 60,
         }
 
     monkeypatch.setattr(campaign, "attempt", attempt)
     result = campaign.calibrate(tmp_path / "calibration", tmp_path / "engine")
     assert result["status"] == expected
     assert len(result["attempts"]) == 4
-    assert result["watchdog_s"] == 3600
+    assert result["watchdog_s"] is None
     assert result["request_timeout_s"] == pytest.approx(2 * (32768 / 40 + 2) + 120)
     assert result["runtime_image"] == "frozen-runtime"
     assert len(result["observed_generated_tokens_per_elapsed_s"]) == 4

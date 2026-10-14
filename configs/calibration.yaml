@@ -3,6 +3,4 @@ tasks: [dev-python, dev-typescript]
 trial_limit_usd: 1.50
 total_calibration_limit_usd: 6
 probe_limit_usd: 2
-watchdog_floor_s: 3600
-watchdog_multiplier: 2
-watchdog_margin_s: 120
+watchdog_s: null

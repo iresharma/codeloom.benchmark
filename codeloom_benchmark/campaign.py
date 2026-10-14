@@ -246,7 +246,7 @@ def calibrate(root, engine):
                     root,
                     f"{root.name}-{task['id']}-{system}",
                     "development",
-                    7200,
+                    config().get("watchdog_s"),
                     1.5,
                 )
 
@@ -281,23 +281,12 @@ def calibrate(root, engine):
             c["first_byte_s"] for c in calls if c.get("first_byte_s") is not None
         ]
         passed = passed and bool(throughput) and bool(latency)
-        watchdog = max(
-            3600,
-            2
-            * max(
-                (r["elapsed_s"] for r in results if r["termination"] == "completed"),
-                default=0,
-            )
-            + 120,
-        )
+        watchdog = config().get("watchdog_s")
         # Use the slowest observed rate, including first-byte time, plus a twofold margin.
         timeout = (
-            min(
-                watchdog,
-                max(
-                    300,
-                    2 * (config()["max_tokens"] / min(throughput) + max(latency)) + 120,
-                ),
+            max(
+                300,
+                2 * (config()["max_tokens"] / min(throughput) + max(latency)) + 120,
             )
             if throughput and latency
             else config()["request_timeout_s"]

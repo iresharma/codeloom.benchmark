@@ -23,6 +23,10 @@ def scrub(value, token):
     return value.replace(token, "<trial-token>") if isinstance(value, str) else value
 
 
+def container_lifetime(watchdog_s):
+    return "infinity" if watchdog_s is None else f"{watchdog_s + 600}s"
+
+
 def main():
     cfg = json.loads(sys.stdin.read())
     # Native retry utility and LiteLLM/OpenAI retries must not multiply paid requests.
@@ -40,7 +44,7 @@ def main():
         image=cfg["image"],
         cwd="/task",
         timeout=120,
-        container_timeout=str(cfg["watchdog_s"] + 600) + "s",
+        container_timeout=container_lifetime(cfg["watchdog_s"]),
         run_args=[
             "--platform",
             "linux/amd64",

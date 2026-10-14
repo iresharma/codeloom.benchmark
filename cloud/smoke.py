@@ -70,7 +70,7 @@ def main():
                     root,
                     f"{args.run_id}-{task['id']}-{system}",
                     "development",
-                    600,
+                    config().get("watchdog_s"),
                     0.5,
                 )
 

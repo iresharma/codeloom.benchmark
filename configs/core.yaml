@@ -10,6 +10,7 @@ parallel_attempts: 2
 certification_workers: 2
 budget_policy: actual-spend
 call_limit_multiplier: 3
+watchdog_s: null
 max_tokens: 32768
 input_per_million: 1.32
 output_per_million: 3.96

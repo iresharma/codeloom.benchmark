@@ -35,6 +35,10 @@ def attempt(
     limit,
     retry_of=None,
 ):
+    if watchdog_s is not None and (
+        type(watchdog_s) not in (int, float) or watchdog_s <= 0
+    ):
+        raise ValueError("Task watchdog must be positive or null (disabled)")
     root = run_root / "trials" / trial_id
     root.mkdir(parents=True, exist_ok=True)
     token = broker.ledger.create_trial(trial_id, stage, limit)
