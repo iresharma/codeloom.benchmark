@@ -11,7 +11,8 @@ input_per_million: 1.32
 output_per_million: 3.96
 request_timeout_s: 2400
 campaign_limit_usd: 45
-trial_limit_usd: 1
+trial_limit_usd: 4
+difficulty_limits_usd: {light: 1, medium: 2, heavy: 4}
 stage_limits:
   development: 8
   measured: 32

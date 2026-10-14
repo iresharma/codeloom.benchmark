@@ -1,15 +1,15 @@
 # CodeLoom benchmark — v1-not-run
 
-Status: not_run. 16 tasks; no repeated trials or ablations.
+Status: not_run. 10 tasks; no repeated trials or ablations.
 
 Generator: deepseek/deepseek-v4-pro-0813 / baidu/fp8; classifier off.
 
 | System | Pass / evaluable | Delivered / scheduled | Cost | Cost / success |
 | --- | --- | --- | --- | --- |
-| mini-swe-agent | 0 / 0 | 0 / 16 | Unavailable | Unavailable |
-| engine-core | 0 / 0 | 0 / 16 | Unavailable | Unavailable |
+| mini-swe-agent | 0 / 0 | 0 / 10 | Unavailable | Unavailable |
+| engine-core | 0 / 0 | 0 / 10 | Unavailable | Unavailable |
 
-Paired outcomes: engine_only: 0; mini_only: 0; both_pass: 0; both_fail: 0; unresolved: 0; unrun: 16
+Paired outcomes: engine_only: 0; mini_only: 0; both_pass: 0; both_fail: 0; unresolved: 0; unrun: 10
 
 Run gate: Paid calibration/measurement paused pending owner approval; fixture recertification and live calibration required for updated Engine.
 
@@ -25,4 +25,6 @@ No measured traces exist yet. The separately labeled synthetic adapter traces ch
 - Test-generation features are supplied with their reference tests withheld.
 - Host ARM64 runs Linux AMD64 through emulation.
 - Offline report rebuilding is reproducible; model outputs, endpoint availability and prices are not.
-- Ky candidates were excluded before freeze after reference browser/timing certification failed; four reserve tasks maintain the category balance.
+- Difficulty is a pre-run scope assessment, not measured token use; category counts are unequal.
+- Individual attempt caps sum to $50, sharing a $32 measurement envelope; some scheduled pairs may remain unrun.
+- Six unselected fixtures remain reserves; no scored outputs informed selection.

@@ -5,9 +5,18 @@
     "fees_buffer": 5,
     "inference_ceiling": 45,
     "measurement": 32,
-    "per_primary_attempt": 1,
+    "per_difficulty_attempt_caps": {
+      "heavy": 4,
+      "light": 1,
+      "medium": 2
+    },
     "recovery": 5,
     "total_ceiling": 50
+  },
+  "difficulty_mix": {
+    "heavy": 4,
+    "light": 3,
+    "medium": 3
   },
   "engine_commit": "fe6b2cb4779690855cad3e955c1e08e493847ab7",
   "implied_unpromoted_rates": {
@@ -15,26 +24,29 @@
     "output_per_million": 3.96
   },
   "limitations": [
-    "Assumed aggregate token volumes across the whole attempt, including all Engine children and repeated prompt/history input.",
-    "All input priced as uncached. Cache discounts may help but are not assumed.",
-    "Effort is a setting, not a guaranteed number of reasoning tokens. No measured High-vs-Max cost or accuracy claim.",
-    "Retained reasoning history can increase repeated input cost; native compaction behavior is unchanged.",
-    "An over-cap scenario may fail or be refused. Uncapped scenario totals are not a promise of successful completion.",
-    "Endpoint promotions, latency and availability can change; admission ceilings remain fixed.",
-    "Fees are reserved separately. No credits purchased or paid calls made."
+    "Difficulty is a pre-run scope assessment relative to this small corpus, not a measured complexity or token ranking.",
+    "Request counts and average context/output sizes are illustrative assumptions, not calibrated forecasts or guaranteed completion budgets.",
+    "A 10,000-token code read carried into six subsequent requests alone contributes 60,000 input tokens; all parent/child histories and other inputs also count.",
+    "All input priced as uncached; replayed reasoning counts as future input. Reasoning plus visible output is billed once as output.",
+    "High effort has no guaranteed reasoning-token volume or measured savings versus Max.",
+    "Conservative byte-based request reservations can refuse calls before actual spend reaches the attempt cap; aggregate token math is not an admission guarantee.",
+    "Individual attempt maxima sum to $50 but share a $32 measurement envelope; completing all 20 attempts is not guaranteed.",
+    "Heavy stress case exceeds its cap. Budget stops are published failures, not silently retried or removed.",
+    "Paid development calibration, fixture recertification and preregistration remain pending; no model scoring or credits purchased.",
+    "Provider promotions and availability can change; the plan reserves conservative rates and a separate fee buffer."
   ],
-  "max_output_reservation_per_request": 0.12976128,
   "max_tokens_per_request": 32768,
   "model": "deepseek/deepseek-v4-pro-0813",
-  "observed_at": "2026-10-14T13:15:37.406154+00:00",
+  "observed_at": "2026-10-14T13:37:22.608606+00:00",
   "observed_price": {
-    "completion": "0.00000060588",
-    "discount": 0.847,
-    "input_cache_read": "0.000000006426",
-    "prompt": "0.00000020196"
+    "completion": "0.00000054252",
+    "discount": 0.863,
+    "input_cache_read": "0.000000005754",
+    "prompt": "0.00000018084"
   },
   "paid_calls": 0,
-  "planned_attempts": 32,
+  "planned_attempts": 20,
+  "primary_attempt_maxima_sum": 50,
   "provider": "baidu/fp8",
   "quantization": "fp8",
   "reasoning_effort": "high",
@@ -44,43 +56,58 @@
   },
   "scenarios": [
     {
-      "billed_output_tokens_per_attempt": 10000,
-      "fits_trial_cap_at_observed_price": true,
-      "fits_trial_cap_at_reservation_price": true,
-      "input_tokens_per_attempt": 100000,
-      "observed_price_cost_per_attempt": 0.0262548,
-      "observed_price_total_for_32": 0.8401536,
+      "attempt_cap_usd": 1,
+      "attempts": 6,
+      "average_input_per_request": 20000,
+      "billed_output_tokens_per_attempt": 12000,
+      "cohort_cap_usd": 6,
+      "difficulty": "light",
+      "fits_cap_at_reservation_price": true,
+      "input_tokens_per_attempt": 160000,
+      "observed_price_cohort_total": 0.21266784,
+      "observed_price_cost_per_attempt": 0.03544464,
       "reasoning_tokens_per_attempt": 8000,
-      "reservation_price_cost_per_attempt": 0.1716,
-      "reservation_price_uncapped_total": 5.4912,
-      "scenario": "Light",
-      "visible_tokens_per_attempt": 2000
+      "requests_per_attempt": 8,
+      "reservation_price_cost_per_attempt": 0.25872,
+      "reservation_price_uncapped_cohort_total": 1.55232,
+      "tasks": 3,
+      "visible_tokens_per_attempt": 4000
     },
     {
+      "attempt_cap_usd": 2,
+      "attempts": 6,
+      "average_input_per_request": 40000,
       "billed_output_tokens_per_attempt": 40000,
-      "fits_trial_cap_at_observed_price": true,
-      "fits_trial_cap_at_reservation_price": true,
-      "input_tokens_per_attempt": 300000,
-      "observed_price_cost_per_attempt": 0.0848232,
-      "observed_price_total_for_32": 2.7143424,
-      "reasoning_tokens_per_attempt": 30000,
-      "reservation_price_cost_per_attempt": 0.5544,
-      "reservation_price_uncapped_total": 17.7408,
-      "scenario": "Moderate",
-      "visible_tokens_per_attempt": 10000
+      "cohort_cap_usd": 12,
+      "difficulty": "medium",
+      "fits_cap_at_reservation_price": true,
+      "input_tokens_per_attempt": 640000,
+      "observed_price_cohort_total": 0.8246304,
+      "observed_price_cost_per_attempt": 0.1374384,
+      "reasoning_tokens_per_attempt": 28000,
+      "requests_per_attempt": 16,
+      "reservation_price_cost_per_attempt": 1.0032,
+      "reservation_price_uncapped_cohort_total": 6.0192000000000005,
+      "tasks": 3,
+      "visible_tokens_per_attempt": 12000
     },
     {
-      "billed_output_tokens_per_attempt": 80000,
-      "fits_trial_cap_at_observed_price": true,
-      "fits_trial_cap_at_reservation_price": false,
-      "input_tokens_per_attempt": 600000,
-      "observed_price_cost_per_attempt": 0.1696464,
-      "observed_price_total_for_32": 5.4286848,
-      "reasoning_tokens_per_attempt": 60000,
-      "reservation_price_cost_per_attempt": 1.1088,
-      "reservation_price_uncapped_total": 35.4816,
-      "scenario": "Heavy",
-      "visible_tokens_per_attempt": 20000
+      "attempt_cap_usd": 4,
+      "attempts": 8,
+      "average_input_per_request": 65000,
+      "billed_output_tokens_per_attempt": 72000,
+      "cohort_cap_usd": 32,
+      "difficulty": "heavy",
+      "fits_cap_at_reservation_price": true,
+      "input_tokens_per_attempt": 1560000,
+      "observed_price_cohort_total": 2.56937472,
+      "observed_price_cost_per_attempt": 0.32117184,
+      "reasoning_tokens_per_attempt": 48000,
+      "requests_per_attempt": 24,
+      "reservation_price_cost_per_attempt": 2.34432,
+      "reservation_price_uncapped_cohort_total": 18.75456,
+      "tasks": 4,
+      "visible_tokens_per_attempt": 24000
     }
   ],
   "sources": [
@@ -89,11 +116,19 @@
     "https://api-docs.deepseek.com/guides/thinking_mode/"
   ],
   "status": "projection_only",
+  "stress": {
+    "description": "Heavy attempts make twice as many calls with the same average context and output.",
+    "fits_heavy_cap": false,
+    "requests_per_heavy_attempt": 48,
+    "reservation_price_per_heavy_attempt": 4.68864
+  },
   "supported_efforts": [
     "max",
     "high",
     "low"
   ],
-  "task_count": 16,
-  "thinking_enabled": true
+  "task_count": 10,
+  "thinking_enabled": true,
+  "weighted_observed_price_total": 3.60667296,
+  "weighted_reservation_price_uncapped_total": 26.32608
 }

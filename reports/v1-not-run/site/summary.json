@@ -3,6 +3,11 @@
   "budget_usd": 50,
   "calibration_status": "not_run",
   "classifier": "off",
+  "difficulty_mix": {
+    "heavy": 4,
+    "light": 3,
+    "medium": 3
+  },
   "limitations": [
     "Author-designed corpus; no independent review.",
     "One run per task; no reliability, interaction, or component-effect claims.",
@@ -10,7 +15,9 @@
     "Test-generation features are supplied with their reference tests withheld.",
     "Host ARM64 runs Linux AMD64 through emulation.",
     "Offline report rebuilding is reproducible; model outputs, endpoint availability and prices are not.",
-    "Ky candidates were excluded before freeze after reference browser/timing certification failed; four reserve tasks maintain the category balance."
+    "Difficulty is a pre-run scope assessment, not measured token use; category counts are unequal.",
+    "Individual attempt caps sum to $50, sharing a $32 measurement envelope; some scheduled pairs may remain unrun.",
+    "Six unselected fixtures remain reserves; no scored outputs informed selection."
   ],
   "model": "deepseek/deepseek-v4-pro-0813",
   "paid_runs_authorized": false,
@@ -20,7 +27,7 @@
     "engine_only": 0,
     "mini_only": 0,
     "unresolved": 0,
-    "unrun": 16
+    "unrun": 10
   },
   "platform": "linux/amd64",
   "preregistration_commit": null,
@@ -44,10 +51,10 @@
       "min_elapsed_s": null,
       "passed": 0,
       "regressions": 0,
-      "scheduled": 16,
+      "scheduled": 10,
       "unknown_costs": 0,
       "unresolved": 0,
-      "unrun": 16,
+      "unrun": 10,
       "watchdog_hits": 0
     },
     {
@@ -61,353 +68,19 @@
       "min_elapsed_s": null,
       "passed": 0,
       "regressions": 0,
-      "scheduled": 16,
+      "scheduled": 10,
       "unknown_costs": 0,
       "unresolved": 0,
-      "unrun": 16,
+      "unrun": 10,
       "watchdog_hits": 0
     }
   ],
-  "task_count": 16,
+  "task_count": 10,
   "tasks": [
     {
+      "attempt_limit_usd": 1,
       "category": "bug",
-      "id": "chi-B",
-      "language": "go",
-      "provenance": "fabricated",
-      "repo": "chi",
-      "systems": {
-        "engine-core": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        },
-        "mini-swe-agent": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        }
-      },
-      "title": "Pooled context leaks URL params"
-    },
-    {
-      "category": "navigation",
-      "id": "chi-N",
-      "language": "go",
-      "provenance": "navigation",
-      "repo": "chi",
-      "systems": {
-        "engine-core": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        },
-        "mini-swe-agent": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        }
-      },
-      "title": "Code path and lifecycle navigation"
-    },
-    {
-      "category": "test-generation",
-      "id": "chi-T",
-      "language": "go",
-      "provenance": "new_feature_tests_withheld",
-      "repo": "chi",
-      "systems": {
-        "engine-core": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        },
-        "mini-swe-agent": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        }
-      },
-      "title": "Test immutable writer snapshots"
-    },
-    {
-      "category": "cross-file",
-      "id": "chi-X",
-      "language": "go",
-      "provenance": "new_feature",
-      "repo": "chi",
-      "systems": {
-        "engine-core": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        },
-        "mini-swe-agent": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        }
-      },
-      "title": "Immutable bulk response-header middleware"
-    },
-    {
-      "category": "bug",
-      "id": "dotenv-B",
-      "language": "python",
-      "provenance": "fabricated",
-      "repo": "dotenv",
-      "systems": {
-        "engine-core": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        },
-        "mini-swe-agent": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        }
-      },
-      "title": "Interpolation override precedence"
-    },
-    {
-      "category": "navigation",
-      "id": "dotenv-N",
-      "language": "python",
-      "provenance": "navigation",
-      "repo": "dotenv",
-      "systems": {
-        "engine-core": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        },
-        "mini-swe-agent": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        }
-      },
-      "title": "Code path and lifecycle navigation"
-    },
-    {
-      "category": "test-generation",
-      "id": "dotenv-T",
-      "language": "python",
-      "provenance": "new_feature",
-      "repo": "dotenv",
-      "systems": {
-        "engine-core": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        },
-        "mini-swe-agent": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        }
-      },
-      "title": "Test selection of assigned dotenv values"
-    },
-    {
-      "category": "cross-file",
-      "id": "dotenv-X",
-      "language": "python",
-      "provenance": "cross-file",
-      "repo": "dotenv",
-      "systems": {
-        "engine-core": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        },
-        "mini-swe-agent": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        }
-      },
-      "title": "Strict dotenv loading API and CLI"
-    },
-    {
-      "category": "bug",
-      "id": "pqueue-B",
-      "language": "typescript",
-      "provenance": "fabricated",
-      "repo": "pqueue",
-      "systems": {
-        "engine-core": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        },
-        "mini-swe-agent": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        }
-      },
-      "title": "Priority updates target the wrong queued task"
-    },
-    {
-      "category": "navigation",
-      "id": "pqueue-N",
-      "language": "typescript",
-      "provenance": "navigation",
-      "repo": "pqueue",
-      "systems": {
-        "engine-core": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        },
-        "mini-swe-agent": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        }
-      },
-      "title": "Code path and lifecycle navigation"
-    },
-    {
-      "category": "test-generation",
-      "id": "pqueue-T",
-      "language": "typescript",
-      "provenance": "new_feature_tests_withheld",
-      "repo": "pqueue",
-      "systems": {
-        "engine-core": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        },
-        "mini-swe-agent": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        }
-      },
-      "title": "Test settled queue batches"
-    },
-    {
-      "category": "cross-file",
-      "id": "pqueue-X",
-      "language": "typescript",
-      "provenance": "cross-file",
-      "repo": "pqueue",
-      "systems": {
-        "engine-core": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        },
-        "mini-swe-agent": {
-          "artifact_path": null,
-          "attempt_id": null,
-          "cost_usd": null,
-          "elapsed_s": null,
-          "regressions": null,
-          "status": "unrun",
-          "termination": null
-        }
-      },
-      "title": "Atomic bulk queue priority updates"
-    },
-    {
-      "category": "bug",
+      "difficulty": "light",
       "id": "tinydb-B",
       "language": "python",
       "provenance": "fabricated",
@@ -435,11 +108,13 @@
       "title": "Query cache survives writes"
     },
     {
-      "category": "navigation",
-      "id": "tinydb-N",
-      "language": "python",
-      "provenance": "navigation",
-      "repo": "tinydb",
+      "attempt_limit_usd": 1,
+      "category": "bug",
+      "difficulty": "light",
+      "id": "chi-B",
+      "language": "go",
+      "provenance": "fabricated",
+      "repo": "chi",
       "systems": {
         "engine-core": {
           "artifact_path": null,
@@ -460,14 +135,16 @@
           "termination": null
         }
       },
-      "title": "Trace query-cache invalidation and buffered persistence"
+      "title": "Pooled context leaks URL params"
     },
     {
+      "attempt_limit_usd": 1,
       "category": "test-generation",
-      "id": "tinydb-T",
+      "difficulty": "light",
+      "id": "dotenv-T",
       "language": "python",
-      "provenance": "new_feature_tests_withheld",
-      "repo": "tinydb",
+      "provenance": "new_feature",
+      "repo": "dotenv",
       "systems": {
         "engine-core": {
           "artifact_path": null,
@@ -488,10 +165,42 @@
           "termination": null
         }
       },
-      "title": "Test a conditional middleware flush"
+      "title": "Test selection of assigned dotenv values"
     },
     {
+      "attempt_limit_usd": 2,
+      "category": "navigation",
+      "difficulty": "medium",
+      "id": "chi-N",
+      "language": "go",
+      "provenance": "navigation",
+      "repo": "chi",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null
+        }
+      },
+      "title": "Code path and lifecycle navigation"
+    },
+    {
+      "attempt_limit_usd": 2,
       "category": "cross-file",
+      "difficulty": "medium",
       "id": "tinydb-X",
       "language": "python",
       "provenance": "cross-file",
@@ -517,6 +226,156 @@
         }
       },
       "title": "Public storage flush contract"
+    },
+    {
+      "attempt_limit_usd": 2,
+      "category": "bug",
+      "difficulty": "medium",
+      "id": "pqueue-B",
+      "language": "typescript",
+      "provenance": "fabricated",
+      "repo": "pqueue",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null
+        }
+      },
+      "title": "Priority updates target the wrong queued task"
+    },
+    {
+      "attempt_limit_usd": 4,
+      "category": "cross-file",
+      "difficulty": "heavy",
+      "id": "dotenv-X",
+      "language": "python",
+      "provenance": "cross-file",
+      "repo": "dotenv",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null
+        }
+      },
+      "title": "Strict dotenv loading API and CLI"
+    },
+    {
+      "attempt_limit_usd": 4,
+      "category": "cross-file",
+      "difficulty": "heavy",
+      "id": "pqueue-X",
+      "language": "typescript",
+      "provenance": "cross-file",
+      "repo": "pqueue",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null
+        }
+      },
+      "title": "Atomic bulk queue priority updates"
+    },
+    {
+      "attempt_limit_usd": 4,
+      "category": "cross-file",
+      "difficulty": "heavy",
+      "id": "chi-X",
+      "language": "go",
+      "provenance": "new_feature",
+      "repo": "chi",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null
+        }
+      },
+      "title": "Immutable bulk response-header middleware"
+    },
+    {
+      "attempt_limit_usd": 4,
+      "category": "test-generation",
+      "difficulty": "heavy",
+      "id": "pqueue-T",
+      "language": "typescript",
+      "provenance": "new_feature_tests_withheld",
+      "repo": "pqueue",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null
+        }
+      },
+      "title": "Test settled queue batches"
     }
   ],
   "thinking_enabled": true

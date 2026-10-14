@@ -17,7 +17,7 @@
         "env": {},
         "executable": "docker",
         "forward_env": [],
-        "image": "sha256:65de4d7948cac76861a2c7883f4f36ab46ab09c77364e04990762a90b31f946e",
+        "image": "sha256:57b004f696261cace53c7c44710c7cd89c322803eb2e56c0856175aef9129753",
         "interpreter": [
           "bash",
           "-lc"
@@ -32,7 +32,7 @@
           "--memory=3g",
           "--cpus=2",
           "--network",
-          "bench-606aa09e9065"
+          "bench-f068c267ebc9"
         ],
         "timeout": 120
       },
@@ -42,7 +42,7 @@
         "format_error_template": "{{ error }}",
         "litellm_model_registry": null,
         "model_kwargs": {
-          "api_base": "http://127.0.0.1:54495/v1",
+          "api_base": "http://127.0.0.1:54955/v1",
           "api_key": "<redacted>",
           "num_retries": 0,
           "reasoning_effort": "high",
@@ -132,7 +132,7 @@
             "total_tokens": 11
           }
         },
-        "timestamp": 1791983798.171883
+        "timestamp": 1791985047.387158
       },
       "function_call": null,
       "provider_specific_fields": {
@@ -165,7 +165,7 @@
         "exception_info": "",
         "raw_output": "/task\n",
         "returncode": 0,
-        "timestamp": 1791983798.309099
+        "timestamp": 1791985047.493351
       },
       "role": "tool",
       "tool_call_id": "t1"
@@ -218,7 +218,7 @@
             "total_tokens": 11
           }
         },
-        "timestamp": 1791983798.317832
+        "timestamp": 1791985047.501332
       },
       "function_call": null,
       "provider_specific_fields": null,

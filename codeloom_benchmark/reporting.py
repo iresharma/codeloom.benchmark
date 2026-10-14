@@ -3,7 +3,7 @@ from __future__ import annotations
 import csv
 import json
 import statistics
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 
 from .artifacts import checksum_tree, write_json
@@ -77,6 +77,14 @@ def summarize(manifest: dict, attempts: list[dict]):
             "provenance": t.get("provenance", "unknown")
             if isinstance(t, dict)
             else "unknown",
+            "difficulty": t.get("difficulty", "unknown")
+            if isinstance(t, dict)
+            else "unknown",
+            "attempt_limit_usd": manifest["settings"]
+            .get("difficulty_limits_usd", {})
+            .get(t.get("difficulty"))
+            if isinstance(t, dict)
+            else None,
             "systems": {},
         }
         for system in SYSTEMS:
@@ -180,6 +188,9 @@ def summarize(manifest: dict, attempts: list[dict]):
         "classifier": "off",
         "platform": manifest.get("platform", "linux/amd64"),
         "task_count": len(task_rows),
+        "difficulty_mix": dict(
+            __import__("collections").Counter(t["difficulty"] for t in task_rows)
+        ),
         "repo_count": len({t["repo"] for t in task_rows}),
         "repeat_count": 0,
         "budget_usd": 50,

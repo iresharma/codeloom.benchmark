@@ -137,3 +137,19 @@ def test_model_rejects_generic_efforts_it_does_not_advertise(monkeypatch):
 def test_reasoning_is_billed_once_with_visible_output():
     assert estimate(300_000, 30_000, 10_000, 1.32, 3.96) == pytest.approx(0.5544)
     assert estimate(100_000, 8_000, 2_000, 1.32, 3.96) == pytest.approx(0.1716)
+
+
+def test_cost_report_weights_selected_task_cohorts_and_exposes_oversubscription(
+    tmp_path,
+):
+    from codeloom_benchmark.cost_analysis import analyze
+
+    report = analyze(destination=tmp_path / "cost.json", refresh=False)
+    assert report["planned_attempts"] == 20
+    assert report["weighted_reservation_price_uncapped_total"] == pytest.approx(
+        26.32608
+    )
+    assert report["primary_attempt_maxima_sum"] == 50
+    assert report["budget"]["measurement"] == 32
+    assert report["budget"]["total_ceiling"] == 50
+    assert report["stress"]["fits_heavy_cap"] is False

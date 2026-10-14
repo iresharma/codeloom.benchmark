@@ -9,45 +9,95 @@
     "Test-generation features are supplied with their reference tests withheld.",
     "Host ARM64 runs Linux AMD64 through emulation.",
     "Offline report rebuilding is reproducible; model outputs, endpoint availability and prices are not.",
-    "Ky candidates were excluded before freeze after reference browser/timing certification failed; four reserve tasks maintain the category balance."
+    "Difficulty is a pre-run scope assessment, not measured token use; category counts are unequal.",
+    "Individual attempt caps sum to $50, sharing a $32 measurement envelope; some scheduled pairs may remain unrun.",
+    "Six unselected fixtures remain reserves; no scored outputs informed selection."
   ],
   "platform": "linux/amd64",
   "run_id": "v1-not-run",
   "settings": {
-    "suite": "v1",
-    "platform": "linux/amd64",
-    "model": "deepseek/deepseek-v4-pro-0813",
-    "provider": "baidu/fp8",
-    "provider_name": "Baidu",
-    "reasoning_effort": "high",
-    "thinking_enabled": true,
-    "paid_runs_authorized": false,
-    "max_tokens": 32768,
-    "input_per_million": 1.32,
-    "output_per_million": 3.96,
-    "request_timeout_s": 2400,
     "campaign_limit_usd": 45,
-    "trial_limit_usd": 1,
-    "stage_limits": {
-      "development": 8,
-      "measured": 32,
-      "recovery": 5
+    "difficulty_limits_usd": {
+      "heavy": 4,
+      "light": 1,
+      "medium": 2
     },
-    "schedule_seed": 20261014,
-    "systems": [
-      "mini-swe-agent",
-      "engine-core"
-    ],
     "excluded": [
       "ky-B",
       "ky-N",
       "ky-T",
       "ky-X"
     ],
-    "recovery_max_per_system_task": 1
+    "input_per_million": 1.32,
+    "max_tokens": 32768,
+    "model": "deepseek/deepseek-v4-pro-0813",
+    "output_per_million": 3.96,
+    "paid_runs_authorized": false,
+    "platform": "linux/amd64",
+    "provider": "baidu/fp8",
+    "provider_name": "Baidu",
+    "reasoning_effort": "high",
+    "recovery_max_per_system_task": 1,
+    "request_timeout_s": 2400,
+    "schedule_seed": 20261014,
+    "stage_limits": {
+      "development": 8,
+      "measured": 32,
+      "recovery": 5
+    },
+    "suite": "v1",
+    "systems": [
+      "mini-swe-agent",
+      "engine-core"
+    ],
+    "thinking_enabled": true,
+    "trial_limit_usd": 4
   },
   "suite": "v1",
   "tasks": [
+    {
+      "allowed_paths": [
+        "tinydb/*.py",
+        "benchmark_tests/*"
+      ],
+      "category": "bug",
+      "certification": {
+        "reason": "Reference/no-op, regression and mutant checks have not run.",
+        "status": "pending"
+      },
+      "commit": "6d7c4fc3e04d398b1282876514660a33a7897b41",
+      "difficulty": "light",
+      "difficulty_rationale": "Localized cache invalidation repair with visible upstream tests.",
+      "id": "tinydb-B",
+      "language": "python",
+      "mutants": [],
+      "prompt": "Searching a cached predicate after update/remove returns stale documents. Restore invalidation for every successful mutation, preserving copy-on-search and unaffected tables.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You may edit production source and add tests under benchmark_tests/, but existing tests/configuration and .bench files are immutable.",
+      "provenance": "fabricated",
+      "reference": {
+        "tinydb/table.py": [
+          {
+            "count": 1,
+            "new": "        # Clear the query cache, as the table contents have changed\n        self.clear_cache()",
+            "old": "        # Clear the query cache, as the table contents have changed\n        pass"
+          }
+        ]
+      },
+      "repo": "tinydb",
+      "setup": {
+        "tinydb/table.py": [
+          {
+            "count": 1,
+            "new": "        # Clear the query cache, as the table contents have changed\n        pass",
+            "old": "        # Clear the query cache, as the table contents have changed\n        self.clear_cache()"
+          }
+        ]
+      },
+      "title": "Query cache survives writes",
+      "upstream": "https://github.com/msiemens/tinydb.git",
+      "verification": [
+        "python -m pytest -o addopts= -q tests"
+      ]
+    },
     {
       "allowed_paths": [
         "*.go",
@@ -60,6 +110,8 @@
         "status": "pending"
       },
       "commit": "c9744a3641452cfe4fbb9929ceb554659d6bd950",
+      "difficulty": "light",
+      "difficulty_rationale": "Localized pooled-context reset with reuse invariants.",
       "id": "chi-B",
       "language": "go",
       "mutants": [],
@@ -92,206 +144,6 @@
     },
     {
       "allowed_paths": [
-        "navigation-answer.json"
-      ],
-      "category": "navigation",
-      "certification": {
-        "reason": "Reference/no-op, regression and mutant checks have not run.",
-        "status": "pending"
-      },
-      "commit": "c9744a3641452cfe4fbb9929ceb554659d6bd950",
-      "id": "chi-N",
-      "language": "go",
-      "mutants": [],
-      "prompt": "Explain nested route parameter lookup, pooled routing-context reuse and request context access. Write the call graph and select each claim value from these public choices: {\"precedence\": [\"last matching parameter\", \"first matching parameter\", \"all matching values joined\"], \"reset\": [\"clear parameters\", \"retain parameters\", \"drop context object\"], \"pool\": [\"Get and Put around request\", \"one context shared by all requests\", \"new context without reuse\"]}\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. Write navigation-answer.json using the schema in .bench/navigation-answer.schema.json; run python /opt/benchmark-public/validate_answer.py navigation-answer.json. Do not edit source code.",
-      "provenance": "navigation",
-      "reference": {
-        "navigation-answer.json": "{\n  \"task_id\": \"chi-N\",\n  \"symbols\": [\n    {\n      \"path\": \"context.go\",\n      \"name\": \"Context.URLParam\"\n    },\n    {\n      \"path\": \"context.go\",\n      \"name\": \"Context.Reset\"\n    },\n    {\n      \"path\": \"context.go\",\n      \"name\": \"URLParamFromCtx\"\n    },\n    {\n      \"path\": \"mux.go\",\n      \"name\": \"Mux.ServeHTTP\"\n    }\n  ],\n  \"edges\": [\n    {\n      \"from\": \"URLParamFromCtx\",\n      \"to\": \"RouteContext\"\n    },\n    {\n      \"from\": \"URLParamFromCtx\",\n      \"to\": \"Context.URLParam\"\n    },\n    {\n      \"from\": \"Mux.ServeHTTP\",\n      \"to\": \"Context.Reset\"\n    }\n  ],\n  \"claims\": {\n    \"precedence\": \"last matching parameter\",\n    \"reset\": \"clear parameters\",\n    \"pool\": \"Get and Put around request\"\n  }\n}\n"
-      },
-      "repo": "chi",
-      "setup": {},
-      "title": "Code path and lifecycle navigation",
-      "upstream": "https://github.com/go-chi/chi.git",
-      "verification": [
-        "go test ./..."
-      ]
-    },
-    {
-      "allowed_paths": [
-        "benchmark_tests/*"
-      ],
-      "category": "test-generation",
-      "certification": {
-        "reason": "Reference/no-op, regression and mutant checks have not run.",
-        "status": "pending"
-      },
-      "commit": "c9744a3641452cfe4fbb9929ceb554659d6bd950",
-      "id": "chi-T",
-      "language": "go",
-      "mutants": [
-        {
-          "middleware/response_snapshot.go": [
-            {
-              "count": 1,
-              "new": "Status:200",
-              "old": "Status:w.Status()"
-            }
-          ]
-        },
-        {
-          "middleware/response_snapshot.go": [
-            {
-              "count": 1,
-              "new": "Bytes:0",
-              "old": "Bytes:w.BytesWritten()"
-            }
-          ]
-        },
-        {
-          "middleware/response_snapshot.go": [
-            {
-              "count": 1,
-              "new": "Headers:w.Header()",
-              "old": "Headers:w.Header().Clone()"
-            }
-          ]
-        },
-        {
-          "middleware/response_snapshot.go": [
-            {
-              "count": 1,
-              "new": "Headers:http.Header{}",
-              "old": "Headers:w.Header().Clone()"
-            }
-          ]
-        },
-        {
-          "middleware/response_snapshot.go": [
-            {
-              "count": 1,
-              "new": "Status:w.Status()+1",
-              "old": "Status:w.Status()"
-            }
-          ]
-        }
-      ],
-      "prompt": "The supplied middleware.SnapshotResponseWriter(w WrapResponseWriter) returns ResponseSnapshot{Status,Bytes,Headers}, where counters match w and Headers is a deep snapshot. Test counters, multi-value headers, and independence from later map/slice mutation. Add Go tests under benchmark_tests/ using an external package importing github.com/go-chi/chi/v5/middleware; do not change supplied code.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. Only add tests under benchmark_tests/. Do not edit production code, existing tests or test/config files. The supplied feature implementation has its reference tests withheld; unrelated upstream tests remain intact. Use Go testing.",
-      "provenance": "new_feature_tests_withheld",
-      "reference": {
-        "benchmark_tests/snapshot_test.go": "package benchmark_tests\nimport(\"testing\";\"net/http/httptest\"; . \"github.com/go-chi/chi/v5/middleware\")\nfunc TestBenchmarkSnapshot(t *testing.T){\n w:=NewWrapResponseWriter(httptest.NewRecorder(),1);w.Header().Add(\"X-Test\",\"one\");w.Header().Add(\"X-Test\",\"two\");w.WriteHeader(418);w.Write([]byte(\"abc\"))\n s:=SnapshotResponseWriter(w);if s.Status!=418 || s.Bytes!=3 || len(s.Headers.Values(\"X-Test\"))!=2{t.Fatal(\"snapshot fields\")}\n s.Headers[\"X-Test\"][0]=\"changed\";if w.Header().Values(\"X-Test\")[0]!=\"one\"{t.Fatal(\"snapshot shares header slice\")}\n w.Header().Add(\"X-New\",\"v\");if s.Headers.Get(\"X-New\")!=\"\"{t.Fatal(\"snapshot shares map\")}\n}\n"
-      },
-      "repo": "chi",
-      "setup": {
-        "middleware/response_snapshot.go": "package middleware\n\nimport \"net/http\"\n\ntype ResponseSnapshot struct {\n Status int\n Bytes int\n Headers http.Header\n}\n\nfunc SnapshotResponseWriter(w WrapResponseWriter) ResponseSnapshot {\n return ResponseSnapshot{Status:w.Status(), Bytes:w.BytesWritten(), Headers:w.Header().Clone()}\n}\n"
-      },
-      "title": "Test immutable writer snapshots",
-      "upstream": "https://github.com/go-chi/chi.git",
-      "verification": [
-        "go test ./..."
-      ]
-    },
-    {
-      "allowed_paths": [
-        "*.go",
-        "middleware/*.go",
-        "benchmark_tests/*"
-      ],
-      "category": "cross-file",
-      "certification": {
-        "reason": "Activated reserve before freeze; certification required.",
-        "status": "pending"
-      },
-      "commit": "c9744a3641452cfe4fbb9929ceb554659d6bd950",
-      "id": "chi-X",
-      "language": "go",
-      "prompt": "Add middleware.SetHeaders(headers http.Header) func(http.Handler) http.Handler. Snapshot the configuration at factory creation (map and slices), replace selected response headers with all supplied values before calling the next handler, canonicalize names using net/http semantics, preserve unlisted headers, and copy values per response so handler mutation cannot alter later requests. Nil/empty input is a no-op. Inputs have no duplicate names under case folding. Refactor existing SetHeader(key,value) to delegate to SetHeaders while preserving its behavior. Implement in a new middleware file and update the existing SetHeader definition.\n\nWork autonomously. Leave the final output on the main checkout. Existing tests/configuration and .bench files are immutable.",
-      "provenance": "new_feature",
-      "reference": {
-        "middleware/bulk_headers.go": "package middleware\n\nimport \"net/http\"\n\n// SetHeaders snapshots configuration and replaces selected response header values.\nfunc SetHeaders(headers http.Header) func(http.Handler) http.Handler {\n snapshot := headers.Clone()\n return func(next http.Handler) http.Handler {\n  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n   for name, values := range snapshot {\n    w.Header().Del(name)\n    for _, value := range values { w.Header().Add(name, value) }\n   }\n   next.ServeHTTP(w, r)\n  })\n }\n}\n",
-        "middleware/content_type.go": [
-          {
-            "new": "func SetHeader(key, value string) func(http.Handler) http.Handler {\n return SetHeaders(http.Header{key: []string{value}})\n}\n",
-            "old": "func SetHeader(key, value string) func(http.Handler) http.Handler {\n\treturn func(next http.Handler) http.Handler {\n\t\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\t\tw.Header().Set(key, value)\n\t\t\tnext.ServeHTTP(w, r)\n\t\t})\n\t}\n}\n"
-          }
-        ]
-      },
-      "repo": "chi",
-      "setup": {},
-      "title": "Immutable bulk response-header middleware",
-      "upstream": "https://github.com/go-chi/chi.git",
-      "verification": [
-        "go test ./..."
-      ]
-    },
-    {
-      "allowed_paths": [
-        "src/dotenv/*.py",
-        "benchmark_tests/*"
-      ],
-      "category": "bug",
-      "certification": {
-        "reason": "Reference/no-op, regression and mutant checks have not run.",
-        "status": "pending"
-      },
-      "commit": "0b2880591780a426b0551436f47a17e7a76d954f",
-      "id": "dotenv-B",
-      "language": "python",
-      "mutants": [],
-      "prompt": "When override=False, substitutions must prefer existing environment values over earlier file bindings; override=True must prefer earlier file bindings. Preserve empty values, default substitutions and unassigned keys.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You may edit production source and add tests under benchmark_tests/, but existing tests/configuration and .bench files are immutable.",
-      "provenance": "fabricated",
-      "reference": {
-        "src/dotenv/main.py": [
-          {
-            "count": 1,
-            "new": "            else:\n                env.update(new_values)\n                env.update(os.environ)  # type: ignore",
-            "old": "            else:\n                env.update(os.environ)  # type: ignore\n                env.update(new_values)"
-          }
-        ]
-      },
-      "repo": "dotenv",
-      "setup": {
-        "src/dotenv/main.py": [
-          {
-            "count": 1,
-            "new": "            else:\n                env.update(os.environ)  # type: ignore\n                env.update(new_values)",
-            "old": "            else:\n                env.update(new_values)\n                env.update(os.environ)  # type: ignore"
-          }
-        ]
-      },
-      "title": "Interpolation override precedence",
-      "upstream": "https://github.com/theskumar/python-dotenv.git",
-      "verification": [
-        "python -m pytest -q tests"
-      ]
-    },
-    {
-      "allowed_paths": [
-        "navigation-answer.json"
-      ],
-      "category": "navigation",
-      "certification": {
-        "reason": "Reference/no-op, regression and mutant checks have not run.",
-        "status": "pending"
-      },
-      "commit": "0b2880591780a426b0551436f47a17e7a76d954f",
-      "id": "dotenv-N",
-      "language": "python",
-      "mutants": [],
-      "prompt": "Trace CLI environment construction and override semantics. Explain why unassigned keys are excluded and identify the final environment merge. Write the call graph and select each claim value from these public choices: {\"override_precedence\": [\"environment always\", \"file always\", \"file when true; environment when false\"], \"unassigned\": [\"excluded\", \"empty string\", \"literal null\"], \"execution\": [\"exec/subprocess\", \"in-process eval\", \"shell source\"]}\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. Write navigation-answer.json using the schema in .bench/navigation-answer.schema.json; run python /opt/benchmark-public/validate_answer.py navigation-answer.json. Do not edit source code.",
-      "provenance": "navigation",
-      "reference": {
-        "navigation-answer.json": "{\n  \"task_id\": \"dotenv-N\",\n  \"symbols\": [\n    {\n      \"path\": \"src/dotenv/cli.py\",\n      \"name\": \"run\"\n    },\n    {\n      \"path\": \"src/dotenv/cli.py\",\n      \"name\": \"run_command\"\n    },\n    {\n      \"path\": \"src/dotenv/main.py\",\n      \"name\": \"DotEnv.dict\"\n    },\n    {\n      \"path\": \"src/dotenv/main.py\",\n      \"name\": \"resolve_variables\"\n    }\n  ],\n  \"edges\": [\n    {\n      \"from\": \"run\",\n      \"to\": \"DotEnv.dict\"\n    },\n    {\n      \"from\": \"DotEnv.dict\",\n      \"to\": \"resolve_variables\"\n    },\n    {\n      \"from\": \"run\",\n      \"to\": \"run_command\"\n    }\n  ],\n  \"claims\": {\n    \"override_precedence\": \"file when true; environment when false\",\n    \"unassigned\": \"excluded\",\n    \"execution\": \"exec/subprocess\"\n  }\n}\n"
-      },
-      "repo": "dotenv",
-      "setup": {},
-      "title": "Code path and lifecycle navigation",
-      "upstream": "https://github.com/theskumar/python-dotenv.git",
-      "verification": [
-        "python -m pytest -q tests"
-      ]
-    },
-    {
-      "allowed_paths": [
         "benchmark_tests/*"
       ],
       "category": "test-generation",
@@ -300,6 +152,8 @@
         "status": "pending"
       },
       "commit": "0b2880591780a426b0551436f47a17e7a76d954f",
+      "difficulty": "light",
+      "difficulty_rationale": "Deterministic tests for one supplied mapping helper.",
       "id": "dotenv-T",
       "language": "python",
       "mutants": [
@@ -366,6 +220,117 @@
     },
     {
       "allowed_paths": [
+        "navigation-answer.json"
+      ],
+      "category": "navigation",
+      "certification": {
+        "reason": "Reference/no-op, regression and mutant checks have not run.",
+        "status": "pending"
+      },
+      "commit": "c9744a3641452cfe4fbb9929ceb554659d6bd950",
+      "difficulty": "medium",
+      "difficulty_rationale": "Trace nested routes, request context and pool lifecycle across files.",
+      "id": "chi-N",
+      "language": "go",
+      "mutants": [],
+      "prompt": "Explain nested route parameter lookup, pooled routing-context reuse and request context access. Write the call graph and select each claim value from these public choices: {\"precedence\": [\"last matching parameter\", \"first matching parameter\", \"all matching values joined\"], \"reset\": [\"clear parameters\", \"retain parameters\", \"drop context object\"], \"pool\": [\"Get and Put around request\", \"one context shared by all requests\", \"new context without reuse\"]}\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. Write navigation-answer.json using the schema in .bench/navigation-answer.schema.json; run python /opt/benchmark-public/validate_answer.py navigation-answer.json. Do not edit source code.",
+      "provenance": "navigation",
+      "reference": {
+        "navigation-answer.json": "{\n  \"task_id\": \"chi-N\",\n  \"symbols\": [\n    {\n      \"path\": \"context.go\",\n      \"name\": \"Context.URLParam\"\n    },\n    {\n      \"path\": \"context.go\",\n      \"name\": \"Context.Reset\"\n    },\n    {\n      \"path\": \"context.go\",\n      \"name\": \"URLParamFromCtx\"\n    },\n    {\n      \"path\": \"mux.go\",\n      \"name\": \"Mux.ServeHTTP\"\n    }\n  ],\n  \"edges\": [\n    {\n      \"from\": \"URLParamFromCtx\",\n      \"to\": \"RouteContext\"\n    },\n    {\n      \"from\": \"URLParamFromCtx\",\n      \"to\": \"Context.URLParam\"\n    },\n    {\n      \"from\": \"Mux.ServeHTTP\",\n      \"to\": \"Context.Reset\"\n    }\n  ],\n  \"claims\": {\n    \"precedence\": \"last matching parameter\",\n    \"reset\": \"clear parameters\",\n    \"pool\": \"Get and Put around request\"\n  }\n}\n"
+      },
+      "repo": "chi",
+      "setup": {},
+      "title": "Code path and lifecycle navigation",
+      "upstream": "https://github.com/go-chi/chi.git",
+      "verification": [
+        "go test ./..."
+      ]
+    },
+    {
+      "allowed_paths": [
+        "tinydb/*.py",
+        "benchmark_tests/*"
+      ],
+      "category": "cross-file",
+      "certification": {
+        "reason": "Reference/no-op, regression and mutant checks have not run.",
+        "status": "pending"
+      },
+      "commit": "6d7c4fc3e04d398b1282876514660a33a7897b41",
+      "difficulty": "medium",
+      "difficulty_rationale": "Propagate a flush contract across database, storage and middleware.",
+      "id": "tinydb-X",
+      "language": "python",
+      "mutants": [],
+      "prompt": "Add TinyDB.flush() -> None and Storage.flush() -> None. Default Storage.flush is a no-op; JSONStorage remains usable. TinyDB delegates to storage so CachingMiddleware.flush persists pending writes without closing. Calling flush repeatedly is safe; flushing a closed caching middleware still raises ValueError.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You may edit production source and add tests under benchmark_tests/, but existing tests/configuration and .bench files are immutable.",
+      "provenance": "cross-file",
+      "reference": {
+        "tinydb/database.py": [
+          {
+            "count": 1,
+            "new": "    def flush(self) -> None:\n        \"\"\"Persist buffered writes without closing the database.\"\"\"\n        self._storage.flush()\n\n    def close(self) -> None:",
+            "old": "    def close(self) -> None:"
+          }
+        ],
+        "tinydb/storages.py": [
+          {
+            "count": 2,
+            "new": "    def flush(self) -> None:\n        \"\"\"Default storage flush: writes are already synchronous.\"\"\"\n        return None\n\n    def close(self) -> None:",
+            "old": "    def close(self) -> None:"
+          }
+        ]
+      },
+      "repo": "tinydb",
+      "setup": {},
+      "title": "Public storage flush contract",
+      "upstream": "https://github.com/msiemens/tinydb.git",
+      "verification": [
+        "python -m pytest -o addopts= -q tests"
+      ]
+    },
+    {
+      "allowed_paths": [
+        "source/*.ts",
+        "benchmark_tests/*"
+      ],
+      "category": "bug",
+      "certification": {
+        "reason": "Activated reserve before freeze; certification required.",
+        "status": "pending"
+      },
+      "commit": "7f272ab5ff2254c0dc2537b7977e88ede1cd55e8",
+      "difficulty": "medium",
+      "difficulty_rationale": "Repair queued-ID matching while preserving dequeue and ordering semantics.",
+      "id": "pqueue-B",
+      "language": "typescript",
+      "prompt": "setPriority(id, priority) updates a different queued task and may accept a missing ID. Restore matching by ID, including queue entries after previous dequeues. Preserve FIFO behavior at equal priority and missing-ID errors.\n\nWork autonomously. Leave the final output on the main checkout. Existing tests/configuration and .bench files are immutable.",
+      "provenance": "fabricated",
+      "reference": {
+        "source/priority-queue.ts": [
+          {
+            "new": "const index = this.#findIndex(element => element.id === id);",
+            "old": "const index = this.#findIndex(element => element.id !== id);"
+          }
+        ]
+      },
+      "repo": "pqueue",
+      "setup": {
+        "source/priority-queue.ts": [
+          {
+            "new": "const index = this.#findIndex(element => element.id !== id);",
+            "old": "const index = this.#findIndex(element => element.id === id);"
+          }
+        ]
+      },
+      "title": "Priority updates target the wrong queued task",
+      "upstream": "https://github.com/sindresorhus/p-queue.git",
+      "verification": [
+        "npm run build",
+        "node --import=tsx/esm --test --test-timeout=60000 test/*.ts"
+      ]
+    },
+    {
+      "allowed_paths": [
         "src/dotenv/*.py",
         "benchmark_tests/*"
       ],
@@ -375,6 +340,8 @@
         "status": "pending"
       },
       "commit": "0b2880591780a426b0551436f47a17e7a76d954f",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Atomic strict parsing propagated through public APIs and CLI errors.",
       "id": "dotenv-X",
       "language": "python",
       "mutants": [],
@@ -445,34 +412,45 @@
         "source/*.ts",
         "benchmark_tests/*"
       ],
-      "category": "bug",
+      "category": "cross-file",
       "certification": {
-        "reason": "Activated reserve before freeze; certification required.",
+        "reason": "Reference/no-op, regression and mutant checks have not run.",
         "status": "pending"
       },
       "commit": "7f272ab5ff2254c0dc2537b7977e88ede1cd55e8",
-      "id": "pqueue-B",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Bulk validation and queue metadata updates with custom-queue fallback.",
+      "id": "pqueue-X",
       "language": "typescript",
-      "prompt": "setPriority(id, priority) updates a different queued task and may accept a missing ID. Restore matching by ID, including queue entries after previous dequeues. Preserve FIFO behavior at equal priority and missing-ID errors.\n\nWork autonomously. Leave the final output on the main checkout. Existing tests/configuration and .bench files are immutable.",
-      "provenance": "fabricated",
+      "mutants": [],
+      "prompt": "Add setPriorities(updates: ReadonlyArray<{id:string;priority:number}>): void to PQueue, the Queue interface and PriorityQueue. Make the Queue capability optional to preserve existing custom queue types; PQueue must fall back to validated single updates when a custom queue lacks the bulk method. Validate the entire batch before any mutation: nonfinite priority -> TypeError; unknown or already-running ID -> ReferenceError. Empty batch is a no-op; duplicate IDs apply in order (last wins). Reuse single-update ordering, keep waiting-task metadata consistent, and preserve other queued tasks.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You may edit production source and add tests under benchmark_tests/, but existing tests/configuration and .bench files are immutable.",
+      "provenance": "cross-file",
       "reference": {
+        "source/index.ts": [
+          {
+            "count": 1,
+            "new": "\tsetPriorities(updates: ReadonlyArray<{id: string; priority: number}>): void {\n\t\tfor (const {id, priority} of updates) {\n\t\t\tif (!Number.isFinite(priority)) { throw new TypeError('priority must be finite'); }\n\t\t\tif (![...this.#waitingTasks].some(task => task.id === id)) { throw new ReferenceError('unknown queued id'); }\n\t\t}\n\t\tif (this.#queue.setPriorities) { this.#queue.setPriorities(updates); }\n\t\telse { for (const {id, priority} of updates) { this.#queue.setPriority(id, priority); } }\n\t\tfor (const {id, priority} of updates) {\n\t\t\tfor (const task of this.#waitingTasks) { if (task.id === id) { task.priority = priority; } }\n\t\t}\n\t}\n\n\tsetPriority(id: string, priority: number) {",
+            "old": "\tsetPriority(id: string, priority: number) {"
+          }
+        ],
         "source/priority-queue.ts": [
           {
-            "new": "const index = this.#findIndex(element => element.id === id);",
-            "old": "const index = this.#findIndex(element => element.id !== id);"
+            "count": 1,
+            "new": "\tsetPriorities(updates: ReadonlyArray<{id: string; priority: number}>): void {\n\t\tfor (const {id, priority} of updates) {\n\t\t\tif (!Number.isFinite(priority)) { throw new TypeError('priority must be finite'); }\n\t\t\tif (this.#findIndex(element => element.id === id) === -1) { throw new ReferenceError('unknown queued id'); }\n\t\t}\n\t\tfor (const {id, priority} of updates) { this.setPriority(id, priority); }\n\t}\n\n\tsetPriority(id: string, priority: number) {",
+            "old": "\tsetPriority(id: string, priority: number) {"
+          }
+        ],
+        "source/queue.ts": [
+          {
+            "count": 1,
+            "new": "\tsetPriorities?: (updates: ReadonlyArray<{id: string; priority: number}>) => void;\n\tsetPriority: (id: string, priority: number) => void;",
+            "old": "\tsetPriority: (id: string, priority: number) => void;"
           }
         ]
       },
       "repo": "pqueue",
-      "setup": {
-        "source/priority-queue.ts": [
-          {
-            "new": "const index = this.#findIndex(element => element.id !== id);",
-            "old": "const index = this.#findIndex(element => element.id === id);"
-          }
-        ]
-      },
-      "title": "Priority updates target the wrong queued task",
+      "setup": {},
+      "title": "Atomic bulk queue priority updates",
       "upstream": "https://github.com/sindresorhus/p-queue.git",
       "verification": [
         "npm run build",
@@ -481,29 +459,37 @@
     },
     {
       "allowed_paths": [
-        "navigation-answer.json"
+        "*.go",
+        "middleware/*.go",
+        "benchmark_tests/*"
       ],
-      "category": "navigation",
+      "category": "cross-file",
       "certification": {
-        "reason": "Reference/no-op, regression and mutant checks have not run.",
+        "reason": "Activated reserve before freeze; certification required.",
         "status": "pending"
       },
-      "commit": "7f272ab5ff2254c0dc2537b7977e88ede1cd55e8",
-      "id": "pqueue-N",
-      "language": "typescript",
-      "mutants": [],
-      "prompt": "Trace PQueue.add through priority enqueue, execution and completion bookkeeping. Write the call graph and select each claim value from these public choices: {\"concurrency\": [\"pending less than concurrency\", \"queue size less than concurrency\", \"pending equal concurrency\"], \"completion\": [\"finally\", \"only fulfillment\", \"before execution\"], \"idle\": [\"pending and queue both zero\", \"queue empty regardless of pending\", \"pending zero regardless of queue\"]}\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. Write navigation-answer.json using the schema in .bench/navigation-answer.schema.json; run python /opt/benchmark-public/validate_answer.py navigation-answer.json. Do not edit source code.",
-      "provenance": "navigation",
+      "commit": "c9744a3641452cfe4fbb9929ceb554659d6bd950",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Cross-file middleware change with deep-copy ownership and per-response isolation.",
+      "id": "chi-X",
+      "language": "go",
+      "prompt": "Add middleware.SetHeaders(headers http.Header) func(http.Handler) http.Handler. Snapshot the configuration at factory creation (map and slices), replace selected response headers with all supplied values before calling the next handler, canonicalize names using net/http semantics, preserve unlisted headers, and copy values per response so handler mutation cannot alter later requests. Nil/empty input is a no-op. Inputs have no duplicate names under case folding. Refactor existing SetHeader(key,value) to delegate to SetHeaders while preserving its behavior. Implement in a new middleware file and update the existing SetHeader definition.\n\nWork autonomously. Leave the final output on the main checkout. Existing tests/configuration and .bench files are immutable.",
+      "provenance": "new_feature",
       "reference": {
-        "navigation-answer.json": "{\n  \"task_id\": \"pqueue-N\",\n  \"symbols\": [\n    {\n      \"path\": \"source/index.ts\",\n      \"name\": \"PQueue.add\"\n    },\n    {\n      \"path\": \"source/index.ts\",\n      \"name\": \"PQueue.#next\"\n    },\n    {\n      \"path\": \"source/priority-queue.ts\",\n      \"name\": \"PriorityQueue.enqueue\"\n    },\n    {\n      \"path\": \"source/index.ts\",\n      \"name\": \"PQueue.#tryToStartAnother\"\n    }\n  ],\n  \"edges\": [\n    {\n      \"from\": \"PQueue.add\",\n      \"to\": \"PriorityQueue.enqueue\"\n    },\n    {\n      \"from\": \"PQueue.add\",\n      \"to\": \"PQueue.#next\"\n    },\n    {\n      \"from\": \"PQueue.#next\",\n      \"to\": \"PQueue.#processQueue\"\n    }\n  ],\n  \"claims\": {\n    \"concurrency\": \"pending less than concurrency\",\n    \"completion\": \"finally\",\n    \"idle\": \"pending and queue both zero\"\n  }\n}\n"
+        "middleware/bulk_headers.go": "package middleware\n\nimport \"net/http\"\n\n// SetHeaders snapshots configuration and replaces selected response header values.\nfunc SetHeaders(headers http.Header) func(http.Handler) http.Handler {\n snapshot := headers.Clone()\n return func(next http.Handler) http.Handler {\n  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n   for name, values := range snapshot {\n    w.Header().Del(name)\n    for _, value := range values { w.Header().Add(name, value) }\n   }\n   next.ServeHTTP(w, r)\n  })\n }\n}\n",
+        "middleware/content_type.go": [
+          {
+            "new": "func SetHeader(key, value string) func(http.Handler) http.Handler {\n return SetHeaders(http.Header{key: []string{value}})\n}\n",
+            "old": "func SetHeader(key, value string) func(http.Handler) http.Handler {\n\treturn func(next http.Handler) http.Handler {\n\t\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\t\tw.Header().Set(key, value)\n\t\t\tnext.ServeHTTP(w, r)\n\t\t})\n\t}\n}\n"
+          }
+        ]
       },
-      "repo": "pqueue",
+      "repo": "chi",
       "setup": {},
-      "title": "Code path and lifecycle navigation",
-      "upstream": "https://github.com/sindresorhus/p-queue.git",
+      "title": "Immutable bulk response-header middleware",
+      "upstream": "https://github.com/go-chi/chi.git",
       "verification": [
-        "npm run build",
-        "node --import=tsx/esm --test --test-timeout=60000 test/*.ts"
+        "go test ./..."
       ]
     },
     {
@@ -516,6 +502,8 @@
         "status": "pending"
       },
       "commit": "7f272ab5ff2254c0dc2537b7977e88ede1cd55e8",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Deterministic async tests for concurrency, rejections and completion bookkeeping.",
       "id": "pqueue-T",
       "language": "typescript",
       "mutants": [
@@ -585,240 +573,6 @@
       "verification": [
         "npm run build",
         "node --import=tsx/esm --test --test-timeout=60000 test/*.ts"
-      ]
-    },
-    {
-      "allowed_paths": [
-        "source/*.ts",
-        "benchmark_tests/*"
-      ],
-      "category": "cross-file",
-      "certification": {
-        "reason": "Reference/no-op, regression and mutant checks have not run.",
-        "status": "pending"
-      },
-      "commit": "7f272ab5ff2254c0dc2537b7977e88ede1cd55e8",
-      "id": "pqueue-X",
-      "language": "typescript",
-      "mutants": [],
-      "prompt": "Add setPriorities(updates: ReadonlyArray<{id:string;priority:number}>): void to PQueue, the Queue interface and PriorityQueue. Make the Queue capability optional to preserve existing custom queue types; PQueue must fall back to validated single updates when a custom queue lacks the bulk method. Validate the entire batch before any mutation: nonfinite priority -> TypeError; unknown or already-running ID -> ReferenceError. Empty batch is a no-op; duplicate IDs apply in order (last wins). Reuse single-update ordering, keep waiting-task metadata consistent, and preserve other queued tasks.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You may edit production source and add tests under benchmark_tests/, but existing tests/configuration and .bench files are immutable.",
-      "provenance": "cross-file",
-      "reference": {
-        "source/index.ts": [
-          {
-            "count": 1,
-            "new": "\tsetPriorities(updates: ReadonlyArray<{id: string; priority: number}>): void {\n\t\tfor (const {id, priority} of updates) {\n\t\t\tif (!Number.isFinite(priority)) { throw new TypeError('priority must be finite'); }\n\t\t\tif (![...this.#waitingTasks].some(task => task.id === id)) { throw new ReferenceError('unknown queued id'); }\n\t\t}\n\t\tif (this.#queue.setPriorities) { this.#queue.setPriorities(updates); }\n\t\telse { for (const {id, priority} of updates) { this.#queue.setPriority(id, priority); } }\n\t\tfor (const {id, priority} of updates) {\n\t\t\tfor (const task of this.#waitingTasks) { if (task.id === id) { task.priority = priority; } }\n\t\t}\n\t}\n\n\tsetPriority(id: string, priority: number) {",
-            "old": "\tsetPriority(id: string, priority: number) {"
-          }
-        ],
-        "source/priority-queue.ts": [
-          {
-            "count": 1,
-            "new": "\tsetPriorities(updates: ReadonlyArray<{id: string; priority: number}>): void {\n\t\tfor (const {id, priority} of updates) {\n\t\t\tif (!Number.isFinite(priority)) { throw new TypeError('priority must be finite'); }\n\t\t\tif (this.#findIndex(element => element.id === id) === -1) { throw new ReferenceError('unknown queued id'); }\n\t\t}\n\t\tfor (const {id, priority} of updates) { this.setPriority(id, priority); }\n\t}\n\n\tsetPriority(id: string, priority: number) {",
-            "old": "\tsetPriority(id: string, priority: number) {"
-          }
-        ],
-        "source/queue.ts": [
-          {
-            "count": 1,
-            "new": "\tsetPriorities?: (updates: ReadonlyArray<{id: string; priority: number}>) => void;\n\tsetPriority: (id: string, priority: number) => void;",
-            "old": "\tsetPriority: (id: string, priority: number) => void;"
-          }
-        ]
-      },
-      "repo": "pqueue",
-      "setup": {},
-      "title": "Atomic bulk queue priority updates",
-      "upstream": "https://github.com/sindresorhus/p-queue.git",
-      "verification": [
-        "npm run build",
-        "node --import=tsx/esm --test --test-timeout=60000 test/*.ts"
-      ]
-    },
-    {
-      "allowed_paths": [
-        "tinydb/*.py",
-        "benchmark_tests/*"
-      ],
-      "category": "bug",
-      "certification": {
-        "reason": "Reference/no-op, regression and mutant checks have not run.",
-        "status": "pending"
-      },
-      "commit": "6d7c4fc3e04d398b1282876514660a33a7897b41",
-      "id": "tinydb-B",
-      "language": "python",
-      "mutants": [],
-      "prompt": "Searching a cached predicate after update/remove returns stale documents. Restore invalidation for every successful mutation, preserving copy-on-search and unaffected tables.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You may edit production source and add tests under benchmark_tests/, but existing tests/configuration and .bench files are immutable.",
-      "provenance": "fabricated",
-      "reference": {
-        "tinydb/table.py": [
-          {
-            "count": 1,
-            "new": "        # Clear the query cache, as the table contents have changed\n        self.clear_cache()",
-            "old": "        # Clear the query cache, as the table contents have changed\n        pass"
-          }
-        ]
-      },
-      "repo": "tinydb",
-      "setup": {
-        "tinydb/table.py": [
-          {
-            "count": 1,
-            "new": "        # Clear the query cache, as the table contents have changed\n        pass",
-            "old": "        # Clear the query cache, as the table contents have changed\n        self.clear_cache()"
-          }
-        ]
-      },
-      "title": "Query cache survives writes",
-      "upstream": "https://github.com/msiemens/tinydb.git",
-      "verification": [
-        "python -m pytest -o addopts= -q tests"
-      ]
-    },
-    {
-      "allowed_paths": [
-        "navigation-answer.json"
-      ],
-      "category": "navigation",
-      "certification": {
-        "reason": "Activated reserve before freeze; certification required.",
-        "status": "pending"
-      },
-      "commit": "6d7c4fc3e04d398b1282876514660a33a7897b41",
-      "id": "tinydb-N",
-      "language": "python",
-      "prompt": "For TinyDB(storage=CachingMiddleware(JSONStorage)), trace writes from Table through middleware into JSON persistence. Explain when the query cache is invalidated and whether cached search results protect list membership or nested values. Write navigation-answer.json using .bench/navigation-answer.schema.json and run python .bench/validate_answer.py. Choose each claim value from {\"cached_results\": [\"same list\", \"shallow list copy\", \"deep copy\"], \"invalidation\": [\"after storage write\", \"only on close\", \"never\"], \"persistence\": [\"every write\", \"on flush\", \"only on close\"]}\n\nWork autonomously. Leave the final output on the main checkout. Existing tests/configuration and .bench files are immutable.",
-      "provenance": "navigation",
-      "reference": {
-        "navigation-answer.json": "{\n  \"task_id\": \"tinydb-N\",\n  \"symbols\": [\n    {\n      \"path\": \"tinydb/table.py\",\n      \"name\": \"Table.search\"\n    },\n    {\n      \"path\": \"tinydb/table.py\",\n      \"name\": \"Table._update_table\"\n    },\n    {\n      \"path\": \"tinydb/middlewares.py\",\n      \"name\": \"CachingMiddleware.write\"\n    },\n    {\n      \"path\": \"tinydb/middlewares.py\",\n      \"name\": \"CachingMiddleware.flush\"\n    },\n    {\n      \"path\": \"tinydb/storages.py\",\n      \"name\": \"JSONStorage.write\"\n    }\n  ],\n  \"edges\": [\n    {\n      \"from\": \"Table._update_table\",\n      \"to\": \"CachingMiddleware.write\"\n    },\n    {\n      \"from\": \"Table._update_table\",\n      \"to\": \"Table.clear_cache\"\n    },\n    {\n      \"from\": \"CachingMiddleware.write\",\n      \"to\": \"CachingMiddleware.flush\"\n    },\n    {\n      \"from\": \"CachingMiddleware.flush\",\n      \"to\": \"JSONStorage.write\"\n    }\n  ],\n  \"claims\": {\n    \"cached_results\": \"shallow list copy\",\n    \"invalidation\": \"after storage write\",\n    \"persistence\": \"on flush\"\n  }\n}\n"
-      },
-      "repo": "tinydb",
-      "setup": {},
-      "title": "Trace query-cache invalidation and buffered persistence",
-      "upstream": "https://github.com/msiemens/tinydb.git",
-      "verification": [
-        "python -m pytest -o addopts= -q tests"
-      ]
-    },
-    {
-      "allowed_paths": [
-        "benchmark_tests/*"
-      ],
-      "category": "test-generation",
-      "certification": {
-        "reason": "Reference/no-op, regression and mutant checks have not run.",
-        "status": "pending"
-      },
-      "commit": "6d7c4fc3e04d398b1282876514660a33a7897b41",
-      "id": "tinydb-T",
-      "language": "python",
-      "mutants": [
-        {
-          "tinydb/middlewares.py": [
-            {
-              "count": 1,
-              "new": "        pass\n        return True",
-              "old": "        self.flush()\n        return True"
-            }
-          ]
-        },
-        {
-          "tinydb/middlewares.py": [
-            {
-              "count": 1,
-              "new": "        if self._cache_modified_count <= min_writes:",
-              "old": "        if self._cache_modified_count < min_writes:"
-            }
-          ]
-        },
-        {
-          "tinydb/middlewares.py": [
-            {
-              "count": 1,
-              "new": "        if min_writes < 0:",
-              "old": "        if min_writes < 1:"
-            }
-          ]
-        },
-        {
-          "tinydb/middlewares.py": [
-            {
-              "count": 1,
-              "new": "        self.flush()\n        return False",
-              "old": "        self.flush()\n        return True"
-            }
-          ]
-        },
-        {
-          "tinydb/middlewares.py": [
-            {
-              "count": 1,
-              "new": "        if min_writes",
-              "old": "        if self._closed:\n            raise ValueError('I/O operation on closed storage')\n        if min_writes"
-            }
-          ]
-        }
-      ],
-      "prompt": "The supplied CachingMiddleware.flush_if_pending(min_writes=1)->bool flushes only at the threshold, returns whether it flushed, rejects nonpositive thresholds and closed storage, preserves pending data below threshold, and is safe after a flush. Add deterministic regression tests for this supplied feature.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. Only add tests under benchmark_tests/. Do not edit production code, existing tests or test/config files. The supplied feature implementation has its reference tests withheld; unrelated upstream tests remain intact. Use pytest.",
-      "provenance": "new_feature_tests_withheld",
-      "reference": {
-        "benchmark_tests/test_flush.py": "from tinydb.middlewares import CachingMiddleware\nfrom tinydb.storages import MemoryStorage\nimport pytest\n\ndef test_flush_if_pending():\n s=CachingMiddleware(MemoryStorage)();assert s.flush_if_pending() is False\n s.write({'x':1});assert s.flush_if_pending(2) is False\n assert s.flush_if_pending(1) is True;assert s.storage.read()=={'x':1};assert s.flush_if_pending() is False\n s.write({'x':2});assert s.flush_if_pending() is True\n with pytest.raises(ValueError):s.flush_if_pending(0)\n s.close()\n with pytest.raises(ValueError):s.flush_if_pending()\n"
-      },
-      "repo": "tinydb",
-      "setup": {
-        "tinydb/middlewares.py": [
-          {
-            "count": 1,
-            "new": "    def flush_if_pending(self, min_writes: int = 1) -> bool:\n        if self._closed:\n            raise ValueError('I/O operation on closed storage')\n        if min_writes < 1:\n            raise ValueError('min_writes must be positive')\n        if self._cache_modified_count < min_writes:\n            return False\n        self.flush()\n        return True\n\n    def flush(self):",
-            "old": "    def flush(self):"
-          }
-        ]
-      },
-      "title": "Test a conditional middleware flush",
-      "upstream": "https://github.com/msiemens/tinydb.git",
-      "verification": [
-        "python -m pytest -o addopts= -q tests"
-      ]
-    },
-    {
-      "allowed_paths": [
-        "tinydb/*.py",
-        "benchmark_tests/*"
-      ],
-      "category": "cross-file",
-      "certification": {
-        "reason": "Reference/no-op, regression and mutant checks have not run.",
-        "status": "pending"
-      },
-      "commit": "6d7c4fc3e04d398b1282876514660a33a7897b41",
-      "id": "tinydb-X",
-      "language": "python",
-      "mutants": [],
-      "prompt": "Add TinyDB.flush() -> None and Storage.flush() -> None. Default Storage.flush is a no-op; JSONStorage remains usable. TinyDB delegates to storage so CachingMiddleware.flush persists pending writes without closing. Calling flush repeatedly is safe; flushing a closed caching middleware still raises ValueError.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You may edit production source and add tests under benchmark_tests/, but existing tests/configuration and .bench files are immutable.",
-      "provenance": "cross-file",
-      "reference": {
-        "tinydb/database.py": [
-          {
-            "count": 1,
-            "new": "    def flush(self) -> None:\n        \"\"\"Persist buffered writes without closing the database.\"\"\"\n        self._storage.flush()\n\n    def close(self) -> None:",
-            "old": "    def close(self) -> None:"
-          }
-        ],
-        "tinydb/storages.py": [
-          {
-            "count": 2,
-            "new": "    def flush(self) -> None:\n        \"\"\"Default storage flush: writes are already synchronous.\"\"\"\n        return None\n\n    def close(self) -> None:",
-            "old": "    def close(self) -> None:"
-          }
-        ]
-      },
-      "repo": "tinydb",
-      "setup": {},
-      "title": "Public storage flush contract",
-      "upstream": "https://github.com/msiemens/tinydb.git",
-      "verification": [
-        "python -m pytest -o addopts= -q tests"
       ]
     }
   ]

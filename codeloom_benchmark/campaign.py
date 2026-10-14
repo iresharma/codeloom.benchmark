@@ -9,7 +9,7 @@ from .artifacts import write_json
 from .broker import Broker
 from .fixtures import command
 from .ledger import Ledger
-from .manifests import ROOT, config, tasks, fingerprint, model_metadata
+from .manifests import ROOT, config, tasks, fingerprint, model_metadata, task_limit
 from .reporting import INFRA, report
 from .runner import attempt
 from .sandbox import Network
@@ -96,11 +96,12 @@ def measured(root: Path, lock):
                 / "result.json"
                 for r in pair
             ]
-            unfinished = sum(not p.exists() for p in existing)
-            if (
-                broker.ledger.headroom("measured")
-                < unfinished * settings["trial_limit_usd"]
-            ):
+            remaining_caps = sum(
+                task_limit(by_id[r["task_id"]], settings)
+                for r, p in zip(pair, existing)
+                if not p.exists()
+            )
+            if broker.ledger.headroom("measured") < remaining_caps:
                 raise ValueError("Not enough budget to admit the remaining pair")
             for row, path in zip(pair, existing):
                 trial_id = path.parent.name
@@ -123,7 +124,7 @@ def measured(root: Path, lock):
                         trial_id,
                         "measured",
                         lock["calibration"]["watchdog_s"],
-                        settings["trial_limit_usd"],
+                        task_limit(by_id[row["task_id"]], settings),
                     )
                 print(
                     trial_id,
@@ -133,7 +134,8 @@ def measured(root: Path, lock):
                 )
                 if (
                     result["termination"] in INFRA
-                    and broker.ledger.headroom("recovery") >= 1
+                    and broker.ledger.headroom("recovery")
+                    >= task_limit(by_id[row["task_id"]], settings)
                     and not broker.ledger.snapshot()["unknown_calls"]
                 ):
                     retry = trial_id + "-recovery"
@@ -153,7 +155,7 @@ def measured(root: Path, lock):
                         retry,
                         "recovery",
                         lock["calibration"]["watchdog_s"],
-                        1,
+                        task_limit(by_id[row["task_id"]], settings),
                         retry_of=trial_id,
                     )
                 report(root)

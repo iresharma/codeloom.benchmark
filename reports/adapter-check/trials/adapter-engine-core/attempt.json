@@ -1,8 +1,10 @@
 {
+  "difficulty": "medium",
   "id": "adapter-engine-core",
+  "limit_usd": 0.5,
   "retry_of": null,
   "stage": "development",
-  "started_at": 1791983804.928111,
+  "started_at": 1791985054.498605,
   "system": "engine-core",
   "task_id": "tinydb-X"
 }

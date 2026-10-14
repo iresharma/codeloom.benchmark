@@ -1,6 +1,6 @@
 # CodeLoom paired coding benchmark
 
-16 tasks × two existing systems = **32 independent measured attempts**. The baseline is pinned **mini-SWE-agent 2.4.6**, using its native controller, Docker environment and LiteLLM tool-calling backend. This repository does not implement another coding agent. Engine runs its native orchestrator, children, tree-sitter and LSP. The optional external classifier is off in both arms.
+10 tasks × two existing systems = **20 independent measured attempts**: 3 light, 3 medium and 4 heavy. The baseline is pinned **mini-SWE-agent 2.4.6**, using its native controller, Docker environment and LiteLLM tool-calling backend. This repository does not implement another coding agent. Engine runs its native orchestrator, children, tree-sitter and LSP. The optional external classifier is off in both arms.
 
 ## Current status
 
@@ -53,16 +53,18 @@ The importer also builds `runs.json`, per-attempt `view.json`, and the website's
 
 | Repository | Bug | Cross-file | Navigation | Test generation |
 | --- | --- | --- | --- | --- |
-| TinyDB | Cache invalidation | Storage flush API | Search/update/cache lifecycle | Conditional cache flush |
-| python-dotenv | Interpolation precedence | Strict loading + CLI | Environment construction | Selected value copies |
-| p-queue | Matching priority IDs | Atomic bulk priorities | Queue lifecycle | Settled batches |
-| chi | Pooled context reset | Immutable bulk headers | Route/context lifecycle | Writer snapshots |
+| TinyDB | Cache invalidation (light) | Storage flush API (medium) | — | — |
+| python-dotenv | — | Strict loading + CLI (heavy) | — | Selected value copies (light) |
+| p-queue | Matching priority IDs (medium) | Atomic bulk priorities (heavy) | — | Settled batches (heavy) |
+| chi | Pooled context reset (light) | Immutable bulk headers (heavy) | Route/context lifecycle (medium) | — |
 
-`B`, `X`, `N`, `T` mean bug, cross-file, navigation and test generation. There are no hidden B1/B2 leftovers. All four current bugs are **fabricated regressions**, labeled in their manifests; upstream tests remain visible even when they expose the bug. No upstream maintainer is contacted and no PR is opened. Each task's source is a fresh local Git repository with a single starting commit and no upstream remote/history. Trusted upstream file symlinks are materialized as regular files with the same contents before that snapshot; agent-created links are rejected.
+Selection and scope rationale are pinned in [selection.yaml](suites/v1/selection.yaml), before any scored outputs. Light means a localized repair or tests for one helper; medium involves lifecycle tracing or several cooperating files; heavy emphasizes API/CLI propagation, queue atomicity, ownership or deterministic async tests. These labels are relative to this small corpus, not measured difficulty or large-repository SWE-bench equivalence. Categories are deliberately unequal (3 bugs, 4 cross-file features, 1 navigation, 2 test-generation tasks); avoid conclusions from tiny category subsets.
+
+`B`, `X`, `N`, `T` mean bug, cross-file, navigation and test generation. There are no hidden B1/B2 leftovers. All three selected bugs are **fabricated regressions**, labeled in their manifests; upstream tests remain visible even when they expose the bug. No upstream maintainer is contacted and no PR is opened. Each task's source is a fresh local Git repository with a single starting commit and no upstream remote/history. Trusted upstream file symlinks are materialized as regular files with the same contents before that snapshot; agent-created links are rejected.
 
 Bug/features require private behavior checks **and** trusted upstream regressions to pass. Existing tests/configuration cannot be edited. Navigation uses public JSON schema plus a runnable format validator, and hidden symbol/edge/claim checks. Public claim choices avoid grading arbitrary prose; expected relationships remain hidden. References and rubric equivalents were authored with Codex assistance and checked against pinned source and deterministic tests. No independent human review has taken place, and no measured DeepSeek output is used to tune accepted answers.
 
-Test generation supplies a correct newly added feature with reference tests withheld (explicitly disclosed in the brief), preserving all upstream tests. Tests must pass three times on correct code and stably kill at least 80% of five valid mutants, with the same behavioral assertion failing on all three mutant runs. Import/build/collection failures do not count as kills. Certification confirms these mutants survive the trusted upstream suite; Python, Node/AVA and Go have separate parsers. Ky candidates were excluded before freezing after their upstream browser/timing checks failed under emulation; `reports/excluded-ky.json` records this. Four named reserve tasks preserve the category balance.
+Test generation supplies a correct newly added feature with reference tests withheld (explicitly disclosed in the brief), preserving all upstream tests. Tests must pass three times on correct code and stably kill at least 80% of five valid mutants, with the same behavioral assertion failing on all three mutant runs. Import/build/collection failures do not count as kills. Certification confirms these mutants survive the trusted upstream suite; Python, Node/AVA and Go have separate parsers. Ky candidates were excluded before freezing after their upstream browser/timing checks failed under emulation; `reports/excluded-ky.json` records this. The original 16-task pool is retained; six fixtures are unselected reserves in this smaller study.
 
 Only changes on the main `/task` checkout are submitted, including commits and allowed untracked files. Child branches are submitted only after native settlement merges them. The controller answers settlement prompts `merge` and continuation prompts `continue`; it waits for the native idle barrier to include queued reports and child settlements. The filesystem is sealed before a clean, separate evaluator reconstructs allowed changes. It never trusts the agent's installed tools or Git hooks.
 
@@ -70,17 +72,19 @@ Only changes on the main `/task` checkout are submitted, including commits and a
 
 Generator: `deepseek/deepseek-v4-pro-0813`, thinking enabled at **High** effort, fixed provider `baidu/fp8`, no provider fallback, same model/effort for every Engine child and mini-SWE-agent. High is the model’s advertised default; its captured metadata supports `low`, `high` and `max`, so generic unsupported efforts are rejected. Both native controllers must send the agreed model/effort; the broker rejects mismatches and preserves opaque histories. The shared 32,768 combined-output ceiling remains unchanged.
 
-Conservative admission rates are **$1.32/M input and $3.96/M output**, 4.4× the old rates. The captured promotional endpoint rates are $0.20196/$0.60588; the budget does not depend on the promotion. Reasoning and visible output are billed once together, and all child requests and replayed inputs count. [Cost analysis](reports/cost-analysis.md) gives token-sensitivity scenarios, not measured forecasts: the moderate scenario costs $17.74 for 32 attempts at conservative rates, while the heavy scenario exceeds the $1 attempt cap. No High-vs-Max savings or quality improvement is claimed without paid calibration.
+Conservative admission rates are **$1.32/M input and $3.96/M output**, 4.4× the old rates. The captured promotional endpoint rates are $0.20196/$0.60588; the budget does not depend on the promotion. Reasoning and visible output are billed once together, and all child requests and replayed inputs count. [Cost analysis](reports/cost-analysis.md) gives token-sensitivity scenarios, not measured forecasts: the weighted 3/3/4 request-volume scenario costs about $26.33 for 20 attempts at conservative rates. Doubling heavy request counts exceeds the $4 cap. No High-vs-Max savings or quality improvement is claimed without paid calibration.
 
 Refresh the read-only analysis with `./scripts/benchmark cost-analysis`. Versioned settings and model metadata are in `configs/core.yaml` and `configs/model.json`; dependency pins are in `uv.lock` and `engine-requirements.lock`.
 
 | Allocation | Ceiling |
 | --- | ---: |
 | Development/calibration (four $1.50 runs + probes) | $8 |
-| 32 measured attempts | $32 |
+| 20 measured attempts (shared envelope) | $32 |
 | Whole-task infrastructure recovery | $5 |
 | OpenRouter fees / rounding buffer | $5 |
 | Total | **$50** |
+
+Individual attempt caps are **$1 light, $2 medium and $4 heavy**, identical for both systems on each task. Their maxima total $50, but share the $32 measurement envelope; these are ceilings rather than guaranteed allocations. Pair admission can stop with scheduled tasks unrun. Exhausting all attempt maxima plus the development/recovery/fees reserves would require $68, which is not authorized. The overall ceiling stays $50.
 
 The host-only broker owns the real key and durable SQLite ledger. It reserves conservative input/output upper bounds transactionally before every request, covering concurrent children. Agents receive only opaque per-attempt tokens. Unknown bills retain their full reservations; new paid calls stop until reconciled. Any price overrun halts admission. Defaults cannot be increased when resuming a campaign. A campaign binds measurement to one run directory; renaming a run cannot create another set of primary attempts. The campaign ledger is `.cache/campaign/ledger.sqlite`; do not delete it to reset spent budget. Actual charges come from provider usage, not a second client-side estimate.
 

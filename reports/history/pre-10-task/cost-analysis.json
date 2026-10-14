@@ -1,0 +1,99 @@
+{
+  "ablations": 0,
+  "budget": {
+    "development_and_probes": 8,
+    "fees_buffer": 5,
+    "inference_ceiling": 45,
+    "measurement": 32,
+    "per_primary_attempt": 1,
+    "recovery": 5,
+    "total_ceiling": 50
+  },
+  "engine_commit": "fe6b2cb4779690855cad3e955c1e08e493847ab7",
+  "implied_unpromoted_rates": {
+    "input_per_million": 1.32,
+    "output_per_million": 3.96
+  },
+  "limitations": [
+    "Assumed aggregate token volumes across the whole attempt, including all Engine children and repeated prompt/history input.",
+    "All input priced as uncached. Cache discounts may help but are not assumed.",
+    "Effort is a setting, not a guaranteed number of reasoning tokens. No measured High-vs-Max cost or accuracy claim.",
+    "Retained reasoning history can increase repeated input cost; native compaction behavior is unchanged.",
+    "An over-cap scenario may fail or be refused. Uncapped scenario totals are not a promise of successful completion.",
+    "Endpoint promotions, latency and availability can change; admission ceilings remain fixed.",
+    "Fees are reserved separately. No credits purchased or paid calls made."
+  ],
+  "max_output_reservation_per_request": 0.12976128,
+  "max_tokens_per_request": 32768,
+  "model": "deepseek/deepseek-v4-pro-0813",
+  "observed_at": "2026-10-14T13:15:37.406154+00:00",
+  "observed_price": {
+    "completion": "0.00000060588",
+    "discount": 0.847,
+    "input_cache_read": "0.000000006426",
+    "prompt": "0.00000020196"
+  },
+  "paid_calls": 0,
+  "planned_attempts": 32,
+  "provider": "baidu/fp8",
+  "quantization": "fp8",
+  "reasoning_effort": "high",
+  "reservation_rates": {
+    "input_per_million": 1.32,
+    "output_per_million": 3.96
+  },
+  "scenarios": [
+    {
+      "billed_output_tokens_per_attempt": 10000,
+      "fits_trial_cap_at_observed_price": true,
+      "fits_trial_cap_at_reservation_price": true,
+      "input_tokens_per_attempt": 100000,
+      "observed_price_cost_per_attempt": 0.0262548,
+      "observed_price_total_for_32": 0.8401536,
+      "reasoning_tokens_per_attempt": 8000,
+      "reservation_price_cost_per_attempt": 0.1716,
+      "reservation_price_uncapped_total": 5.4912,
+      "scenario": "Light",
+      "visible_tokens_per_attempt": 2000
+    },
+    {
+      "billed_output_tokens_per_attempt": 40000,
+      "fits_trial_cap_at_observed_price": true,
+      "fits_trial_cap_at_reservation_price": true,
+      "input_tokens_per_attempt": 300000,
+      "observed_price_cost_per_attempt": 0.0848232,
+      "observed_price_total_for_32": 2.7143424,
+      "reasoning_tokens_per_attempt": 30000,
+      "reservation_price_cost_per_attempt": 0.5544,
+      "reservation_price_uncapped_total": 17.7408,
+      "scenario": "Moderate",
+      "visible_tokens_per_attempt": 10000
+    },
+    {
+      "billed_output_tokens_per_attempt": 80000,
+      "fits_trial_cap_at_observed_price": true,
+      "fits_trial_cap_at_reservation_price": false,
+      "input_tokens_per_attempt": 600000,
+      "observed_price_cost_per_attempt": 0.1696464,
+      "observed_price_total_for_32": 5.4286848,
+      "reasoning_tokens_per_attempt": 60000,
+      "reservation_price_cost_per_attempt": 1.1088,
+      "reservation_price_uncapped_total": 35.4816,
+      "scenario": "Heavy",
+      "visible_tokens_per_attempt": 20000
+    }
+  ],
+  "sources": [
+    "https://openrouter.ai/api/v1/models/deepseek/deepseek-v4-pro-0813/endpoints",
+    "https://openrouter.ai/docs/guides/best-practices/reasoning-tokens",
+    "https://api-docs.deepseek.com/guides/thinking_mode/"
+  ],
+  "status": "projection_only",
+  "supported_efforts": [
+    "max",
+    "high",
+    "low"
+  ],
+  "task_count": 16,
+  "thinking_enabled": true
+}

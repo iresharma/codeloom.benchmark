@@ -1,8 +1,10 @@
 {
+  "difficulty": "medium",
   "id": "adapter-mini-swe-agent",
+  "limit_usd": 0.5,
   "retry_of": null,
   "stage": "development",
-  "started_at": 1791983795.8524952,
+  "started_at": 1791985045.003684,
   "system": "mini-swe-agent",
   "task_id": "tinydb-X"
 }

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import Counter
 import hashlib
 import json
 from pathlib import Path
@@ -38,11 +39,42 @@ def model_metadata():
 
 def tasks(suite="v1"):
     path = ROOT / "suites" / suite / "tasks"
-    return [yaml.safe_load(p.read_text()) for p in sorted(path.glob("*.yaml"))]
+    rows = [yaml.safe_load(p.read_text()) for p in sorted(path.glob("*.yaml"))]
+    selection_path = ROOT / "suites" / suite / "selection.yaml"
+    if not selection_path.exists():
+        return rows
+    selection = yaml.safe_load(selection_path.read_text())
+    selected = selection["tasks"]
+    ids = [t["id"] for t in selected]
+    available = {t["id"]: t for t in rows}
+    if len(set(ids)) != len(ids) or set(ids) - available.keys():
+        raise ValueError("Task selection contains duplicate or unknown IDs")
+    if Counter(t["difficulty"] for t in selected) != selection["expected_mix"]:
+        raise ValueError("Task selection does not match the declared difficulty mix")
+    return [
+        dict(
+            available[t["id"]],
+            difficulty=t["difficulty"],
+            difficulty_rationale=t["rationale"],
+        )
+        for t in selected
+    ]
+
+
+def task_limit(task, settings=None):
+    settings = settings or config()
+    limit = settings["difficulty_limits_usd"][task["difficulty"]]
+    if not 0 < limit <= settings["trial_limit_usd"]:
+        raise ValueError("Task cap exceeds the frozen maximum")
+    return limit
 
 
 def validate_suite(suite="v1"):
     rows = tasks(suite)
+    if suite == "v1":
+        for task in rows:
+            # Validate each task cap; the ledger enforces shared spending.
+            task_limit(task)
     ids = [t["id"] for t in rows]
     if len(ids) != len(set(ids)):
         raise ValueError("Duplicate task IDs")

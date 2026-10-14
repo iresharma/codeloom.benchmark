@@ -49,7 +49,8 @@ def test_stage_limit_and_fixed_resume_ceiling(tmp_path):
     path = tmp_path / "budget.db"
     ledger = Ledger(path, stage_limits={"measured": "1"})
     a = ledger.create_trial("a", "measured", "1")
-    b = ledger.create_trial("b", "measured", "1")
+    # Larger per-attempt maxima must not expand the shared measurement envelope.
+    b = ledger.create_trial("b", "measured", "4")
     call, _ = ledger.reserve(a, micros(".9"))
     ledger.settle(call, ".8")
     with pytest.raises(BudgetRefused):

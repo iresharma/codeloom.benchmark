@@ -55,6 +55,8 @@ def attempt(
             "task_id": task["id"],
             "system": system,
             "stage": stage,
+            "difficulty": task.get("difficulty"),
+            "limit_usd": limit,
             "retry_of": retry_of,
             "started_at": time.time(),
         },

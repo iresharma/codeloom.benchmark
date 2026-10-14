@@ -1,6 +1,4 @@
 {
-  "status": "stale",
-  "reason": "Engine revision, runtime image and reasoning settings changed; recertification required before calibration.",
   "previous_report": "history/pre-thinking/certification.json",
   "previous_runtime": {
     "engine_commit": "64ee57f0b6832bd38f029eedef7ad0f0be64d433",
@@ -246,6 +244,7 @@
     "image": "sha256:0b4bd38d4893088261811c99b44c986cc4aa56fcb44b41d112fbd66fad5ffea0",
     "platform": "linux/amd64"
   },
+  "reason": "Engine/runtime/settings and active task selection changed; recertification required before calibration.",
   "required_runtime": {
     "engine_commit": "fe6b2cb4779690855cad3e955c1e08e493847ab7",
     "engine_dirty": false,
@@ -491,6 +490,7 @@
     "image": "sha256:4c95e8332bf87d6f72751566204a6b4dac8e0a315ebb010ed6fe5703ff5539d2",
     "platform": "linux/amd64"
   },
+  "status": "stale",
   "tasks": [
     {
       "id": "chi-B",
@@ -501,19 +501,7 @@
       "status": "stale"
     },
     {
-      "id": "chi-T",
-      "status": "stale"
-    },
-    {
       "id": "chi-X",
-      "status": "stale"
-    },
-    {
-      "id": "dotenv-B",
-      "status": "stale"
-    },
-    {
-      "id": "dotenv-N",
       "status": "stale"
     },
     {
@@ -529,10 +517,6 @@
       "status": "stale"
     },
     {
-      "id": "pqueue-N",
-      "status": "stale"
-    },
-    {
       "id": "pqueue-T",
       "status": "stale"
     },
@@ -542,14 +526,6 @@
     },
     {
       "id": "tinydb-B",
-      "status": "stale"
-    },
-    {
-      "id": "tinydb-N",
-      "status": "stale"
-    },
-    {
-      "id": "tinydb-T",
       "status": "stale"
     },
     {
