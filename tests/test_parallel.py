@@ -54,8 +54,10 @@ def test_wrong_provider_revokes_both_parallel_arms(tmp_path):
     call, _ = ledger.reserve(a, micros(".1"))
     ledger.settle(call, ".01", "provider_mismatch")
     assert ledger.snapshot()["protocol_violation"]
-    with pytest.raises(BudgetRefused, match="revoked"):
+    with pytest.raises(BudgetRefused, match="identity mismatch"):
         ledger.reserve(b, micros(".1"))
+    with pytest.raises(BudgetRefused, match="identity mismatch"):
+        ledger.create_trial("late-arm", "measured", "1")
 
 
 def test_parallel_arms_share_one_stage_ceiling(tmp_path):

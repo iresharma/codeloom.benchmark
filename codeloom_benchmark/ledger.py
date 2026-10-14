@@ -73,6 +73,8 @@ class Ledger:
         with self.connection() as db:
             if db.execute("SELECT 1 FROM settings WHERE key='overrun'").fetchone():
                 raise BudgetRefused("Campaign halted after provider price overrun")
+            if db.execute("SELECT 1 FROM settings WHERE key='protocol_violation'").fetchone():
+                raise BudgetRefused("Campaign halted after provider identity mismatch")
             if db.execute(
                 "SELECT 1 FROM calls WHERE charge IS NULL AND status != 'pending' LIMIT 1"
             ).fetchone():
@@ -106,6 +108,8 @@ class Ledger:
             db.execute("BEGIN IMMEDIATE")
             if db.execute("SELECT 1 FROM settings WHERE key='overrun'").fetchone():
                 raise BudgetRefused("Campaign halted after provider price overrun")
+            if db.execute("SELECT 1 FROM settings WHERE key='protocol_violation'").fetchone():
+                raise BudgetRefused("Campaign halted after provider identity mismatch")
             if db.execute(
                 "SELECT 1 FROM calls WHERE charge IS NULL AND status != 'pending' LIMIT 1"
             ).fetchone():
