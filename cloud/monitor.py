@@ -126,6 +126,11 @@ class Handler(BaseHTTPRequestHandler):
                 Path(__file__).with_name("dashboard.html").read_bytes(),
                 kind="text/html; charset=utf-8",
             )
+        if path == "/inspect":
+            return self.send(
+                Path(__file__).with_name("inspector.html").read_bytes(),
+                kind="text/html; charset=utf-8",
+            )
         if path == "/api/status":
             return self.send(self.snapshot())
         if path == "/api/events":
