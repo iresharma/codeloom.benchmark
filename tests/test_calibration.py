@@ -40,7 +40,12 @@ def test_calibration_uses_broker_throughput_and_requires_completion(
         campaign,
         "services",
         lambda *args: (
-            SimpleNamespace(close=lambda: closed.append("broker")),
+            SimpleNamespace(
+                close=lambda: closed.append("broker"),
+                ledger=SimpleNamespace(
+                    snapshot=lambda: {"unknown_calls": 0, "overrun": False}
+                ),
+            ),
             SimpleNamespace(close=lambda: closed.append("network")),
         ),
     )

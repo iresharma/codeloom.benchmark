@@ -7,6 +7,7 @@ import platform
 import random
 import shutil
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -43,10 +44,11 @@ def draft(root):
             "One run per task; no reliability, interaction, or component-effect claims.",
             "Synthetic bugs keep upstream tests, which can reveal the regression.",
             "Test-generation features are supplied with their reference tests withheld.",
-            "Host ARM64 runs Linux AMD64 through emulation.",
             "Offline report rebuilding is reproducible; model outputs, endpoint availability and prices are not.",
         ],
     }
+    if platform.machine().lower() in ("arm64", "aarch64"):
+        manifest["limitations"].append("Host ARM64 runs Linux AMD64 through emulation.")
     write_json(root / "manifest.json", manifest)
     return report(root)
 
@@ -73,9 +75,21 @@ def certification(engine, rebuild=True):
         "suite_fingerprint": initial_fingerprint,
     }
     write_json(ROOT / "reports/certification.json", result)
+    # Build/cache mutation stays serial; isolated grading can then run concurrently.
+    prepared = {}
     for task in tasks():
+        print("Preparing image", task["id"], flush=True)
+        try:
+            prepared[task["id"]] = task_image(task)
+        except Exception as exc:
+            prepared[task["id"]] = exc
+
+    def certify_one(task):
         print("Certifying", task["id"], flush=True)
         try:
+            image = prepared[task["id"]]
+            if isinstance(image, Exception):
+                raise image
             cache = ROOT / ".cache/certification" / task["id"] / "certification.json"
             cached = json.loads(cache.read_text()) if cache.exists() else {}
             contract = grading_fingerprint(task)
@@ -116,7 +130,6 @@ def certification(engine, rebuild=True):
                     "Reusing unchanged certified grading inputs", task["id"], flush=True
                 )
             else:
-                image = task_image(task)
                 record = certify(task, image)
             record["audit"] = audit_image(image, task)
             if grading_fingerprint(task) != contract:
@@ -130,13 +143,23 @@ def certification(engine, rebuild=True):
                 "error": str(exc)[-4000:],
                 "suite_fingerprint": initial_fingerprint,
             }
-        if fingerprint()[0] != initial_fingerprint:
-            raise ValueError(
-                "Suite changed during certification; restart on stable files"
-            )
-        records.append(record)
-        write_json(ROOT / "reports/certification.json", result)
         print(task["id"], record["status"], flush=True)
+        return record
+
+    with ThreadPoolExecutor(
+        max_workers=config().get("certification_workers", 1)
+    ) as pool:
+        futures = [pool.submit(certify_one, task) for task in tasks()]
+        completed = {}
+        for future in as_completed(futures):
+            record = future.result()
+            if fingerprint()[0] != initial_fingerprint:
+                raise ValueError(
+                    "Suite changed during certification; restart on stable files"
+                )
+            completed[record["id"]] = record
+            records[:] = [completed[t["id"]] for t in tasks() if t["id"] in completed]
+            write_json(ROOT / "reports/certification.json", result)
     result["status"] = (
         "certified" if all(r["status"] == "certified" for r in records) else "failed"
     )

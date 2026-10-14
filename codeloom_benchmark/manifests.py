@@ -70,6 +70,9 @@ def task_limit(task, settings=None):
 
 
 def validate_suite(suite="v1"):
+    for setting in ("parallel_attempts", "certification_workers"):
+        if config().get(setting, 1) not in (1, 2):
+            raise ValueError(f"{setting} must be 1 or 2 for this protocol")
     rows = tasks(suite)
     if suite == "v1":
         for task in rows:

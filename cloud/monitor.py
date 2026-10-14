@@ -1,4 +1,5 @@
 """Persistent public projections and authenticated worker uploads. No inference here."""
+
 import hashlib
 import hmac
 import io
@@ -45,7 +46,9 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def authorized(self):
-        return hmac.compare_digest(self.headers.get("Authorization", ""), "Bearer " + TOKEN)
+        return hmac.compare_digest(
+            self.headers.get("Authorization", ""), "Bearer " + TOKEN
+        )
 
     def do_POST(self):
         if not self.authorized():
@@ -68,7 +71,9 @@ class Handler(BaseHTTPRequestHandler):
                     stage = Path(folder)
                     unpack(body, stage)
                     # A full generation is promoted atomically; readers never see half an upload.
-                    generation = DATA / ("generation-" + hashlib.sha256(body).hexdigest())
+                    generation = DATA / (
+                        "generation-" + hashlib.sha256(body).hexdigest()
+                    )
                     if not generation.exists():
                         stage.rename(generation)
                     with LOCK:
@@ -96,10 +101,18 @@ class Handler(BaseHTTPRequestHandler):
 
     def snapshot(self):
         with LOCK:
-            status = json.loads((DATA / "status.json").read_text()) if (DATA / "status.json").exists() else {"phase": "waiting", "message": "Waiting for the worker"}
+            status = (
+                json.loads((DATA / "status.json").read_text())
+                if (DATA / "status.json").exists()
+                else {"phase": "waiting", "message": "Waiting for the worker"}
+            )
             result = {"worker": status, "summary": None, "setup": None, "runs": []}
             current = DATA / "current"
-            for key, name in (("summary", "summary.json"), ("setup", "setup.json"), ("runs", "runs.json")):
+            for key, name in (
+                ("summary", "summary.json"),
+                ("setup", "setup.json"),
+                ("runs", "runs.json"),
+            ):
                 if (current / name).exists():
                     result[key] = json.loads((current / name).read_text())
             return json.dumps(result).encode()
@@ -109,7 +122,10 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/health":
             return self.send(b'{"ok":true}')
         if path in ("/", "/index.html"):
-            return self.send(Path(__file__).with_name("dashboard.html").read_bytes(), kind="text/html; charset=utf-8")
+            return self.send(
+                Path(__file__).with_name("dashboard.html").read_bytes(),
+                kind="text/html; charset=utf-8",
+            )
         if path == "/api/status":
             return self.send(self.snapshot())
         if path == "/api/events":
@@ -132,7 +148,7 @@ class Handler(BaseHTTPRequestHandler):
             source = DATA / "private/worker.tar.gz"
         elif path.startswith("/benchmarks/"):
             root = (DATA / "current/benchmarks").resolve()
-            source = (root / path[len("/benchmarks/"):]).resolve()
+            source = (root / path[len("/benchmarks/") :]).resolve()
             if not source.is_relative_to(root):
                 return self.send(b'{"error":"not found"}', 404)
         else:
@@ -140,9 +156,14 @@ class Handler(BaseHTTPRequestHandler):
         with LOCK:
             if not source.is_file():
                 return self.send(b'{"error":"not found"}', 404)
-            self.send(source.read_bytes(), kind=mimetypes.guess_type(source.name)[0] or "application/octet-stream")
+            self.send(
+                source.read_bytes(),
+                kind=mimetypes.guess_type(source.name)[0] or "application/octet-stream",
+            )
 
 
 if __name__ == "__main__":
     DATA.mkdir(parents=True, exist_ok=True)
-    ThreadingHTTPServer(("0.0.0.0", int(os.environ.get("PORT", "8080"))), Handler).serve_forever()
+    ThreadingHTTPServer(
+        ("0.0.0.0", int(os.environ.get("PORT", "8080"))), Handler
+    ).serve_forever()

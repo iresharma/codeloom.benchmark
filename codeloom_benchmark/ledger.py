@@ -73,6 +73,12 @@ class Ledger:
         with self.connection() as db:
             if db.execute("SELECT 1 FROM settings WHERE key='overrun'").fetchone():
                 raise BudgetRefused("Campaign halted after provider price overrun")
+            if db.execute(
+                "SELECT 1 FROM calls WHERE charge IS NULL AND status != 'pending' LIMIT 1"
+            ).fetchone():
+                raise BudgetRefused(
+                    "Campaign halted until unknown bills are reconciled"
+                )
             if not db.execute("SELECT 1 FROM stages WHERE name=?", (stage,)).fetchone():
                 raise ValueError("Unknown budget stage")
             db.execute(
@@ -100,6 +106,12 @@ class Ledger:
             db.execute("BEGIN IMMEDIATE")
             if db.execute("SELECT 1 FROM settings WHERE key='overrun'").fetchone():
                 raise BudgetRefused("Campaign halted after provider price overrun")
+            if db.execute(
+                "SELECT 1 FROM calls WHERE charge IS NULL AND status != 'pending' LIMIT 1"
+            ).fetchone():
+                raise BudgetRefused(
+                    "Campaign halted until unknown bills are reconciled"
+                )
             t = db.execute(
                 "SELECT id,stage,ceiling,active FROM trials WHERE token=?", (token,)
             ).fetchone()
@@ -132,6 +144,14 @@ class Ledger:
 
     def pending_can_release_budget(self, token, amount):
         with self.connection() as db:
+            if db.execute(
+                "SELECT 1 FROM calls WHERE charge IS NULL AND status != 'pending' LIMIT 1"
+            ).fetchone():
+                return False
+            if db.execute(
+                "SELECT 1 FROM calls WHERE charge IS NULL AND status != 'pending' LIMIT 1"
+            ).fetchone():
+                return False
             trial = db.execute(
                 "SELECT ceiling,active FROM trials WHERE token=?", (token,)
             ).fetchone()
@@ -163,6 +183,18 @@ class Ledger:
             if charge is not None and charge > row[0]:
                 db.execute("UPDATE trials SET active=0")
                 db.execute("INSERT OR REPLACE INTO settings VALUES('overrun',1)")
+            if status in ("model_mismatch", "provider_mismatch"):
+                db.execute("UPDATE trials SET active=0")
+                db.execute(
+                    "INSERT OR REPLACE INTO settings VALUES('protocol_violation',1)"
+                )
+
+    def unknown_calls_for_trial(self, trial_id):
+        with self.connection() as db:
+            return db.execute(
+                "SELECT COUNT(*) FROM calls WHERE trial_id=? AND charge IS NULL",
+                (trial_id,),
+            ).fetchone()[0]
 
     def snapshot(self):
         with self.connection() as db:
@@ -173,6 +205,11 @@ class Ledger:
                 ).fetchone()[0],
                 "overrun": bool(
                     db.execute("SELECT 1 FROM settings WHERE key='overrun'").fetchone()
+                ),
+                "protocol_violation": bool(
+                    db.execute(
+                        "SELECT 1 FROM settings WHERE key='protocol_violation'"
+                    ).fetchone()
                 ),
                 "trials": [
                     {

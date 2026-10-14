@@ -264,7 +264,7 @@ def attempt(
         "cost_is_conservative": any(
             (r.get("usage") or {}).get("cost") is None for r in calls if r.get("id")
         )
-        or bool(ledger["unknown_calls"]),
+        or bool(broker.ledger.unknown_calls_for_trial(trial_id)),
         "elapsed_s": (agent_ended or time.monotonic()) - started,
         "evaluation_elapsed_s": time.monotonic() - agent_ended if agent_ended else None,
         "request_count": sum(bool(r.get("id")) for r in calls),

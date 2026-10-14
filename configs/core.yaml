@@ -6,6 +6,8 @@ provider_name: Baidu
 reasoning_effort: high
 thinking_enabled: true
 paid_runs_authorized: true
+parallel_attempts: 2
+certification_workers: 2
 max_tokens: 32768
 input_per_million: 1.32
 output_per_million: 3.96

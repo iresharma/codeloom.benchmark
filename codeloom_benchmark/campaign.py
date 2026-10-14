@@ -4,6 +4,7 @@ import json
 import os
 import re
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
 
 from .artifacts import write_json
 from .broker import Broker
@@ -13,6 +14,15 @@ from .manifests import ROOT, config, tasks, fingerprint, model_metadata, task_li
 from .reporting import INFRA, report
 from .runner import attempt
 from .sandbox import Network
+
+
+def parallel_pair(jobs, execute):
+    """At most one matched pair at a time; wait for both before budget/recovery decisions."""
+    workers = config().get("parallel_attempts", 1)
+    if workers not in (1, 2):
+        raise ValueError("parallel_attempts must be 1 or 2")
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        return list(pool.map(execute, jobs))
 
 
 def credentials():
@@ -48,7 +58,11 @@ def services(root, calibration=None):
         settings["campaign_limit_usd"],
         settings["stage_limits"],
     )
-    if ledger.snapshot()["unknown_calls"] or ledger.snapshot()["overrun"]:
+    if (
+        ledger.snapshot()["unknown_calls"]
+        or ledger.snapshot()["overrun"]
+        or ledger.snapshot()["protocol_violation"]
+    ):
         raise ValueError(
             "Resolve unknown bills or provider price overruns before admitting another paid call"
         )
@@ -103,29 +117,44 @@ def measured(root: Path, lock):
             )
             if broker.ledger.headroom("measured") < remaining_caps:
                 raise ValueError("Not enough budget to admit the remaining pair")
-            for row, path in zip(pair, existing):
+            ledger_ids = {t["id"] for t in broker.ledger.snapshot()["trials"]}
+            if any(
+                not path.exists() and path.parent.name in ledger_ids
+                for path in existing
+            ):
+                raise ValueError(
+                    "Interrupted attempt already has a ledger entry; preserve and reconcile it before recovery"
+                )
+
+            def execute(job):
+                row, path = job
                 trial_id = path.parent.name
                 if path.exists():
-                    result = json.loads(path.read_text())
-                else:
-                    if any(
-                        t["id"] == trial_id for t in broker.ledger.snapshot()["trials"]
-                    ):
-                        raise ValueError(
-                            "Interrupted attempt already has a ledger entry; preserve and reconcile it before recovery"
-                        )
-                    result = attempt(
-                        by_id[row["task_id"]],
-                        row["system"],
-                        images[row["task_id"]],
-                        broker,
-                        network,
-                        root,
-                        trial_id,
-                        "measured",
-                        lock["calibration"]["watchdog_s"],
-                        task_limit(by_id[row["task_id"]], settings),
-                    )
+                    return json.loads(path.read_text())
+                return attempt(
+                    by_id[row["task_id"]],
+                    row["system"],
+                    images[row["task_id"]],
+                    broker,
+                    network,
+                    root,
+                    trial_id,
+                    "measured",
+                    lock["calibration"]["watchdog_s"],
+                    task_limit(by_id[row["task_id"]], settings),
+                )
+
+            results = parallel_pair(list(zip(pair, existing)), execute)
+            report(root)
+            snapshot = broker.ledger.snapshot()
+            if (
+                any(r["termination"] == "protocol_violation" for r in results)
+                or snapshot["unknown_calls"]
+                or snapshot["overrun"]
+            ):
+                raise ValueError("Provider identity/usage gate stopped the campaign")
+            for row, path, result in zip(pair, existing, results):
+                trial_id = path.parent.name
                 print(
                     trial_id,
                     result["termination"],
@@ -204,8 +233,9 @@ def calibrate(root, engine):
     try:
         for task in dev:
             image = images[task["id"]]
-            for system in config()["systems"]:
-                result = attempt(
+
+            def execute(system):
+                return attempt(
                     task,
                     system,
                     image,
@@ -217,7 +247,15 @@ def calibrate(root, engine):
                     7200,
                     1.5,
                 )
-                results.append(result)
+
+            results.extend(parallel_pair(config()["systems"], execute))
+            snapshot = broker.ledger.snapshot()
+            if (
+                snapshot["unknown_calls"]
+                or snapshot["overrun"]
+                or snapshot.get("protocol_violation")
+            ):
+                raise ValueError("Provider identity/usage gate stopped calibration")
         passed = all(
             r["termination"] == "completed"
             and r["verification"]["pass"]
@@ -269,6 +307,7 @@ def calibrate(root, engine):
             "runtime_image": json.loads((ROOT / ".cache/runtime.json").read_text())[
                 "image"
             ],
+            "parallel_attempts": config().get("parallel_attempts", 1),
             "watchdog_s": watchdog,
             "request_timeout_s": timeout,
             "observed_generated_tokens_per_elapsed_s": throughput,
