@@ -15,6 +15,7 @@ from .artifacts import write_json, canonical
 from .compatibility import check
 from .evaluate import certify
 from .certification import grading_fingerprint
+from .calibration import accepted as calibration_accepted
 from .fixtures import command
 from .manifests import (
     ROOT,
@@ -185,13 +186,13 @@ def preregister():
     calibration = json.loads((ROOT / "reports/calibration.json").read_text())
     if (
         certified["status"] != "certified"
-        or calibration["status"] != "passed"
+        or not calibration_accepted(calibration)
         or certified.get("suite_fingerprint") != fingerprint()[0]
         or calibration.get("suite_fingerprint") != fingerprint()[0]
         or calibration.get("runtime_image") != certified["runtime"]["image"]
     ):
         raise ValueError(
-            "All tasks must certify and representative calibration must pass before preregistration"
+            "All tasks must certify and calibration must pass or have explicit historical timing reuse before preregistration"
         )
     if command(["git", "status", "--porcelain"], cwd=ROOT):
         raise ValueError(
@@ -253,7 +254,7 @@ def run(root, engine):
         raise ValueError(compatibility["reason"])
     lock = check_frozen()
     calibration = lock["calibration"]
-    if calibration["status"] != "passed":
+    if not calibration_accepted(calibration):
         raise ValueError("Calibration gate failed")
     if command(["git", "status", "--porcelain"], cwd=ROOT):
         raise ValueError("Measured checkout must be clean")
@@ -337,10 +338,18 @@ def import_site(root, pages):
         if (setup / "pricing.json").exists()
         else {}
     )
+    calibration = (
+        json.loads((setup / "calibration.json").read_text())
+        if (setup / "calibration.json").exists()
+        else {}
+    )
     manifest_limits = json.loads((root / "manifest.json").read_text())["settings"].get(
         "stage_limits", {}
     )
     setup_summary = {
+        "calibration_status": calibration.get("status", "not_run"),
+        "calibration_policy": calibration.get("policy"),
+        "calibration_source_commit": calibration.get("source_commit"),
         "certification_status": certification.get("status", "not_run"),
         "certified_tasks": sum(
             t.get("status") == "certified" for t in certification.get("tasks", [])
@@ -411,6 +420,10 @@ def main():
         p.add_argument("--run-dir", type=Path, default=ROOT / "reports/v1-not-run")
         p.add_argument("--engine", type=Path, default=ROOT.parent / "engine")
         p.add_argument("--pages", type=Path, default=ROOT.parent / "pages")
+    reuse_parser = sub.add_parser("reuse-calibration")
+    reuse_parser.add_argument("--source", type=Path, required=True)
+    reuse_parser.add_argument("--source-commit", required=True)
+    reuse_parser.add_argument("--owner-reason", required=True)
     args = parser.parse_args()
     try:
         if args.command == "validate":
@@ -428,6 +441,10 @@ def main():
             from .campaign import calibrate
 
             result = calibrate(args.run_dir, args.engine)
+        elif args.command == "reuse-calibration":
+            from .calibration import reuse
+
+            result = reuse(args.source, args.source_commit, args.owner_reason)
         elif args.command == "cost-analysis":
             from .cost_analysis import analyze
 

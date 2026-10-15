@@ -90,11 +90,15 @@ def measured(root: Path, lock):
     settings = config()
     manifest = json.loads((root / "manifest.json").read_text())
     manifest.update(
-        calibration_status="passed",
+        calibration_status=lock["calibration"]["status"],
         preregistration_commit=command(
             ["git", "rev-parse", "benchmark-v1-preregistered^{commit}"], cwd=ROOT
         ),
     )
+    if lock["calibration"]["status"] == "reused":
+        policy = lock["calibration"]["policy"]
+        if policy not in manifest.setdefault("limitations", []):
+            manifest["limitations"].append(policy)
     write_json(root / "manifest.json", manifest)
     broker, network = services(root, lock["calibration"])
     by_id = {t["id"]: t for t in tasks()}
