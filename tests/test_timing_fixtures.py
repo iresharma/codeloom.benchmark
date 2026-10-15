@@ -31,5 +31,5 @@ def test_pqueue_clock_fix_is_shared_by_starting_and_reference_snapshots(
     assert fixed.endswith("test('strict mode precision timing'" + after)
     assert "interval: 100," in fixed
     assert "intervalCap: 3," in fixed
-    assert "assert.equal(executionTimes.length, 12);" in fixed
+    assert "t.assert.strictEqual(executionTimes.length, 12);" in fixed
     assert "tasksPerInterval.every(count => count <= 3)" in fixed
