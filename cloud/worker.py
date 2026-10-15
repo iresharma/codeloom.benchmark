@@ -311,11 +311,6 @@ def main():
             cli + ["certify"],
             "Building pinned images and checking references, no-ops, regressions and mutants",
         )
-        run_phase(
-            "compatibility",
-            cli + ["compatibility"],
-            "Checking both native adapters without paid inference",
-        )
         with state_lock:
             state.update(
                 phase="awaiting_paid_summary",

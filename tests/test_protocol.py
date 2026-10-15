@@ -19,19 +19,22 @@ def test_schedule_is_complete_paired_and_order_balanced():
 def test_gate_stops_before_credentials_and_keeps_truthful_report(tmp_path, monkeypatch):
     monkeypatch.setattr(
         "codeloom_benchmark.cli.check",
-        lambda *args: {"status": "failed", "reason": "Native compatibility failed"},
+        lambda *args: pytest.fail("Unrequested compatibility probe"),
     )
+    def reject_frozen():
+        raise ValueError("Frozen suite is unavailable")
+
+    monkeypatch.setattr("codeloom_benchmark.cli.check_frozen", reject_frozen)
     monkeypatch.setattr(
         "codeloom_benchmark.campaign.credentials",
         lambda: pytest.fail("credentials read despite failed gate"),
     )
     root = tmp_path / "blocked"
-    with pytest.raises(ValueError, match="Native compatibility failed"):
+    with pytest.raises(ValueError, match="Frozen suite is unavailable"):
         run(root, ROOT.parent / "engine")
     report = json.loads((root / "summary.json").read_text())
     assert report["status"] == "not_run"
     assert report["pairs"]["unrun"] == 10
-    assert report["blocked_reason"] == "Native compatibility failed"
 
 
 def test_price_overrun_cannot_be_reset_by_new_trial(tmp_path):

@@ -212,12 +212,8 @@ def measured(root: Path, lock):
 def calibrate(root, engine):
     if not config().get("paid_runs_authorized", False):
         raise ValueError("Paid runs are on hold; explicit owner approval is required")
-    from .compatibility import check
     from .sandbox import task_image, audit_image
 
-    compatibility = check(engine, ROOT / "reports/compatibility.json")
-    if compatibility["status"] != "passed":
-        raise ValueError(compatibility["reason"])
     dev = tasks("dev")
     if len(dev) != 2:
         raise ValueError("Exactly two representative development tasks required")

@@ -78,10 +78,34 @@ def certification(engine, rebuild=True):
     write_json(ROOT / "reports/certification.json", result)
     # Build/cache mutation stays serial; isolated grading can then run concurrently.
     prepared = {}
+    reusable_records = {}
     for task in tasks():
-        print("Preparing image", task["id"], flush=True)
         try:
-            prepared[task["id"]] = task_image(task)
+            cache = ROOT / ".cache/certification" / task["id"] / "certification.json"
+            cached = json.loads(cache.read_text()) if cache.exists() else {}
+            if (
+                cached.get("status") == "certified"
+                and cached.get("grading_fingerprint") == grading_fingerprint(task)
+            ):
+                try:
+                    labels = json.loads(command([
+                        "docker", "image", "inspect", cached["image"],
+                        "--format", "{{json .Config.Labels}} ",
+                    ])) or {}
+                    if (
+                        labels.get("org.codeloom.runtime-image") == runtime["image"]
+                        and labels.get("org.codeloom.task-fingerprint")
+                        == hashlib.sha256(canonical(task)).hexdigest()
+                    ):
+                        reusable_records[task["id"]] = cached
+                except RuntimeError:
+                    pass
+            if task["id"] in reusable_records:
+                print("Using existing certified image", task["id"], flush=True)
+                prepared[task["id"]] = cached["image"]
+            else:
+                print("Preparing image", task["id"], flush=True)
+                prepared[task["id"]] = task_image(task)
         except Exception as exc:
             prepared[task["id"]] = exc
 
@@ -92,34 +116,12 @@ def certification(engine, rebuild=True):
             if isinstance(image, Exception):
                 raise image
             cache = ROOT / ".cache/certification" / task["id"] / "certification.json"
-            cached = json.loads(cache.read_text()) if cache.exists() else {}
+            cached = reusable_records.get(task["id"], {})
             contract = grading_fingerprint(task)
             reusable = (
                 cached.get("status") == "certified"
                 and cached.get("grading_fingerprint") == contract
             )
-            if reusable:
-                try:
-                    image = cached["image"]
-                    labels = json.loads(
-                        command(
-                            [
-                                "docker",
-                                "image",
-                                "inspect",
-                                image,
-                                "--format",
-                                "{{json .Config.Labels}} ",
-                            ]
-                        )
-                    )
-                    reusable = (
-                        labels.get("org.codeloom.runtime-image") == runtime["image"]
-                        and labels.get("org.codeloom.task-fingerprint")
-                        == hashlib.sha256(canonical(task)).hexdigest()
-                    )
-                except RuntimeError:
-                    reusable = False
             if reusable:
                 record = cached
                 record.setdefault(
@@ -245,13 +247,6 @@ def run(root, engine):
     # Offline setup goes first. No credentials are read until all fixed gates pass.
     if not root.exists():
         draft(root)
-    compatibility = check(engine, ROOT / "reports/compatibility.json")
-    if compatibility["status"] != "passed":
-        manifest = json.loads((root / "manifest.json").read_text())
-        manifest["blocked_reason"] = compatibility["reason"]
-        write_json(root / "manifest.json", manifest)
-        report(root)
-        raise ValueError(compatibility["reason"])
     lock = check_frozen()
     calibration = lock["calibration"]
     if not calibration_accepted(calibration):
@@ -363,7 +358,11 @@ def import_site(root, pages):
             }
             for t in certification.get("tasks", [])
         ],
-        "compatibility_status": compatibility.get("status", "not_run"),
+        "compatibility_status": (
+            "not_rerun"
+            if calibration.get("compatibility_policy") == "previous_tests_accepted"
+            else compatibility.get("status", "not_run")
+        ),
         "compatibility_checks": compatibility.get("checks", {}),
         "pricing_status": pricing.get("status", "not_run"),
         "published_attempts": sum(1 for r in run_views if not r["synthetic"]),

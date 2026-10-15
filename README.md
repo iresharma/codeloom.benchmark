@@ -4,13 +4,13 @@
 
 ## Current status
 
-The owner authorized running the harness on Railway on 2026-10-14. Official paid commands remain held until the requested summary, certification, native compatibility, pricing, calibration and preregistration. The owner subsequently authorized actual-spend stopping with a 3x per-call estimate gate; the $50 allocation is now a target that final calls may overshoot.
+The owner authorized running the harness on Railway on 2026-10-14 and subsequently accepted existing adapter tests and historical calibration timing. Official measurement still requires fixture certification, pricing and preregistration. The owner also authorized actual-spend stopping with a 3x per-call estimate gate; the $50 allocation is now a target that final calls may overshoot.
 
-The initial native compatibility check passes: both adapters preserve reasoning history and explicitly send the same High effort, including an Engine child. Railway rebuilds and repeats this check before calibration. `reports/compatibility.json` contains synthetic evidence, not coding scores. The live campaign state is at https://benchmark-monitor-production.up.railway.app/ and is authoritative for current progress.
+The native adapters have already been tested for reasoning history and explicit High effort, including an Engine child. Compatibility probes remain available as a manual diagnostic and are not an automatic run gate. Historical `reports/compatibility.json` contains synthetic evidence, not coding scores. The live campaign state is at https://benchmark-monitor-production.up.railway.app/ and is authoritative for current progress.
 
 ## Railway execution
 
-The worker runs in a Docker-enabled x86-64 Railway sandbox with idle destruction disabled. `cloud/worker.py` runs offline certification, compatibility, four paid development attempts, commits setup evidence, preregisters and pushes the timestamped tag, then runs measurement. Any failed gate stops the campaign. After offline setup, the supervisor waits for `.cache/cloud/paid-start-authorized`; the operator creates this marker only after delivering the requested owner-facing summary, before any paid calibration. `--resume-setup` permits CPU-only preparation after a fully settled unscored smoke test; it refuses active/unknown bills or existing official calibration/measurement trials. Starting it twice is refused; interrupted paid trials require reconciliation before resumption.
+The worker runs in a Docker-enabled x86-64 Railway sandbox with idle destruction disabled. `cloud/worker.py` runs offline certification, four paid development attempts, commits setup evidence, preregisters and pushes the timestamped tag, then runs measurement. The current owner-authorized launcher reuses prior development timing instead of paying for fresh calibration. Any failed required gate stops the campaign. After offline setup, the supervisor waits for `.cache/cloud/paid-start-authorized`; the operator creates this marker only after delivering the requested owner-facing summary, before any paid calibration. `--resume-setup` permits CPU-only preparation after a fully settled unscored smoke test; it refuses active/unknown bills or existing official calibration/measurement trials. Starting it twice is refused; interrupted paid trials require reconciliation before resumption.
 
 The `cloud/` Dockerfile deploys the separate monitoring service. Mount a Railway volume at `/data` and set a randomly generated `MONITOR_UPLOAD_TOKEN`; never commit this value. The worker needs the same token, `MONITOR_URL`, `OPENROUTER_API_KEY`, and a host-only Git credential helper for preregistration publication. Agents receive only broker tokens, never deployment credentials.
 
@@ -33,7 +33,6 @@ At this revision this command stops at the explicit paid-run hold, before any in
 ```sh
 ./scripts/benchmark validate
 ./scripts/benchmark certify
-./scripts/benchmark compatibility
 ./scripts/benchmark calibrate --run-dir runs/calibration
 ./scripts/benchmark preregister
 ./scripts/benchmark run --run-dir runs/v1
@@ -137,9 +136,9 @@ uv run codeloom-benchmark prepare-runtime --engine ../engine
 uv run codeloom-benchmark calibrate --engine ../engine --run-dir runs/<unique-name>
 ```
 
-`prepare-runtime` rebuilds the Docker runtime and records its source digests. `calibrate` checks native compatibility and certifies its two development fixtures before paid attempts. It does not require the ten-task v1 suite to be recertified. Full `certify` remains the gate before v1 preregistration/measurement; its current cache includes the agent image, so an Engine change invalidates that evidence too.
+`prepare-runtime` rebuilds the Docker runtime and records its source digests. `calibrate` certifies its two development fixtures before paid attempts. It does not require the ten-task v1 suite to be recertified. Full `certify` remains the gate before v1 preregistration/measurement; unchanged certified task images are reused without rebuilding them. The cache includes the agent image, so an Engine change invalidates that evidence too. Use `compatibility` only when explicitly diagnosing adapter wiring.
 
-The owner may explicitly waive fresh paid calibration and reuse a completed four-arm calibration's request timing with `reuse-calibration --source <report.json> --source-commit <benchmark-commit> --owner-reason <reason>`. This requires unchanged model/provider/effort, output limit, parallelism and timing/budget policy. The report and preregistration record `status: reused`, retain the original report and its source/hash, and state that the current runtime has not passed a fresh end-to-end calibration. No new development attempts are represented as passed. Full fixture certification, native compatibility, pricing, budget and preregistration gates still apply.
+The owner may explicitly waive fresh paid calibration and reuse a completed four-arm calibration's request timing with `reuse-calibration --source <report.json> --source-commit <benchmark-commit> --owner-reason <reason>`. This requires unchanged model/provider/effort, output limit, parallelism and timing/budget policy. The report and preregistration record `status: reused`, retain the original report and its source/hash, and state that the current runtime has not passed a fresh end-to-end calibration. No new development attempts are represented as passed. Existing adapter tests are accepted without rerunning compatibility probes. Fixture certification, pricing, budget and preregistration gates still apply.
 
 ## Static website publication
 

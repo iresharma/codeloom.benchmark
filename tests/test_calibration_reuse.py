@@ -34,9 +34,6 @@ def source(tmp_path, monkeypatch):
     (tmp_path / ".cache").mkdir()
     (tmp_path / ".cache/runtime.json").write_text(json.dumps({"image": "new-runtime"}))
     (tmp_path / "reports").mkdir()
-    (tmp_path / "reports/compatibility.json").write_text(
-        json.dumps({"status": "passed", "runtime": {"image": "new-runtime"}})
-    )
     monkeypatch.setattr(calibration, "ROOT", tmp_path)
     monkeypatch.setattr(calibration, "fingerprint", lambda: ("new-suite", {}))
 
@@ -106,10 +103,10 @@ def test_reuse_requires_explicit_reason_and_complete_provenance(source):
     assert calibration.accepted({"status": "passed"})
 
 
-def test_reuse_does_not_waive_native_compatibility(source):
+def test_reuse_accepts_existing_adapter_tests_without_rerunning_compatibility(source):
     path, _, _ = source
     (path.parent / "reports/compatibility.json").write_text(
         json.dumps({"status": "passed", "runtime": {"image": "stale-runtime"}})
     )
-    with pytest.raises(ValueError, match="native compatibility"):
-        calibration.reuse(path, "source", "Owner approved reuse")
+    record = calibration.reuse(path, "source", "Owner approved reuse")
+    assert record["compatibility_policy"] == "previous_tests_accepted"

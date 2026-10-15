@@ -76,15 +76,10 @@ def reuse(source: Path, source_commit: str, owner_reason: str):
             "Model, provider or timing policy changed; fresh calibration is required"
         )
     runtime = json.loads((ROOT / ".cache/runtime.json").read_text())
-    compatibility = json.loads((ROOT / "reports/compatibility.json").read_text())
-    if (
-        compatibility.get("status") != "passed"
-        or compatibility.get("runtime", {}).get("image") != runtime["image"]
-    ):
-        raise ValueError("Current runtime must pass native compatibility before timing reuse")
     record = {
         "status": "reused",
         "fresh_paid_runs": False,
+        "compatibility_policy": "previous_tests_accepted",
         "attempts": [],
         "owner_reason": owner_reason.strip(),
         "source_commit": commit,
@@ -95,7 +90,7 @@ def reuse(source: Path, source_commit: str, owner_reason: str):
         "runtime_image": runtime["image"],
         "request_timeout_s": timeout,
         "watchdog_s": settings.get("watchdog_s"),
-        "policy": "Owner waived fresh paid calibration. Historical request timing is reused; the current runtime has not passed a fresh end-to-end calibration. Native compatibility and fixture certification remain required.",
+        "policy": "Owner waived fresh paid calibration and redundant compatibility probes. Historical request timing and existing adapter tests are accepted; the current runtime has not passed a fresh end-to-end calibration. Fixture certification remains required.",
     }
     write_json(ROOT / "reports/calibration.json", record)
     return record
