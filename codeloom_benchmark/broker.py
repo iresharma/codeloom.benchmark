@@ -368,6 +368,17 @@ class Broker:
                         or cost < 0
                     ):
                         cost = None
+                    if (
+                        cost is None
+                        and status == "provider_error"
+                        and record.get("http_status") in (408, 429)
+                        and not usage
+                    ):
+                        # A pre-generation rejection (rate limit/timeout) returns no
+                        # usage: nothing was produced upstream, so nothing was billed.
+                        # Settle at $0 instead of leaving an unknown bill that would
+                        # halt admission for every other trial until reconciled.
+                        cost = 0
                     broker.ledger.settle(call_id, cost, status)
                     with broker.admission:
                         broker.admission.notify_all()

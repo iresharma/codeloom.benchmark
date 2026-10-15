@@ -93,7 +93,10 @@ def attempt(
                 "ENGINE_LLM_TIMEOUT_S": str(cfg["request_timeout_s"]),
                 "ENGINE_LLM_IDLE_S": str(cfg["request_timeout_s"]),
                 "ENGINE_EXEC_APPROVAL": "auto",
-                "OPENROUTER_DISABLE_RETRIES": "1",
+                # Let the Engine's own backoff retry (500ms-8s, up to 60s) absorb
+                # transient 429/5xx from the upstream provider instead of going
+                # idle after the first one. Each retry still hits our broker as
+                # its own request, so ledger admission/accounting is unaffected.
             }
             container = start_container(image, network.name, env=env)
             write_json(root / "container.json", {"id": container})
