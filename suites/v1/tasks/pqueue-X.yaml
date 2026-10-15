@@ -24,7 +24,19 @@ verification:
 - npm run build
 - node --import=tsx/esm --test --test-timeout=60000 test/*.ts
 provenance: cross-file
-setup: {}
+setup:
+  test/strict.ts:
+  - old: test('strict mode multiple complete intervals', async () => {
+    new: "test('strict mode multiple complete intervals', async t => {\n\tt.mock.timers.enable({apis: ['setTimeout',\
+      \ 'setInterval', 'Date'], now: 1_000_000});"
+    count: 1
+  - old: "\tawait queue.onIdle();\n\n\tassert.equal(executionTimes.length, 12);"
+    new: "\tawait flush();\n\tassert.equal(executionTimes.length, 3);\n\n\t// Advance to each boundary,\
+      \ proving no task starts before its slot.\n\tfor (let window = 0; window < 3; window++) {\n\t\tawait\
+      \ tick(t, 99);\n\t\tassert.equal(executionTimes.length, (window + 1) * 3);\n\t\tawait tick(t, 1);\n\
+      \t\tassert.equal(executionTimes.length, (window + 2) * 3);\n\t}\n\n\tawait queue.onIdle();\n\n\tassert.equal(executionTimes.length,\
+      \ 12);"
+    count: 1
 reference:
   source/queue.ts:
   - old: "\tsetPriority: (id: string, priority: number) => void;"
