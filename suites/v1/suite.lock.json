@@ -630,14 +630,14 @@
     },
     "source_sha256": "810450153a715189191469e96b67abd4a3fa1cc84b8c344d02416d003318fbe7",
     "status": "reused",
-    "suite_fingerprint": "a9aec497cf18dbc6189622d7e0ed508a20e54d83fa8348522adea6201a63f099",
+    "suite_fingerprint": "71bf9dfb6f283de0c3a51f37931d28d643b571072ed71b59a671b37341b45134",
     "watchdog_s": null
   },
   "files": {
     "Dockerfile": "e3c296ff6e7f1b3f921ad2ebe62e0db5b49eda3a809bc5f4d9a6df894e24564a",
     "codeloom_benchmark/__init__.py": "db71dd14b11e9c8bcadff62fa3bf234b17f4e0004e17795279c5cc92f3258a0d",
     "codeloom_benchmark/artifacts.py": "2da807c6d3dfc633b6eddce64bbe2f0273484352a7ca9a9ef1934dc658d9a22f",
-    "codeloom_benchmark/broker.py": "9163e10d7527c175160b45bc51ec7fdccce27fdc232c2d0ec1d6c1b9840c4bee",
+    "codeloom_benchmark/broker.py": "760f8d7f82fb7c33e6388288f60fd93924d4db8d62bec37f5b080ea36b4b9bdb",
     "codeloom_benchmark/calibration.py": "95ec0585539732d836a27a823dd8a34d2d3094593d5343bbcb341b7f1155ed18",
     "codeloom_benchmark/campaign.py": "ffc890fad3673b09da0b7b7d5b47ce903363ff364d0a6f2bf702166ef69a399f",
     "codeloom_benchmark/certification.py": "7c5a87ed4c88fc921f2a0e8aaa831767930b26b4dffc39776f3832678c3e22e9",
@@ -654,7 +654,7 @@
     "codeloom_benchmark/manifests.py": "1887b8679867ea7c781670a3dc18615af0a64fad5866511cc5c8f1c9a9f641e3",
     "codeloom_benchmark/pricing.py": "e8f22f5f93dded06d2b7af5186a4c34353261d3fdfa90fc2616d5f209424e1d4",
     "codeloom_benchmark/reporting.py": "fb3f67f3d35d778bff7c4954b3e231051d7724cf62737e534fc5e474556ea3a4",
-    "codeloom_benchmark/runner.py": "8cd07ed4299077dc7c1e33d378eb03100d4252c4a67b35e4ae8317135129e8eb",
+    "codeloom_benchmark/runner.py": "6991ba0e6abda53fdaa11c17cab5a799e3620481e9935b9138ad9ef6b7f39711",
     "codeloom_benchmark/sandbox.py": "bbd34d0a2073b5b405e52b27c5e3380f479464c434c69ca5cd85880b6c0d47b9",
     "codeloom_benchmark/trace_view.py": "091544a8dc6f48c313dac6b6fc9a671b8fbaf888fe72ce02b0283bc7f9b4c58d",
     "codeloom_benchmark/worker.py": "8df37a01e5c20e218806580701f0e91eccb1ade48248d56509205e3a7868c805",
@@ -711,7 +711,7 @@
     "suites/v1/tasks/tinydb-X.yaml": "452934e6f1b04d33f08e40cd34cd6e883789a582e68f13729dfd93711002874f",
     "uv.lock": "549b0dfdb98be9a517e1f3536daa25a973c4f12ec1fccae27d29892f3711263a"
   },
-  "fingerprint": "a9aec497cf18dbc6189622d7e0ed508a20e54d83fa8348522adea6201a63f099",
+  "fingerprint": "71bf9dfb6f283de0c3a51f37931d28d643b571072ed71b59a671b37341b45134",
   "limitations": [
     "Author-designed corpus; independent task review unavailable",
     "One run per task; no confidence or reliability claims",
