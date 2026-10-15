@@ -15,6 +15,13 @@ BASE_TAG = "codeloom-benchmark-runtime:dev"
 
 
 def prepare_runtime(engine: Path):
+    # Engine's own source is deliberately NOT copied into the build context: it
+    # is bind-mounted into /opt/engine at container start instead (see
+    # start_container). That decouples the base/task images -- and every
+    # certified task's cache -- from Engine's commit entirely, so iterating on
+    # Engine no longer forces every task to recertify from scratch. Only
+    # engine-requirements.lock (actual runtime dependencies) is still baked in;
+    # a dependency change is a genuine runtime change and should still rebuild.
     engine = engine.resolve()
     git = [
         "git",
@@ -28,16 +35,6 @@ def prepare_runtime(engine: Path):
         shutil.copy2(ROOT / rel, stage / rel)
     shutil.copytree(ROOT / "public", stage / "public", dirs_exist_ok=True)
     shutil.copytree(ROOT / "runtime-node", stage / "runtime-node", dirs_exist_ok=True)
-    target = stage / "engine"
-    if target.exists():
-        shutil.rmtree(target)
-    target.mkdir()
-    for rel in tracked:
-        source = engine / rel
-        if source.is_file() and not rel.startswith(("tests/", "docs/", ".github/")):
-            dest = target / rel
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, dest)
     command(
         ["docker", "build", "--platform", PLATFORM, "-t", BASE_TAG, str(stage)],
         timeout=2400,
@@ -243,7 +240,12 @@ class Network:
 
 
 def start_container(
-    image: str, network=None, ipc: Path | None = None, env=None, evaluator=False
+    image: str,
+    network=None,
+    ipc: Path | None = None,
+    env=None,
+    evaluator=False,
+    engine: Path | None = None,
 ):
     args = [
         "docker",
@@ -262,6 +264,27 @@ def start_container(
     if ipc:
         ipc.mkdir(parents=True, exist_ok=True)
         args += ["--mount", f"type=bind,source={ipc},target=/task/.engine"]
+    if engine is not None:
+        # Engine is bind-mounted, not baked into the image (see
+        # prepare_runtime), so nothing stops the checkout from drifting
+        # between certify-time and run-time the way the image digest used
+        # to. Enforce the same guarantee explicitly: the mounted commit
+        # must match what was certified, and must be clean.
+        engine = engine.resolve()
+        runtime = json.loads((ROOT / ".cache/runtime.json").read_text())
+        git = ["git", f"--git-dir={engine / '.git'}", f"--work-tree={engine}"]
+        commit = command([*git, "rev-parse", "HEAD"], cwd=engine)
+        if commit != runtime["engine_commit"]:
+            raise RuntimeError(
+                "Engine checkout has moved since certification "
+                f"(certified {runtime['engine_commit']}, now {commit}); "
+                "recertify before running"
+            )
+        if command([*git, "status", "--porcelain"], cwd=engine):
+            raise RuntimeError(
+                "Engine checkout must stay clean to match the certified commit"
+            )
+        args += ["--mount", f"type=bind,source={engine},target=/opt/engine,readonly"]
     if evaluator:
         args += ["--cap-add=CHOWN", "--cap-add=FOWNER", "--cap-add=DAC_OVERRIDE"]
     for key, value in (env or {}).items():

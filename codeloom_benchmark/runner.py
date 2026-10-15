@@ -138,7 +138,11 @@ def attempt(
                 # idle after the first one. Each retry still hits our broker as
                 # its own request, so ledger admission/accounting is unaffected.
             }
-            container = start_container(image, network.name, env=env)
+            from .manifests import ROOT
+
+            container = start_container(
+                image, network.name, env=env, engine=ROOT.parent / "engine"
+            )
             write_json(root / "container.json", {"id": container})
             argv = [
                 "docker",
