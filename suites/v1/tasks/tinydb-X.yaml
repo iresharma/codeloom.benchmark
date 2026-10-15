@@ -17,6 +17,7 @@ allowed_paths:
 - tinydb/*.py
 - tests/*.py
 - benchmark_tests/*
+- docs/api.rst
 verification:
 - python -m pytest -o addopts= -q tests
 provenance: cross-file

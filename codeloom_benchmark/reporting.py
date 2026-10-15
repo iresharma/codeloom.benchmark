@@ -90,13 +90,21 @@ def summarize(manifest: dict, attempts: list[dict]):
         for system in SYSTEMS:
             a = selected.get((task_id, system))
             row["systems"][system] = {
+                # The delivered artifact's own grading is the real signal, not
+                # the termination label: a harness-side admission hiccup
+                # (budget_pending races, a cascaded unknown-bill halt, a
+                # watchdog that still left a checkout, ...) can stomp
+                # "completed" even when the agent's work already finished and
+                # genuinely passed grading. Only fall back to "unresolved"
+                # when verification itself never ran (no checkout captured,
+                # or the output was structurally invalid before grading).
                 "status": "unrun"
                 if a is None
-                else "unresolved"
-                if a["termination"] in INFRA
                 else "pass"
-                if a["termination"] == "completed"
-                and a.get("verification", {}).get("pass")
+                if a.get("verification", {}).get("pass")
+                else "unresolved"
+                if a.get("verification", {}).get("reason")
+                in ("no_checkout", "invalid_output", "unsealed_attempt")
                 else "fail",
                 "termination": a.get("termination") if a else None,
                 "cost_usd": sum(

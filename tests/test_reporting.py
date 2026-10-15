@@ -40,17 +40,37 @@ def test_recovery_is_one_vote_but_all_charges_count():
     assert round(mini["cost_per_success_usd"], 2) == 0.3
 
 
-def test_budget_partial_patch_cannot_count_as_success():
+def test_budget_exhausted_termination_with_passing_verification_counts_as_success():
+    # A harness-side admission rejection (a budget_pending race between a trial's
+    # own calls, a cascaded unknown-bill halt, ...) can stomp a "completed"
+    # termination with "budget_exhausted" even when the agent's own work already
+    # finished and the delivered artifact genuinely passes grading. The artifact's
+    # own verification is the real signal of success, not termination noise
+    # around it. Confirmed against two live v1 trials (dotenv-X and pqueue-X,
+    # engine-core) whose agents finished and passed despite a harness-side
+    # rejection stomping their termination label.
     summary = summarize(
         manifest(),
         [attempt("1", "tinydb-B", "engine-core", "budget_exhausted", True, None)],
     )
     engine = summary["systems"][1]
-    assert engine["passed"] == 0
+    assert engine["passed"] == 1
     assert engine["evaluated"] == 1
+    # Cost still reads as unknown: a termination other than "completed" means
+    # the settled charge for this attempt isn't trustworthy as a total.
     assert engine["cost_per_success_usd"] is None
     assert engine["cost_usd"] is None
     assert engine["budget_hits"] == 1
+
+
+def test_unresolved_attempt_with_no_checkout_is_neither_pass_nor_fail():
+    unresolved = attempt("1", "tinydb-B", "engine-core", "watchdog", False, None)
+    unresolved["verification"] = {"pass": False, "reason": "no_checkout"}
+    summary = summarize(manifest(), [unresolved])
+    engine = summary["systems"][1]
+    assert engine["passed"] == 0
+    assert engine["evaluated"] == 0
+    assert engine["unresolved"] == 1
 
 
 def test_unsealed_attempt_is_visible_with_unknown_bill_and_time(tmp_path):
