@@ -7,7 +7,7 @@ from codeloom_benchmark.manifests import tasks
 
 
 @pytest.mark.parametrize(
-    "task_id", ["pqueue-B", "pqueue-X", "pqueue-T", "dev-typescript"]
+    "task_id", ["pqueue-B", "pqueue-X", "dev-typescript"]
 )
 def test_pqueue_clock_fix_is_shared_by_starting_and_reference_snapshots(
     tmp_path, task_id

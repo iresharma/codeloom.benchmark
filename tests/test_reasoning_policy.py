@@ -187,11 +187,11 @@ def test_cost_report_weights_selected_task_cohorts_and_exposes_oversubscription(
     from codeloom_benchmark.cost_analysis import analyze
 
     report = analyze(destination=tmp_path / "cost.json", refresh=False)
-    assert report["planned_attempts"] == 20
+    assert report["planned_attempts"] == 18
     assert report["weighted_reservation_price_uncapped_total"] == pytest.approx(
-        26.32608
+        21.63744
     )
-    assert report["primary_attempt_maxima_sum"] == 50
+    assert report["primary_attempt_maxima_sum"] == 42
     assert report["budget"]["measurement"] == 32
     assert report["budget"]["total_ceiling"] == 50
     assert report["stress"]["fits_heavy_cap"] is False

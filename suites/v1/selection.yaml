@@ -1,5 +1,5 @@
 # Relative task scope, chosen before any scored model outputs. Not measured difficulty.
-expected_mix: {light: 3, medium: 3, heavy: 4}
+expected_mix: {light: 3, medium: 3, heavy: 3}
 tasks:
   - {id: tinydb-B, difficulty: light, rationale: 'Localized cache invalidation repair with visible upstream tests.'}
   - {id: chi-B, difficulty: light, rationale: 'Localized pooled-context reset with reuse invariants.'}
@@ -10,4 +10,6 @@ tasks:
   - {id: dotenv-X, difficulty: heavy, rationale: 'Atomic strict parsing propagated through public APIs and CLI errors.'}
   - {id: pqueue-X, difficulty: heavy, rationale: 'Bulk validation and queue metadata updates with custom-queue fallback.'}
   - {id: chi-X, difficulty: heavy, rationale: 'Cross-file middleware change with deep-copy ownership and per-response isolation.'}
-  - {id: pqueue-T, difficulty: heavy, rationale: 'Deterministic async tests for concurrency, rejections and completion bookkeeping.'}
+# pqueue-T dropped 2026-10-15: its only non-trivial check (test/advanced.ts
+# "intervalCap...high concurrency") is a real-wall-clock stress test that overshoots
+# under sandbox CPU jitter; owner chose to drop it rather than keep delaying the run.
