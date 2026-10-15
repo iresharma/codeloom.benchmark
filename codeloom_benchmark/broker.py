@@ -239,11 +239,14 @@ class Broker:
                         broker.record(
                             trial,
                             {
-                                "status": "call_cost_limit"
-                                if exc.reason == "call_cost_limit"
-                                else "token_denied"
-                                if exc.reason == "token_denied"
-                                else "budget_exhausted",
+                                # ledger.reserve() already gives every refusal
+                                # its own distinct reason (budget_pending,
+                                # overrun_halt, unknown_bills_halt, ...);
+                                # using it directly as the status keeps that
+                                # distinction in the journal instead of
+                                # collapsing everything but call_cost_limit/
+                                # token_denied into generic "budget_exhausted".
+                                "status": exc.reason,
                                 "refusal_reason": exc.reason,
                                 "detail": str(exc),
                                 "estimated_cost_usd": amount / 1_000_000,

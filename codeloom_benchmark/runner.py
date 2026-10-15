@@ -22,6 +22,46 @@ def journal(root):
     )
 
 
+# Statuses that reflect the admission layer refusing a call for reasons
+# unrelated to this trial's own work -- not a signal that the trial itself
+# ran out of real budget, only that the campaign-wide ledger halted
+# admission (an unresolved bill elsewhere, a provider price overrun, a
+# protocol violation recorded against another trial). Grouped under the
+# "budget_exhausted" termination because downstream reporting has always
+# treated that label as "an admission gate stopped this trial", not
+# specifically "the dollar cap was reached" -- the genuine reason remains
+# visible per-call in refusal_reason and in admission_events below.
+# "budget_pending" is deliberately excluded: it is a same-trial in-flight-
+# bill race that resolves on its own and must not override a termination
+# the controller itself already reported.
+ADMISSION_HALT_STATUSES = {
+    "budget_exhausted",
+    "overrun_halt",
+    "protocol_violation_halt",
+    "unknown_bills_halt",
+}
+
+
+def disclosed_prompt(task):
+    """The prompt as sent to the agent: states the real grading constraints
+    (allowed_paths, and navigation's exact task_id) instead of leaving them
+    as undisclosed internal bookkeeping the agent has no way to discover."""
+    prompt = task["prompt"]
+    paths = task.get("allowed_paths")
+    if paths:
+        prompt += (
+            "\n\nAllowed paths: only create or modify files matching these "
+            "patterns: " + ", ".join(paths) + ". Edits outside these paths "
+            "will fail grading regardless of correctness."
+        )
+    if task.get("category") == "navigation":
+        prompt += (
+            f'\n\nSet "task_id" to exactly "{task["id"]}" (this task\'s '
+            "internal identifier) in the answer file."
+        )
+    return prompt
+
+
 def attempt(
     task,
     system,
@@ -44,7 +84,7 @@ def attempt(
     token = broker.ledger.create_trial(trial_id, stage, limit)
     cfg = dict(
         broker.settings,
-        prompt=task["prompt"],
+        prompt=disclosed_prompt(task),
         root=str(root),
         image=image,
         url=f"http://127.0.0.1:{broker.server.server_address[1]}/v1",
@@ -185,7 +225,7 @@ def attempt(
         controller_termination = termination
         if termination == "watchdog":
             pass  # Preserve the primary stop; shutdown requests cannot overwrite it.
-        elif "budget_exhausted" in statuses:
+        elif statuses & ADMISSION_HALT_STATUSES:
             termination = "budget_exhausted"
         elif "call_cost_limit" in statuses:
             termination = "call_cost_limit"
@@ -277,6 +317,13 @@ def attempt(
         "call_limit_multiplier": broker.settings.get("call_limit_multiplier", 3),
         "termination": termination,
         "controller_termination": controller_termination or termination,
+        # Every distinct non-"complete" journal status seen for this trial,
+        # so a mix of events (e.g. a recovered budget_pending race *and* a
+        # later transport_error) isn't silently collapsed to whichever one
+        # happened to win the termination-override priority above.
+        "admission_events": sorted(
+            {r["status"] for r in calls if r["status"] != "complete"}
+        ),
         "watchdog_s": watchdog_s,
         "verification": verification,
         "upstream_check_failures": sorted(failures),
