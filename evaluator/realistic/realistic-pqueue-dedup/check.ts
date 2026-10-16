@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import PQueue from './source/index.ts';
+import PQueue from '/task/source/index.ts';
 
 // A task with an `id` already pending returns the SAME promise, and the new function is never called.
 {

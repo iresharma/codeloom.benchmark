@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import PQueue from './source/index.ts';
+import PQueue from '/task/source/index.ts';
 
 // Two tasks in the same group, groupConcurrency 1: only one runs at a time, even with global concurrency wide open.
 {
