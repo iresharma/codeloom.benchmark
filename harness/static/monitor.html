@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Harness monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #12110e;
+      --panel: #1c1b16;
+      --ink: #efe7d6;
+      --muted: #8d8676;
+      --line: #3a372f;
+      --live: #e0b03a;
+      --pass: #86b392;
+      --fail: #d2643f;
+      --queued: #5c574c;
+      --engine: #c9b8a0;
+      --mini: #9bb0c9;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--ink); }
+    body {
+      font-family: "IBM Plex Sans", sans-serif;
+      font-size: 15px;
+      line-height: 1.45;
+      background-image:
+        radial-gradient(1200px 500px at 10% -10%, rgba(224,176,58,.08), transparent 50%),
+        linear-gradient(180deg, rgba(255,255,255,.02), transparent 30%);
+    }
+    body::before {
+      content: "";
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      opacity: .07;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, #000 3px);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      body::before { display: none; }
+      .pulse { animation: none; }
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-end;
+      padding: 22px 28px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--live);
+      margin: 0 0 8px;
+    }
+    h1 {
+      font-family: "IBM Plex Mono", monospace;
+      font-weight: 500;
+      font-size: 26px;
+      letter-spacing: -.03em;
+      margin: 0;
+    }
+    .meta {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: right;
+    }
+    .meta strong { color: var(--ink); font-weight: 500; }
+    .run-pick {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-end;
+    }
+    .run-pick span {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    select {
+      min-height: 40px;
+      min-width: 280px;
+      max-width: 420px;
+      background: var(--panel);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      padding: 8px 10px;
+    }
+    .strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .stat { background: var(--panel); padding: 16px 22px; }
+    .stat span {
+      display: block;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .stat b {
+      display: block;
+      margin-top: 8px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 24px;
+      font-weight: 500;
+    }
+    main { display: grid; grid-template-columns: minmax(420px, 1fr) minmax(420px, 1.15fr); min-height: calc(100vh - 170px); }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    td { padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+    tr { cursor: default; }
+    tr:hover td { background: rgba(224,176,58,.05); }
+    tr[aria-selected="true"] td { background: rgba(224,176,58,.1); }
+    .id { font-family: "IBM Plex Mono", monospace; font-size: 13px; }
+    .title { color: var(--muted); font-size: 13px; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: inherit;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: left;
+    }
+    .pill:focus-visible { outline: 2px solid var(--live); outline-offset: 2px; }
+    .pill i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; display: inline-block; }
+    .pass { color: var(--pass); }
+    .fail { color: var(--fail); }
+    .running { color: var(--live); }
+    .queued, .unresolved { color: var(--queued); }
+    .pulse i { animation: pulse 1.4s ease-in-out infinite; }
+    @keyframes pulse { 50% { opacity: .25; } }
+    .money { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted); }
+    aside {
+      border-left: 1px solid var(--line);
+      padding: 16px 18px 20px;
+      background: #16150f;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      min-width: 0;
+    }
+    aside h2 {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 13px;
+      font-weight: 500;
+      margin: 0 0 4px;
+      word-break: break-all;
+    }
+    .sub { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--muted); margin: 0 0 12px; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .tabs button {
+      min-height: 36px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    .tabs button[aria-selected="true"] { color: var(--ink); border-color: var(--live); }
+    .pane { flex: 1; overflow: auto; min-height: 240px; }
+    pre, .block {
+      margin: 0;
+      overflow: auto;
+      background: #0d0c0a;
+      color: #d7ccb4;
+      border: 1px solid var(--line);
+      padding: 12px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .waiting { padding: 80px 32px; color: var(--muted); font-family: "IBM Plex Mono", monospace; }
+    .agent {
+      border-left: 1px solid var(--line);
+      margin-left: calc(var(--d, 0) * 16px);
+      padding: 10px 0 10px 14px;
+    }
+    .agent-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; font-family: "IBM Plex Mono", monospace; font-size: 12px; }
+    .agent-head b { font-weight: 500; }
+    .agent-task { color: var(--muted); font-size: 12px; margin: 4px 0 6px; }
+    .tool {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 8px;
+      padding: 6px 0;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+    }
+    .tool .dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; background: var(--queued); }
+    .tool.ok .dot { background: var(--pass); }
+    .tool.bad .dot { background: var(--fail); }
+    details { border-bottom: 1px solid var(--line); padding: 8px 0; }
+    summary {
+      cursor: pointer;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      list-style: none;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary:focus-visible { outline: 2px solid var(--live); outline-offset: 2px; }
+    .kind { color: var(--live); }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .chip {
+      border: 1px solid var(--line);
+      padding: 2px 7px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    @media (max-width: 1200px) { .strip { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 960px) {
+      main, header { display: block; }
+      .meta, .run-pick { text-align: left; align-items: flex-start; margin-top: 12px; }
+      aside { border-left: 0; border-top: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <p class="eyebrow" id="status-label">waiting</p>
+      <h1 id="run-title">Harness monitor</h1>
+    </div>
+    <div class="meta">
+      <label class="run-pick">
+        <span>Open run</span>
+        <select id="run-select" aria-label="Open run"></select>
+      </label>
+      <div id="run-meta" style="margin-top:10px">No run directory yet.</div>
+    </div>
+  </header>
+  <section class="strip" aria-label="Totals">
+    <div class="stat"><span>mini pass</span><b id="mini-pass">—</b></div>
+    <div class="stat"><span>engine pass</span><b id="engine-pass">—</b></div>
+    <div class="stat"><span>spend</span><b id="spend">—</b></div>
+    <div class="stat"><span>live arms</span><b id="live">0</b></div>
+  </section>
+  <main>
+    <section aria-label="Task pairs">
+      <div class="waiting" id="empty">Open a run, or start a campaign. Waiting for <code>manifest.json</code>.</div>
+      <table id="grid" hidden>
+        <thead>
+          <tr>
+            <th>Task</th>
+            <th>mini-SWE-agent</th>
+            <th>Engine core</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+    <aside>
+      <h2 id="log-title">Inspector</h2>
+      <p class="sub" id="log-sub">Select a running or finished arm.</p>
+      <div class="tabs" role="tablist" aria-label="Trial views">
+        <button type="button" role="tab" data-tab="stack" aria-selected="true">Stack</button>
+        <button type="button" role="tab" data-tab="timeline">Timeline</button>
+        <button type="button" role="tab" data-tab="calls">Calls</button>
+        <button type="button" role="tab" data-tab="patch">Patch</button>
+        <button type="button" role="tab" data-tab="checks">Checks</button>
+        <button type="button" role="tab" data-tab="log">Log</button>
+      </div>
+      <div class="pane" id="pane" tabindex="0">Select an arm to inspect the agent stack.</div>
+    </aside>
+  </main>
+  <script>
+    const SYSTEMS = ["mini-swe-agent", "engine-core"];
+    const TABS = ["stack", "timeline", "calls", "patch", "checks", "log"];
+    let selected = null;
+    let tab = "stack";
+    let lastViewSig = null;
+    let view = null;
+    let runsLoaded = false;
+
+    const money = (n) => n == null ? "—" : "$" + Number(n).toFixed(3);
+    const clock = (s) => {
+      if (s == null || s === "") return "";
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60).toString().padStart(2, "0");
+      return m + ":" + sec;
+    };
+    const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+    const clip = (value, n=400) => {
+      const text = String(value ?? "");
+      return text.length > n ? text.slice(0, n) + "…" : text;
+    };
+
+    function pill(arm) {
+      const cls = arm.status + (arm.status === "running" ? " pulse" : "");
+      const extra = [money(arm.cost_usd), clock(arm.elapsed_s)].filter(Boolean).join(" · ");
+      const mark = arm.trace_available ? " ▸" : "";
+      return `<button type="button" class="pill ${cls}" data-id="${esc(arm.id)}"><i></i>${esc(arm.status)}${extra ? " · " + extra : ""}${mark}</button>`;
+    }
+
+    function hash() {
+      const params = new URLSearchParams(location.hash.replace(/^#/, ""));
+      return { trial: params.get("trial"), tab: params.get("tab") };
+    }
+    function writeHash() {
+      const params = new URLSearchParams();
+      if (selected) params.set("trial", selected);
+      if (tab && tab !== "stack") params.set("tab", tab);
+      const next = params.toString();
+      if (location.hash.replace(/^#/, "") !== next) history.replaceState(null, "", next ? "#" + next : location.pathname);
+    }
+
+    function render(data) {
+      document.getElementById("status-label").textContent = data.waiting ? "waiting" : data.status;
+      document.getElementById("run-title").textContent = data.waiting ? "Harness monitor" : data.run_id;
+      document.getElementById("run-meta").innerHTML = data.waiting
+        ? (data.run_dir || "Pick a run from the list.")
+        : `<strong>${esc(data.model || "")}</strong><br>${esc(data.provider || "")} · ${esc(data.suite || "")}<br>${esc(data.run_dir || "")}`;
+      const byId = Object.fromEntries((data.systems || []).map(s => [s.id, s]));
+      document.getElementById("mini-pass").textContent = byId["mini-swe-agent"]
+        ? `${byId["mini-swe-agent"].passed}/${byId["mini-swe-agent"].scheduled}` : "—";
+      document.getElementById("engine-pass").textContent = byId["engine-core"]
+        ? `${byId["engine-core"].passed}/${byId["engine-core"].scheduled}` : "—";
+      document.getElementById("spend").textContent = data.waiting ? "—" : money(data.spend_usd);
+      document.getElementById("live").textContent = (data.systems || []).reduce((n, s) => n + s.running, 0);
+      const empty = document.getElementById("empty");
+      const grid = document.getElementById("grid");
+      if (!data.tasks || !data.tasks.length) {
+        empty.hidden = false;
+        grid.hidden = true;
+        return;
+      }
+      empty.hidden = true;
+      grid.hidden = false;
+      const body = grid.querySelector("tbody");
+      if (!selected) {
+        const live = data.tasks.flatMap(t => SYSTEMS.map(s => t.systems[s])).find(a => a.status === "running");
+        const traced = data.tasks.flatMap(t => SYSTEMS.map(s => t.systems[s])).find(a => a.trace_available);
+        if (live) selected = live.id;
+        else if (traced) selected = traced.id;
+      }
+      const signature = data.tasks.map(t => t.id).join(",");
+      if (body.dataset.sig !== signature) {
+        body.dataset.sig = signature;
+        body.innerHTML = data.tasks.map(task => {
+          const mini = task.systems["mini-swe-agent"];
+          const engine = task.systems["engine-core"];
+          return `<tr>
+            <td>
+              <div class="id">${esc(task.id)} <span class="title">${esc(task.difficulty)} · ${esc(task.category)}</span></div>
+              <div class="title">${esc(task.title)}</div>
+            </td>
+            <td>${pill(mini)}<div class="money" data-req="${esc(mini.id)}"></div></td>
+            <td>${pill(engine)}<div class="money" data-req="${esc(engine.id)}"></div></td>
+          </tr>`;
+        }).join("");
+        body.querySelectorAll("button[data-id]").forEach(button => {
+          button.addEventListener("click", () => {
+            selected = button.dataset.id;
+            lastViewSig = null;
+            writeHash();
+            loadTrial(true);
+          });
+        });
+      }
+      data.tasks.forEach(task => {
+        SYSTEMS.forEach(system => {
+          const arm = task.systems[system];
+          const button = body.querySelector(`button[data-id="${CSS.escape(arm.id)}"]`);
+          if (!button) return;
+          const wrap = document.createElement("div");
+          wrap.innerHTML = pill(arm);
+          const fresh = wrap.firstElementChild;
+          button.className = fresh.className;
+          button.innerHTML = fresh.innerHTML;
+          const req = body.querySelector(`[data-req="${CSS.escape(arm.id)}"]`);
+          if (req) req.textContent = arm.requests ? arm.requests + " calls" : "";
+        });
+      });
+      body.querySelectorAll("tr").forEach(row => row.removeAttribute("aria-selected"));
+      const selectedButton = selected ? body.querySelector(`button[data-id="${CSS.escape(selected)}"]`) : null;
+      if (selectedButton) selectedButton.closest("tr").setAttribute("aria-selected", "true");
+    }
+
+    function stackHtml(data) {
+      const agents = data.agents || [];
+      if (!agents.length) return `<div class="waiting">No agent events yet. Engine copies the event log when the container is reachable; mini writes native-trace at the end of the arm.</div>`;
+      const kids = {};
+      agents.forEach(agent => {
+        const parent = agent.parent_id || "";
+        (kids[parent] ||= []).push(agent);
+      });
+      const tools = {};
+      (data.timeline || []).filter(event => event.kind === "tool").forEach(event => {
+        (tools[event.agent_id || "root"] ||= []).push(event);
+      });
+      const seen = new Set();
+      function node(id, depth) {
+        return (kids[id] || []).map(agent => {
+          if (seen.has(agent.id)) return "";
+          seen.add(agent.id);
+          const label = agent.id === "root" ? "controller" : (agent.profile || "agent") + " · " + String(agent.id).slice(0, 8);
+          const toolRows = (tools[agent.id] || []).map(event => {
+            const cls = event.ok === false ? "bad" : event.ok ? "ok" : "";
+            return `<div class="tool ${cls}"><span class="dot"></span><div><b>${esc(event.title)}</b> ${event.duration_ms != null ? event.duration_ms + "ms" : ""}<div class="title">${esc(clip(event.detail, 180))}</div>${event.output ? `<div class="title">${esc(clip(event.output, 220))}</div>` : ""}</div></div>`;
+          }).join("");
+          return `<div class="agent" style="--d:${depth}">
+            <div class="agent-head"><b>${esc(label)}</b><span class="${esc(agent.status || "")}">${esc(agent.status || "")}</span><span class="title">${agent.tool_calls || 0} tools</span></div>
+            ${agent.task ? `<div class="agent-task">${esc(agent.task)}</div>` : ""}
+            ${toolRows}
+            ${node(agent.id, depth + 1)}
+          </div>`;
+        }).join("");
+      }
+      const tree = node("", 0);
+      return tree || node("root", 0);
+    }
+
+    function timelineHtml(data) {
+      const rows = data.timeline || [];
+      if (!rows.length) return `<div class="waiting">No timeline yet.</div>`;
+      return rows.map(event => `<details>
+        <summary><span class="kind">${esc(event.kind)}</span> · ${esc(event.agent_id || "root")} · ${esc(event.title)}</summary>
+        <pre>${esc(event.detail || "")}${event.reasoning ? "\n\nreasoning:\n" + esc(event.reasoning) : ""}${event.output ? "\n\noutput:\n" + esc(event.output) : ""}</pre>
+      </details>`).join("");
+    }
+
+    function callsHtml(data) {
+      const rows = data.requests || [];
+      if (!rows.length) return `<div class="waiting">No broker calls recorded.</div>`;
+      return rows.map((row, i) => {
+        const usage = row.usage || {};
+        const response = row.response || {};
+        const tools = (response.tool_calls || []).map(call => `${call.name || "tool"} ${clip(call.arguments, 120)}`).join("\n");
+        return `<details ${i === 0 ? "open" : ""}>
+          <summary>${esc(row.model || "model")} · ${esc(row.status || "")} · ${usage.total_tokens || 0} tok · ${row.elapsed_s != null ? Number(row.elapsed_s).toFixed(2) + "s" : ""}</summary>
+          <pre>${esc(clip(response.reasoning, 1200))}${response.reasoning && response.text ? "\n\n" : ""}${esc(clip(response.text, 1600))}${tools ? "\n\ntools:\n" + esc(tools) : ""}</pre>
+        </details>`;
+      }).join("");
+    }
+
+    function checksHtml(data) {
+      const rows = data.checks || [];
+      if (!rows.length) return `<div class="waiting">No grader output yet.</div>`;
+      return rows.map(check => `<details>
+        <summary class="${check.passed ? "pass" : "fail"}">${check.passed ? "pass" : "fail"} · ${esc(check.kind)} · ${esc(clip(check.command, 80))}</summary>
+        <pre>${esc(check.output || "")}</pre>
+      </details>`).join("");
+    }
+
+    function renderInspector(data) {
+      view = data;
+      document.getElementById("log-title").textContent = data.id || selected || "Inspector";
+      document.getElementById("log-sub").textContent = [
+        data.system,
+        data.status,
+        data.termination,
+        money(data.cost_usd),
+        clock(data.elapsed_s),
+        (data.agents || []).length ? (data.agents.length + " agents") : "",
+        (data.requests || []).length ? (data.requests.length + " calls") : "",
+      ].filter(Boolean).join(" · ");
+      document.querySelectorAll(".tabs button").forEach(button => {
+        button.setAttribute("aria-selected", button.dataset.tab === tab ? "true" : "false");
+      });
+      const pane = document.getElementById("pane");
+      if (tab === "stack") pane.innerHTML = stackHtml(data);
+      else if (tab === "timeline") pane.innerHTML = timelineHtml(data);
+      else if (tab === "calls") pane.innerHTML = callsHtml(data);
+      else if (tab === "patch") pane.innerHTML = `<pre>${esc(data.patch || "(no patch.diff)")}</pre>`;
+      else if (tab === "checks") pane.innerHTML = checksHtml(data);
+      else pane.innerHTML = `<pre>${esc(data.log || "(no controller output yet)")}</pre>`;
+    }
+
+    async function loadTrial(force) {
+      if (!selected) return;
+      const res = await fetch("/api/trial/" + encodeURIComponent(selected));
+      const data = await res.json();
+      if (data.error) {
+        document.getElementById("pane").textContent = data.error;
+        return;
+      }
+      const sig = JSON.stringify({
+        n: (data.timeline || []).length,
+        c: data.cost_usd,
+        t: data.termination,
+        p: (data.patch || "").length,
+        l: (data.log || "").length,
+        a: (data.agents || []).length,
+        r: (data.requests || []).length,
+      });
+      if (!force && sig === lastViewSig && tab !== "log") return;
+      lastViewSig = sig;
+      renderInspector(data);
+    }
+
+    async function loadRuns(currentPath) {
+      const res = await fetch("/api/runs");
+      const data = await res.json();
+      const select = document.getElementById("run-select");
+      const selectedPath = currentPath || data.run_dir || "";
+      select.replaceChildren();
+      const blank = document.createElement("option");
+      blank.value = "";
+      blank.textContent = "Choose a run…";
+      select.append(blank);
+      (data.runs || []).forEach(run => {
+        const option = document.createElement("option");
+        option.value = run.path;
+        option.textContent = `${run.run_id} · ${run.status} · ${run.finished}/${run.trials}`;
+        if (run.path === selectedPath) option.selected = true;
+        select.append(option);
+      });
+      runsLoaded = true;
+    }
+
+    async function openRun(path) {
+      if (!path) return;
+      const res = await fetch("/api/open", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path }),
+      });
+      const data = await res.json();
+      selected = null;
+      lastViewSig = null;
+      view = null;
+      render(data);
+      await loadRuns(path);
+      await loadTrial(true);
+    }
+
+    async function tick() {
+      const res = await fetch("/api/status");
+      const data = await res.json();
+      render(data);
+      if (!runsLoaded) await loadRuns(data.run_dir);
+      if (selected) await loadTrial(false);
+    }
+
+    document.getElementById("run-select").addEventListener("change", (event) => openRun(event.target.value));
+    document.querySelectorAll(".tabs button").forEach(button => {
+      button.addEventListener("click", () => {
+        tab = button.dataset.tab;
+        writeHash();
+        if (view) renderInspector(view);
+        else loadTrial(true);
+      });
+    });
+
+    const start = hash();
+    if (start.trial) selected = start.trial;
+    if (start.tab && TABS.includes(start.tab)) tab = start.tab;
+
+    const source = new EventSource("/api/events");
+    source.onmessage = (event) => {
+      render(JSON.parse(event.data));
+      if (selected) loadTrial(false);
+    };
+    source.onerror = () => {};
+    setInterval(tick, 2500);
+    tick();
+  </script>
+</body>
+</html>

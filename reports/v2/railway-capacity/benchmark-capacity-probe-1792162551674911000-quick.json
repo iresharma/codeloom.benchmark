@@ -1,0 +1,3247 @@
+{
+  "capacity_report": {
+    "abort_reasons": [],
+    "actual_spent_usd": 0.0,
+    "agent_profile": {
+      "cpus": 0.5,
+      "memory_gb": 0.375
+    },
+    "capacity": {
+      "cpus": 4.0,
+      "memory_gb": 3.9537582397460938
+    },
+    "container_outcomes": [
+      {
+        "Dead": false,
+        "Error": "",
+        "ExitCode": 137,
+        "FinishedAt": "2026-10-16T15:05:22.252014677Z",
+        "OOMKilled": false,
+        "Paused": false,
+        "Pid": 0,
+        "Restarting": false,
+        "Running": false,
+        "StartedAt": "2026-10-16T15:04:46.363348753Z",
+        "Status": "exited"
+      },
+      {
+        "Dead": false,
+        "Error": "",
+        "ExitCode": 137,
+        "FinishedAt": "2026-10-16T15:05:22.300010164Z",
+        "OOMKilled": false,
+        "Paused": false,
+        "Pid": 0,
+        "Restarting": false,
+        "Running": false,
+        "StartedAt": "2026-10-16T15:04:46.023813373Z",
+        "Status": "exited"
+      },
+      {
+        "Dead": false,
+        "Error": "",
+        "ExitCode": 137,
+        "FinishedAt": "2026-10-16T15:05:22.011900702Z",
+        "OOMKilled": false,
+        "Paused": false,
+        "Pid": 0,
+        "Restarting": false,
+        "Running": false,
+        "StartedAt": "2026-10-16T15:05:02.486204914Z",
+        "Status": "exited"
+      },
+      {
+        "Dead": false,
+        "Error": "",
+        "ExitCode": 137,
+        "FinishedAt": "2026-10-16T15:05:22.03562018Z",
+        "OOMKilled": false,
+        "Paused": false,
+        "Pid": 0,
+        "Restarting": false,
+        "Running": false,
+        "StartedAt": "2026-10-16T15:05:02.421393484Z",
+        "Status": "exited"
+      },
+      {
+        "Dead": false,
+        "Error": "",
+        "ExitCode": 0,
+        "FinishedAt": "0001-01-01T00:00:00Z",
+        "OOMKilled": false,
+        "Paused": false,
+        "Pid": 394344,
+        "Restarting": false,
+        "Running": true,
+        "StartedAt": "2026-10-16T15:05:26.812623315Z",
+        "Status": "running"
+      },
+      {
+        "Dead": false,
+        "Error": "",
+        "ExitCode": 0,
+        "FinishedAt": "0001-01-01T00:00:00Z",
+        "OOMKilled": false,
+        "Paused": false,
+        "Pid": 394630,
+        "Restarting": false,
+        "Running": true,
+        "StartedAt": "2026-10-16T15:05:32.184996707Z",
+        "Status": "running"
+      },
+      {
+        "Dead": false,
+        "Error": "",
+        "ExitCode": 0,
+        "FinishedAt": "0001-01-01T00:00:00Z",
+        "OOMKilled": false,
+        "Paused": false,
+        "Pid": 395011,
+        "Restarting": false,
+        "Running": true,
+        "StartedAt": "2026-10-16T15:05:36.990522343Z",
+        "Status": "running"
+      },
+      {
+        "Dead": false,
+        "Error": "",
+        "ExitCode": 0,
+        "FinishedAt": "0001-01-01T00:00:00Z",
+        "OOMKilled": false,
+        "Paused": false,
+        "Pid": 396779,
+        "Restarting": false,
+        "Running": true,
+        "StartedAt": "2026-10-16T15:05:43.887511337Z",
+        "Status": "running"
+      },
+      {
+        "Dead": false,
+        "Error": "",
+        "ExitCode": 137,
+        "FinishedAt": "2026-10-16T15:05:51.995044343Z",
+        "OOMKilled": false,
+        "Paused": false,
+        "Pid": 0,
+        "Restarting": false,
+        "Running": false,
+        "StartedAt": "2026-10-16T15:05:45.045693188Z",
+        "Status": "exited"
+      },
+      {
+        "Dead": false,
+        "Error": "",
+        "ExitCode": 137,
+        "FinishedAt": "2026-10-16T15:05:56.400621901Z",
+        "OOMKilled": false,
+        "Paused": false,
+        "Pid": 0,
+        "Restarting": false,
+        "Running": false,
+        "StartedAt": "2026-10-16T15:05:38.693473032Z",
+        "Status": "exited"
+      },
+      {
+        "Dead": false,
+        "Error": "",
+        "ExitCode": 137,
+        "FinishedAt": "2026-10-16T15:05:42.417754116Z",
+        "OOMKilled": false,
+        "Paused": false,
+        "Pid": 0,
+        "Restarting": false,
+        "Running": false,
+        "StartedAt": "2026-10-16T15:04:46.300769145Z",
+        "Status": "exited"
+      },
+      {
+        "Dead": false,
+        "Error": "",
+        "ExitCode": 137,
+        "FinishedAt": "2026-10-16T15:05:36.274215152Z",
+        "OOMKilled": false,
+        "Paused": false,
+        "Pid": 0,
+        "Restarting": false,
+        "Running": false,
+        "StartedAt": "2026-10-16T15:05:02.522903212Z",
+        "Status": "exited"
+      },
+      {
+        "Dead": false,
+        "Error": "",
+        "ExitCode": 0,
+        "FinishedAt": "0001-01-01T00:00:00Z",
+        "OOMKilled": false,
+        "Paused": false,
+        "Pid": 397625,
+        "Restarting": false,
+        "Running": true,
+        "StartedAt": "2026-10-16T15:05:54.57771812Z",
+        "Status": "running"
+      },
+      {
+        "Dead": false,
+        "Error": "",
+        "ExitCode": 0,
+        "FinishedAt": "0001-01-01T00:00:00Z",
+        "OOMKilled": false,
+        "Paused": false,
+        "Pid": 398232,
+        "Restarting": false,
+        "Running": true,
+        "StartedAt": "2026-10-16T15:05:59.698508038Z",
+        "Status": "running"
+      },
+      {
+        "Dead": false,
+        "Error": "",
+        "ExitCode": 0,
+        "FinishedAt": "0001-01-01T00:00:00Z",
+        "OOMKilled": false,
+        "Paused": false,
+        "Pid": 398465,
+        "Restarting": false,
+        "Running": true,
+        "StartedAt": "2026-10-16T15:06:03.540571423Z",
+        "Status": "running"
+      },
+      {
+        "Dead": false,
+        "Error": "",
+        "ExitCode": 0,
+        "FinishedAt": "0001-01-01T00:00:00Z",
+        "OOMKilled": false,
+        "Paused": false,
+        "Pid": 398715,
+        "Restarting": false,
+        "Running": true,
+        "StartedAt": "2026-10-16T15:06:37.942179682Z",
+        "Status": "running"
+      }
+    ],
+    "error": null,
+    "evaluation_workers": 1,
+    "evaluator_profile": {
+      "cpus": 0.5,
+      "memory_gb": 0.5
+    },
+    "grading_scope": "private_oracles_only",
+    "limitation": "Existing v1 task/runtime images; no v2 browser builds or paid inference tested",
+    "live_model_calls": 0,
+    "minimum_available_memory_gib": 1.59564208984375,
+    "observed_parallel_attempts": 6,
+    "peak_used_memory_gib": 2.1947174072265625,
+    "refill_before_slow_pair_finished": true,
+    "refill_uses_repeated_task": true,
+    "resource_plan": {
+      "cpus": 3.5,
+      "memory_gb": 3.75
+    },
+    "results": [
+      {
+        "elapsed_s": 34.59292598697357,
+        "evaluation_elapsed_s": 5.375756424968131,
+        "id": "capacity-first-tinydb-X-engine-core",
+        "termination": "completed",
+        "verification": {
+          "checks": [
+            {
+              "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py",
+              "kind": "hidden",
+              "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n__________________________________ test_flush __________________________________\n\ntmp_path = PosixPath('/tmp/pytest-of-bench/pytest-0/test_flush0')\n\n    def test_flush(tmp_path):\n>       assert Storage.flush(MemoryStorage()) is None\n               ^^^^^^^^^^^^^\nE       AttributeError: type object 'Storage' has no attribute 'flush'\n\n/tmp/oracle/check.py:7: AttributeError\n=============================== warnings summary ===============================\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-57gk_ybm'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/lastfailed: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-1hod1k89'\n    config.cache.set(\"cache/lastfailed\", self.lastfailed)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED ../tmp/oracle/check.py::test_flush - AttributeError: type object 'Stor...\n1 failed, 2 warnings in 0.12s\n",
+              "repeat": 0,
+              "returncode": 1
+            }
+          ],
+          "pass": false,
+          "reason": "verification"
+        }
+      },
+      {
+        "elapsed_s": 34.301679423078895,
+        "evaluation_elapsed_s": 4.746897121076472,
+        "id": "capacity-first-tinydb-X-mini-swe-agent",
+        "termination": "completed",
+        "verification": {
+          "checks": [
+            {
+              "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py",
+              "kind": "hidden",
+              "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n__________________________________ test_flush __________________________________\n\ntmp_path = PosixPath('/tmp/pytest-of-bench/pytest-0/test_flush0')\n\n    def test_flush(tmp_path):\n>       assert Storage.flush(MemoryStorage()) is None\n               ^^^^^^^^^^^^^\nE       AttributeError: type object 'Storage' has no attribute 'flush'\n\n/tmp/oracle/check.py:7: AttributeError\n=============================== warnings summary ===============================\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-z78kkgoy'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/lastfailed: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-ha2x0avp'\n    config.cache.set(\"cache/lastfailed\", self.lastfailed)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED ../tmp/oracle/check.py::test_flush - AttributeError: type object 'Stor...\n1 failed, 2 warnings in 0.11s\n",
+              "repeat": 0,
+              "returncode": 1
+            }
+          ],
+          "pass": false,
+          "reason": "verification"
+        }
+      },
+      {
+        "elapsed_s": 34.478502630023286,
+        "evaluation_elapsed_s": 6.750739492010325,
+        "id": "capacity-second-dotenv-X-engine-core",
+        "termination": "completed",
+        "verification": {
+          "checks": [
+            {
+              "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py",
+              "kind": "hidden",
+              "output": "\n==================================== ERRORS ====================================\n__________________________ ERROR collecting check.py ___________________________\nImportError while importing test module '/tmp/oracle/check.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/tmp/oracle/check.py:3: in <module>\n    from dotenv import load_dotenv, dotenv_values, DotEnvParseError\nE   ImportError: cannot import name 'DotEnvParseError' from 'dotenv' (/task/src/dotenv/__init__.py)\n=============================== warnings summary ===============================\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-eej4cr5i'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/lastfailed: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-rco4c_oh'\n    config.cache.set(\"cache/lastfailed\", self.lastfailed)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR ../tmp/oracle/check.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n2 warnings, 1 error in 0.41s\n",
+              "repeat": 0,
+              "returncode": 2
+            }
+          ],
+          "pass": false,
+          "reason": "verification"
+        }
+      },
+      {
+        "elapsed_s": 33.762126076966524,
+        "evaluation_elapsed_s": 7.786888299044222,
+        "id": "capacity-second-dotenv-X-mini-swe-agent",
+        "termination": "completed",
+        "verification": {
+          "checks": [
+            {
+              "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py",
+              "kind": "hidden",
+              "output": "\n==================================== ERRORS ====================================\n__________________________ ERROR collecting check.py ___________________________\nImportError while importing test module '/tmp/oracle/check.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/tmp/oracle/check.py:3: in <module>\n    from dotenv import load_dotenv, dotenv_values, DotEnvParseError\nE   ImportError: cannot import name 'DotEnvParseError' from 'dotenv' (/task/src/dotenv/__init__.py)\n=============================== warnings summary ===============================\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-vcm1bwb4'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/lastfailed: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-d_sxzvtg'\n    config.cache.set(\"cache/lastfailed\", self.lastfailed)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR ../tmp/oracle/check.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n2 warnings, 1 error in 0.33s\n",
+              "repeat": 0,
+              "returncode": 2
+            }
+          ],
+          "pass": false,
+          "reason": "verification"
+        }
+      },
+      {
+        "elapsed_s": 54.54571996303275,
+        "evaluation_elapsed_s": 34.3166692230152,
+        "id": "capacity-slow-pqueue-X-engine-core",
+        "termination": "completed",
+        "verification": {
+          "checks": [
+            {
+              "command": "node --import=tsx/esm /tmp/oracle/check.ts",
+              "kind": "hidden",
+              "output": "/tmp/oracle/check.ts:6\nq.setPriorities([{id:'c',priority:2},{id:'c',priority:3}]);\n  ^\n\nTypeError: q.setPriorities is not a function\n    at <anonymous> (/tmp/oracle/check.ts:6:3)\n    at ModuleJob.run (node:internal/modules/esm/module_job:377:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:691:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\n\nNode.js v24.10.0\n",
+              "repeat": 0,
+              "returncode": 1
+            }
+          ],
+          "pass": false,
+          "reason": "verification"
+        }
+      },
+      {
+        "elapsed_s": 48.365997579996474,
+        "evaluation_elapsed_s": 36.96810384397395,
+        "id": "capacity-slow-pqueue-X-mini-swe-agent",
+        "termination": "completed",
+        "verification": {
+          "checks": [
+            {
+              "command": "node --import=tsx/esm /tmp/oracle/check.ts",
+              "kind": "hidden",
+              "output": "/tmp/oracle/check.ts:6\nq.setPriorities([{id:'c',priority:2},{id:'c',priority:3}]);\n  ^\n\nTypeError: q.setPriorities is not a function\n    at <anonymous> (/tmp/oracle/check.ts:6:3)\n    at ModuleJob.run (node:internal/modules/esm/module_job:377:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:691:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\n\nNode.js v24.10.0\n",
+              "repeat": 0,
+              "returncode": 1
+            }
+          ],
+          "pass": false,
+          "reason": "verification"
+        }
+      },
+      {
+        "elapsed_s": 15.919704525033012,
+        "evaluation_elapsed_s": 3.9210621049860492,
+        "id": "capacity-refill-tinydb-X-engine-core",
+        "termination": "completed",
+        "verification": {
+          "checks": [
+            {
+              "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py",
+              "kind": "hidden",
+              "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n__________________________________ test_flush __________________________________\n\ntmp_path = PosixPath('/tmp/pytest-of-bench/pytest-0/test_flush0')\n\n    def test_flush(tmp_path):\n>       assert Storage.flush(MemoryStorage()) is None\n               ^^^^^^^^^^^^^\nE       AttributeError: type object 'Storage' has no attribute 'flush'\n\n/tmp/oracle/check.py:7: AttributeError\n=============================== warnings summary ===============================\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-64rkspmg'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/lastfailed: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-h294ieyp'\n    config.cache.set(\"cache/lastfailed\", self.lastfailed)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED ../tmp/oracle/check.py::test_flush - AttributeError: type object 'Stor...\n1 failed, 2 warnings in 0.09s\n",
+              "repeat": 0,
+              "returncode": 1
+            }
+          ],
+          "pass": false,
+          "reason": "verification"
+        }
+      },
+      {
+        "elapsed_s": 11.593521096976474,
+        "evaluation_elapsed_s": 5.078663057065569,
+        "id": "capacity-refill-tinydb-X-mini-swe-agent",
+        "termination": "completed",
+        "verification": {
+          "checks": [
+            {
+              "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py",
+              "kind": "hidden",
+              "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n__________________________________ test_flush __________________________________\n\ntmp_path = PosixPath('/tmp/pytest-of-bench/pytest-0/test_flush0')\n\n    def test_flush(tmp_path):\n>       assert Storage.flush(MemoryStorage()) is None\n               ^^^^^^^^^^^^^\nE       AttributeError: type object 'Storage' has no attribute 'flush'\n\n/tmp/oracle/check.py:7: AttributeError\n=============================== warnings summary ===============================\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-4ijrejp7'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/lastfailed: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-pqujj26d'\n    config.cache.set(\"cache/lastfailed\", self.lastfailed)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED ../tmp/oracle/check.py::test_flush - AttributeError: type object 'Stor...\n1 failed, 2 warnings in 0.10s\n",
+              "repeat": 0,
+              "returncode": 1
+            }
+          ],
+          "pass": false,
+          "reason": "verification"
+        }
+      }
+    ],
+    "samples": [
+      {
+        "MemAvailable": 3453837312,
+        "MemTotal": 4245315584,
+        "SwapFree": 521891840,
+        "at": 1792163084.0062654
+      },
+      {
+        "MemAvailable": 3439022080,
+        "MemTotal": 4245315584,
+        "SwapFree": 522301440,
+        "at": 1792163084.5073442
+      },
+      {
+        "MemAvailable": 3422355456,
+        "MemTotal": 4245315584,
+        "SwapFree": 522522624,
+        "at": 1792163085.0090437
+      },
+      {
+        "MemAvailable": 3405537280,
+        "MemTotal": 4245315584,
+        "SwapFree": 522612736,
+        "at": 1792163085.5108511
+      },
+      {
+        "MemAvailable": 3409088512,
+        "MemTotal": 4245315584,
+        "SwapFree": 522760192,
+        "at": 1792163086.0125299
+      },
+      {
+        "MemAvailable": 3389972480,
+        "MemTotal": 4245315584,
+        "SwapFree": 522825728,
+        "at": 1792163086.513332
+      },
+      {
+        "MemAvailable": 3371118592,
+        "MemTotal": 4245315584,
+        "SwapFree": 522850304,
+        "at": 1792163087.0141084
+      },
+      {
+        "MemAvailable": 3348873216,
+        "MemTotal": 4245315584,
+        "SwapFree": 522891264,
+        "at": 1792163087.5150518
+      },
+      {
+        "MemAvailable": 3325140992,
+        "MemTotal": 4245315584,
+        "SwapFree": 522891264,
+        "at": 1792163088.0282235
+      },
+      {
+        "MemAvailable": 3301638144,
+        "MemTotal": 4245315584,
+        "SwapFree": 522891264,
+        "at": 1792163088.532258
+      },
+      {
+        "MemAvailable": 3279433728,
+        "MemTotal": 4245315584,
+        "SwapFree": 522895360,
+        "at": 1792163089.03284
+      },
+      {
+        "MemAvailable": 3255734272,
+        "MemTotal": 4245315584,
+        "SwapFree": 522895360,
+        "at": 1792163089.5336983
+      },
+      {
+        "MemAvailable": 3236278272,
+        "MemTotal": 4245315584,
+        "SwapFree": 522895360,
+        "at": 1792163090.0403736
+      },
+      {
+        "MemAvailable": 3210076160,
+        "MemTotal": 4245315584,
+        "SwapFree": 522895360,
+        "at": 1792163090.5409796
+      },
+      {
+        "MemAvailable": 3197849600,
+        "MemTotal": 4245315584,
+        "SwapFree": 522899456,
+        "at": 1792163091.0440943
+      },
+      {
+        "MemAvailable": 3151171584,
+        "MemTotal": 4245315584,
+        "SwapFree": 522899456,
+        "at": 1792163091.548938
+      },
+      {
+        "MemAvailable": 3104563200,
+        "MemTotal": 4245315584,
+        "SwapFree": 521437184,
+        "at": 1792163092.0495517
+      },
+      {
+        "MemAvailable": 3083436032,
+        "MemTotal": 4245315584,
+        "SwapFree": 521437184,
+        "at": 1792163092.5573807
+      },
+      {
+        "MemAvailable": 3057356800,
+        "MemTotal": 4245315584,
+        "SwapFree": 521437184,
+        "at": 1792163093.0578144
+      },
+      {
+        "MemAvailable": 3021328384,
+        "MemTotal": 4245315584,
+        "SwapFree": 521437184,
+        "at": 1792163093.5582485
+      },
+      {
+        "MemAvailable": 2994987008,
+        "MemTotal": 4245315584,
+        "SwapFree": 521437184,
+        "at": 1792163094.0614548
+      },
+      {
+        "MemAvailable": 2978025472,
+        "MemTotal": 4245315584,
+        "SwapFree": 521437184,
+        "at": 1792163094.5636854
+      },
+      {
+        "MemAvailable": 2939551744,
+        "MemTotal": 4245315584,
+        "SwapFree": 521437184,
+        "at": 1792163095.064202
+      },
+      {
+        "MemAvailable": 2910695424,
+        "MemTotal": 4245315584,
+        "SwapFree": 521437184,
+        "at": 1792163095.5646143
+      },
+      {
+        "MemAvailable": 2880331776,
+        "MemTotal": 4245315584,
+        "SwapFree": 521437184,
+        "at": 1792163096.0651016
+      },
+      {
+        "MemAvailable": 2857656320,
+        "MemTotal": 4245315584,
+        "SwapFree": 521437184,
+        "at": 1792163096.565662
+      },
+      {
+        "MemAvailable": 2837401600,
+        "MemTotal": 4245315584,
+        "SwapFree": 521416704,
+        "at": 1792163097.067557
+      },
+      {
+        "MemAvailable": 2823499776,
+        "MemTotal": 4245315584,
+        "SwapFree": 521416704,
+        "at": 1792163097.574902
+      },
+      {
+        "MemAvailable": 2804932608,
+        "MemTotal": 4245315584,
+        "SwapFree": 521416704,
+        "at": 1792163098.0896902
+      },
+      {
+        "MemAvailable": 2782814208,
+        "MemTotal": 4245315584,
+        "SwapFree": 521416704,
+        "at": 1792163098.5984228
+      },
+      {
+        "MemAvailable": 2759278592,
+        "MemTotal": 4245315584,
+        "SwapFree": 521416704,
+        "at": 1792163099.0989513
+      },
+      {
+        "MemAvailable": 2720276480,
+        "MemTotal": 4245315584,
+        "SwapFree": 521420800,
+        "at": 1792163099.60127
+      },
+      {
+        "MemAvailable": 2685009920,
+        "MemTotal": 4245315584,
+        "SwapFree": 521424896,
+        "at": 1792163100.1077027
+      },
+      {
+        "MemAvailable": 2652700672,
+        "MemTotal": 4245315584,
+        "SwapFree": 521424896,
+        "at": 1792163100.6082447
+      },
+      {
+        "MemAvailable": 2632884224,
+        "MemTotal": 4245315584,
+        "SwapFree": 521424896,
+        "at": 1792163101.1092825
+      },
+      {
+        "MemAvailable": 2604433408,
+        "MemTotal": 4245315584,
+        "SwapFree": 521424896,
+        "at": 1792163101.6103218
+      },
+      {
+        "MemAvailable": 2554073088,
+        "MemTotal": 4245315584,
+        "SwapFree": 521437184,
+        "at": 1792163102.110857
+      },
+      {
+        "MemAvailable": 2539757568,
+        "MemTotal": 4245315584,
+        "SwapFree": 521555968,
+        "at": 1792163102.6114526
+      },
+      {
+        "MemAvailable": 2515705856,
+        "MemTotal": 4245315584,
+        "SwapFree": 521555968,
+        "at": 1792163103.1125646
+      },
+      {
+        "MemAvailable": 2487242752,
+        "MemTotal": 4245315584,
+        "SwapFree": 521584640,
+        "at": 1792163103.6130412
+      },
+      {
+        "MemAvailable": 2468360192,
+        "MemTotal": 4245315584,
+        "SwapFree": 521601024,
+        "at": 1792163104.113629
+      },
+      {
+        "MemAvailable": 2416246784,
+        "MemTotal": 4245315584,
+        "SwapFree": 521601024,
+        "at": 1792163104.6175694
+      },
+      {
+        "MemAvailable": 2369118208,
+        "MemTotal": 4245315584,
+        "SwapFree": 521605120,
+        "at": 1792163105.1180947
+      },
+      {
+        "MemAvailable": 2334715904,
+        "MemTotal": 4245315584,
+        "SwapFree": 521605120,
+        "at": 1792163105.622845
+      },
+      {
+        "MemAvailable": 2057084928,
+        "MemTotal": 4111097856,
+        "SwapFree": 521605120,
+        "at": 1792163106.1496208
+      },
+      {
+        "MemAvailable": 2029359104,
+        "MemTotal": 3976880128,
+        "SwapFree": 521605120,
+        "at": 1792163106.6503422
+      },
+      {
+        "MemAvailable": 1973325824,
+        "MemTotal": 3976880128,
+        "SwapFree": 521605120,
+        "at": 1792163107.1510987
+      },
+      {
+        "MemAvailable": 1940164608,
+        "MemTotal": 3976880128,
+        "SwapFree": 521605120,
+        "at": 1792163107.651619
+      },
+      {
+        "MemAvailable": 1921937408,
+        "MemTotal": 3976880128,
+        "SwapFree": 521605120,
+        "at": 1792163108.1521618
+      },
+      {
+        "MemAvailable": 1887133696,
+        "MemTotal": 3976880128,
+        "SwapFree": 521605120,
+        "at": 1792163108.657284
+      },
+      {
+        "MemAvailable": 1855397888,
+        "MemTotal": 3976880128,
+        "SwapFree": 521605120,
+        "at": 1792163109.1577554
+      },
+      {
+        "MemAvailable": 1819885568,
+        "MemTotal": 3976880128,
+        "SwapFree": 521605120,
+        "at": 1792163109.6581407
+      },
+      {
+        "MemAvailable": 1802752000,
+        "MemTotal": 3976880128,
+        "SwapFree": 521605120,
+        "at": 1792163110.1593187
+      },
+      {
+        "MemAvailable": 1801129984,
+        "MemTotal": 3976880128,
+        "SwapFree": 521605120,
+        "at": 1792163110.6597674
+      },
+      {
+        "MemAvailable": 1795092480,
+        "MemTotal": 3976880128,
+        "SwapFree": 521605120,
+        "at": 1792163111.160341
+      },
+      {
+        "MemAvailable": 1764470784,
+        "MemTotal": 3976880128,
+        "SwapFree": 521605120,
+        "at": 1792163111.6608977
+      },
+      {
+        "MemAvailable": 1757278208,
+        "MemTotal": 3976880128,
+        "SwapFree": 521236480,
+        "at": 1792163112.1615438
+      },
+      {
+        "MemAvailable": 1754292224,
+        "MemTotal": 3976880128,
+        "SwapFree": 520638464,
+        "at": 1792163112.6620631
+      },
+      {
+        "MemAvailable": 1739448320,
+        "MemTotal": 3976880128,
+        "SwapFree": 520638464,
+        "at": 1792163113.1645744
+      },
+      {
+        "MemAvailable": 1723330560,
+        "MemTotal": 3976880128,
+        "SwapFree": 517218304,
+        "at": 1792163113.6653378
+      },
+      {
+        "MemAvailable": 1716682752,
+        "MemTotal": 3976880128,
+        "SwapFree": 510894080,
+        "at": 1792163114.1657684
+      },
+      {
+        "MemAvailable": 1713307648,
+        "MemTotal": 3976880128,
+        "SwapFree": 504885248,
+        "at": 1792163114.666191
+      },
+      {
+        "MemAvailable": 1945919488,
+        "MemTotal": 4245315584,
+        "SwapFree": 499023872,
+        "at": 1792163115.1665812
+      },
+      {
+        "MemAvailable": 1937084416,
+        "MemTotal": 4245315584,
+        "SwapFree": 493342720,
+        "at": 1792163115.6671116
+      },
+      {
+        "MemAvailable": 1929363456,
+        "MemTotal": 4245315584,
+        "SwapFree": 488988672,
+        "at": 1792163116.1675909
+      },
+      {
+        "MemAvailable": 1909145600,
+        "MemTotal": 4245315584,
+        "SwapFree": 482578432,
+        "at": 1792163116.6699214
+      },
+      {
+        "MemAvailable": 1891885056,
+        "MemTotal": 4245315584,
+        "SwapFree": 476557312,
+        "at": 1792163117.1712255
+      },
+      {
+        "MemAvailable": 1890660352,
+        "MemTotal": 4245315584,
+        "SwapFree": 469897216,
+        "at": 1792163117.672016
+      },
+      {
+        "MemAvailable": 1890295808,
+        "MemTotal": 4245315584,
+        "SwapFree": 462524416,
+        "at": 1792163118.1724696
+      },
+      {
+        "MemAvailable": 1888755712,
+        "MemTotal": 4245315584,
+        "SwapFree": 455102464,
+        "at": 1792163118.6729698
+      },
+      {
+        "MemAvailable": 2180530176,
+        "MemTotal": 4245315584,
+        "SwapFree": 448999424,
+        "at": 1792163119.1740344
+      },
+      {
+        "MemAvailable": 2453397504,
+        "MemTotal": 4245315584,
+        "SwapFree": 447594496,
+        "at": 1792163119.6835597
+      },
+      {
+        "MemAvailable": 2726703104,
+        "MemTotal": 4245315584,
+        "SwapFree": 443326464,
+        "at": 1792163120.1840148
+      },
+      {
+        "MemAvailable": 2726977536,
+        "MemTotal": 4245315584,
+        "SwapFree": 438366208,
+        "at": 1792163120.6892946
+      },
+      {
+        "MemAvailable": 2726977536,
+        "MemTotal": 4245315584,
+        "SwapFree": 437501952,
+        "at": 1792163121.1897573
+      },
+      {
+        "MemAvailable": 2730024960,
+        "MemTotal": 4245315584,
+        "SwapFree": 432553984,
+        "at": 1792163121.693671
+      },
+      {
+        "MemAvailable": 2750889984,
+        "MemTotal": 4245315584,
+        "SwapFree": 427429888,
+        "at": 1792163122.2183836
+      },
+      {
+        "MemAvailable": 2774847488,
+        "MemTotal": 4245315584,
+        "SwapFree": 424165376,
+        "at": 1792163122.7208314
+      },
+      {
+        "MemAvailable": 2789298176,
+        "MemTotal": 4245315584,
+        "SwapFree": 420864000,
+        "at": 1792163123.2218695
+      },
+      {
+        "MemAvailable": 2800812032,
+        "MemTotal": 4245315584,
+        "SwapFree": 419004416,
+        "at": 1792163123.7288132
+      },
+      {
+        "MemAvailable": 2797559808,
+        "MemTotal": 4245315584,
+        "SwapFree": 415985664,
+        "at": 1792163124.230816
+      },
+      {
+        "MemAvailable": 2791211008,
+        "MemTotal": 4245315584,
+        "SwapFree": 411951104,
+        "at": 1792163124.734373
+      },
+      {
+        "MemAvailable": 2795790336,
+        "MemTotal": 4245315584,
+        "SwapFree": 410226688,
+        "at": 1792163125.2352655
+      },
+      {
+        "MemAvailable": 2799251456,
+        "MemTotal": 4245315584,
+        "SwapFree": 407367680,
+        "at": 1792163125.7356505
+      },
+      {
+        "MemAvailable": 2795819008,
+        "MemTotal": 4245315584,
+        "SwapFree": 405319680,
+        "at": 1792163126.2458367
+      },
+      {
+        "MemAvailable": 2813579264,
+        "MemTotal": 4245315584,
+        "SwapFree": 402112512,
+        "at": 1792163126.747529
+      },
+      {
+        "MemAvailable": 2813104128,
+        "MemTotal": 4245315584,
+        "SwapFree": 399847424,
+        "at": 1792163127.2491124
+      },
+      {
+        "MemAvailable": 2805481472,
+        "MemTotal": 4245315584,
+        "SwapFree": 393281536,
+        "at": 1792163127.7496135
+      },
+      {
+        "MemAvailable": 2803646464,
+        "MemTotal": 4245315584,
+        "SwapFree": 387502080,
+        "at": 1792163128.2503293
+      },
+      {
+        "MemAvailable": 2801610752,
+        "MemTotal": 4245315584,
+        "SwapFree": 386949120,
+        "at": 1792163128.7508092
+      },
+      {
+        "MemAvailable": 2800021504,
+        "MemTotal": 4245315584,
+        "SwapFree": 386211840,
+        "at": 1792163129.2516484
+      },
+      {
+        "MemAvailable": 2798026752,
+        "MemTotal": 4245315584,
+        "SwapFree": 379604992,
+        "at": 1792163129.7520335
+      },
+      {
+        "MemAvailable": 2794283008,
+        "MemTotal": 4245315584,
+        "SwapFree": 374226944,
+        "at": 1792163130.252611
+      },
+      {
+        "MemAvailable": 2792095744,
+        "MemTotal": 4245315584,
+        "SwapFree": 371478528,
+        "at": 1792163130.7531588
+      },
+      {
+        "MemAvailable": 2823131136,
+        "MemTotal": 4245315584,
+        "SwapFree": 370184192,
+        "at": 1792163131.257119
+      },
+      {
+        "MemAvailable": 2818572288,
+        "MemTotal": 4245315584,
+        "SwapFree": 366972928,
+        "at": 1792163131.7600358
+      },
+      {
+        "MemAvailable": 2810384384,
+        "MemTotal": 4245315584,
+        "SwapFree": 364343296,
+        "at": 1792163132.2604856
+      },
+      {
+        "MemAvailable": 2804568064,
+        "MemTotal": 4245315584,
+        "SwapFree": 364314624,
+        "at": 1792163132.7616827
+      },
+      {
+        "MemAvailable": 2793611264,
+        "MemTotal": 4245315584,
+        "SwapFree": 367452160,
+        "at": 1792163133.262954
+      },
+      {
+        "MemAvailable": 2792763392,
+        "MemTotal": 4245315584,
+        "SwapFree": 365973504,
+        "at": 1792163133.7655828
+      },
+      {
+        "MemAvailable": 2978299904,
+        "MemTotal": 4245315584,
+        "SwapFree": 363597824,
+        "at": 1792163134.2660291
+      },
+      {
+        "MemAvailable": 2977263616,
+        "MemTotal": 4245315584,
+        "SwapFree": 361111552,
+        "at": 1792163134.766596
+      },
+      {
+        "MemAvailable": 2977009664,
+        "MemTotal": 4245315584,
+        "SwapFree": 358776832,
+        "at": 1792163135.267084
+      },
+      {
+        "MemAvailable": 2976501760,
+        "MemTotal": 4245315584,
+        "SwapFree": 355074048,
+        "at": 1792163135.7675316
+      },
+      {
+        "MemAvailable": 2992250880,
+        "MemTotal": 4245315584,
+        "SwapFree": 350752768,
+        "at": 1792163136.267912
+      },
+      {
+        "MemAvailable": 3006627840,
+        "MemTotal": 4245315584,
+        "SwapFree": 348229632,
+        "at": 1792163136.7682993
+      },
+      {
+        "MemAvailable": 3001790464,
+        "MemTotal": 4245315584,
+        "SwapFree": 369184768,
+        "at": 1792163137.270842
+      },
+      {
+        "MemAvailable": 2973655040,
+        "MemTotal": 4245315584,
+        "SwapFree": 366419968,
+        "at": 1792163137.7719133
+      },
+      {
+        "MemAvailable": 3093331968,
+        "MemTotal": 4245315584,
+        "SwapFree": 407580672,
+        "at": 1792163138.2723749
+      },
+      {
+        "MemAvailable": 3327426560,
+        "MemTotal": 4245315584,
+        "SwapFree": 484638720,
+        "at": 1792163138.7726278
+      },
+      {
+        "MemAvailable": 3304239104,
+        "MemTotal": 4245315584,
+        "SwapFree": 488624128,
+        "at": 1792163139.2737234
+      },
+      {
+        "MemAvailable": 3329777664,
+        "MemTotal": 4245315584,
+        "SwapFree": 499843072,
+        "at": 1792163139.7743528
+      },
+      {
+        "MemAvailable": 3311230976,
+        "MemTotal": 4245315584,
+        "SwapFree": 522117120,
+        "at": 1792163140.281967
+      },
+      {
+        "MemAvailable": 3276935168,
+        "MemTotal": 4245315584,
+        "SwapFree": 522125312,
+        "at": 1792163140.78239
+      },
+      {
+        "MemAvailable": 3243950080,
+        "MemTotal": 4245315584,
+        "SwapFree": 522125312,
+        "at": 1792163141.2830365
+      },
+      {
+        "MemAvailable": 3231399936,
+        "MemTotal": 4245315584,
+        "SwapFree": 522125312,
+        "at": 1792163141.7845073
+      },
+      {
+        "MemAvailable": 3224940544,
+        "MemTotal": 4245315584,
+        "SwapFree": 522125312,
+        "at": 1792163142.2854593
+      },
+      {
+        "MemAvailable": 3241254912,
+        "MemTotal": 4245315584,
+        "SwapFree": 522227712,
+        "at": 1792163142.7866645
+      },
+      {
+        "MemAvailable": 3225989120,
+        "MemTotal": 4245315584,
+        "SwapFree": 522235904,
+        "at": 1792163143.289234
+      },
+      {
+        "MemAvailable": 3218006016,
+        "MemTotal": 4245315584,
+        "SwapFree": 522252288,
+        "at": 1792163143.8001125
+      },
+      {
+        "MemAvailable": 3214168064,
+        "MemTotal": 4245315584,
+        "SwapFree": 522260480,
+        "at": 1792163144.3005934
+      },
+      {
+        "MemAvailable": 3201814528,
+        "MemTotal": 4245315584,
+        "SwapFree": 522260480,
+        "at": 1792163144.8011272
+      },
+      {
+        "MemAvailable": 3188088832,
+        "MemTotal": 4245315584,
+        "SwapFree": 522268672,
+        "at": 1792163145.303753
+      },
+      {
+        "MemAvailable": 3159343104,
+        "MemTotal": 4245315584,
+        "SwapFree": 522289152,
+        "at": 1792163145.8069458
+      },
+      {
+        "MemAvailable": 3132641280,
+        "MemTotal": 4245315584,
+        "SwapFree": 522289152,
+        "at": 1792163146.324718
+      },
+      {
+        "MemAvailable": 3122466816,
+        "MemTotal": 4245315584,
+        "SwapFree": 522301440,
+        "at": 1792163146.8272943
+      },
+      {
+        "MemAvailable": 3109224448,
+        "MemTotal": 4245315584,
+        "SwapFree": 522305536,
+        "at": 1792163147.3306608
+      },
+      {
+        "MemAvailable": 3103236096,
+        "MemTotal": 4245315584,
+        "SwapFree": 522305536,
+        "at": 1792163147.8312547
+      },
+      {
+        "MemAvailable": 3086176256,
+        "MemTotal": 4245315584,
+        "SwapFree": 522305536,
+        "at": 1792163148.3334246
+      },
+      {
+        "MemAvailable": 3076575232,
+        "MemTotal": 4245315584,
+        "SwapFree": 522317824,
+        "at": 1792163148.8346152
+      },
+      {
+        "MemAvailable": 3069804544,
+        "MemTotal": 4245315584,
+        "SwapFree": 522321920,
+        "at": 1792163149.3353956
+      },
+      {
+        "MemAvailable": 3177639936,
+        "MemTotal": 4245315584,
+        "SwapFree": 522330112,
+        "at": 1792163149.8358548
+      },
+      {
+        "MemAvailable": 3225223168,
+        "MemTotal": 4245315584,
+        "SwapFree": 522330112,
+        "at": 1792163150.3372972
+      },
+      {
+        "MemAvailable": 3258580992,
+        "MemTotal": 4245315584,
+        "SwapFree": 522338304,
+        "at": 1792163150.8393004
+      },
+      {
+        "MemAvailable": 3269783552,
+        "MemTotal": 4245315584,
+        "SwapFree": 522338304,
+        "at": 1792163151.340294
+      },
+      {
+        "MemAvailable": 3271311360,
+        "MemTotal": 4245315584,
+        "SwapFree": 522342400,
+        "at": 1792163151.840936
+      },
+      {
+        "MemAvailable": 3262697472,
+        "MemTotal": 4245315584,
+        "SwapFree": 522346496,
+        "at": 1792163152.341664
+      },
+      {
+        "MemAvailable": 3258658816,
+        "MemTotal": 4245315584,
+        "SwapFree": 522346496,
+        "at": 1792163152.8423436
+      },
+      {
+        "MemAvailable": 3282968576,
+        "MemTotal": 4245315584,
+        "SwapFree": 522366976,
+        "at": 1792163153.3431618
+      },
+      {
+        "MemAvailable": 3290390528,
+        "MemTotal": 4245315584,
+        "SwapFree": 522371072,
+        "at": 1792163153.843731
+      },
+      {
+        "MemAvailable": 3340468224,
+        "MemTotal": 4245315584,
+        "SwapFree": 522387456,
+        "at": 1792163154.3464072
+      },
+      {
+        "MemAvailable": 3347345408,
+        "MemTotal": 4245315584,
+        "SwapFree": 522395648,
+        "at": 1792163154.8471558
+      },
+      {
+        "MemAvailable": 3352002560,
+        "MemTotal": 4245315584,
+        "SwapFree": 522395648,
+        "at": 1792163155.3478537
+      },
+      {
+        "MemAvailable": 3352498176,
+        "MemTotal": 4245315584,
+        "SwapFree": 522407936,
+        "at": 1792163155.849089
+      },
+      {
+        "MemAvailable": 3347431424,
+        "MemTotal": 4245315584,
+        "SwapFree": 522412032,
+        "at": 1792163156.3497007
+      },
+      {
+        "MemAvailable": 3350753280,
+        "MemTotal": 4245315584,
+        "SwapFree": 522416128,
+        "at": 1792163156.850286
+      },
+      {
+        "MemAvailable": 3338059776,
+        "MemTotal": 4245315584,
+        "SwapFree": 522420224,
+        "at": 1792163157.350844
+      },
+      {
+        "MemAvailable": 3337498624,
+        "MemTotal": 4245315584,
+        "SwapFree": 522420224,
+        "at": 1792163157.851746
+      },
+      {
+        "MemAvailable": 3346329600,
+        "MemTotal": 4245315584,
+        "SwapFree": 522424320,
+        "at": 1792163158.3525977
+      },
+      {
+        "MemAvailable": 3385864192,
+        "MemTotal": 4245315584,
+        "SwapFree": 522428416,
+        "at": 1792163158.8530455
+      },
+      {
+        "MemAvailable": 3400380416,
+        "MemTotal": 4245315584,
+        "SwapFree": 522444800,
+        "at": 1792163159.3545043
+      },
+      {
+        "MemAvailable": 3406409728,
+        "MemTotal": 4245315584,
+        "SwapFree": 522448896,
+        "at": 1792163159.857356
+      },
+      {
+        "MemAvailable": 3414306816,
+        "MemTotal": 4245315584,
+        "SwapFree": 522457088,
+        "at": 1792163160.3601513
+      },
+      {
+        "MemAvailable": 3412574208,
+        "MemTotal": 4245315584,
+        "SwapFree": 522457088,
+        "at": 1792163160.8605177
+      },
+      {
+        "MemAvailable": 3400482816,
+        "MemTotal": 4245315584,
+        "SwapFree": 522457088,
+        "at": 1792163161.3611093
+      },
+      {
+        "MemAvailable": 3398414336,
+        "MemTotal": 4245315584,
+        "SwapFree": 522457088,
+        "at": 1792163161.861808
+      },
+      {
+        "MemAvailable": 3388248064,
+        "MemTotal": 4245315584,
+        "SwapFree": 522457088,
+        "at": 1792163162.3622687
+      },
+      {
+        "MemAvailable": 3409215488,
+        "MemTotal": 4245315584,
+        "SwapFree": 522457088,
+        "at": 1792163162.8629055
+      },
+      {
+        "MemAvailable": 3414929408,
+        "MemTotal": 4245315584,
+        "SwapFree": 522461184,
+        "at": 1792163163.3637266
+      },
+      {
+        "MemAvailable": 3429314560,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163163.8642733
+      },
+      {
+        "MemAvailable": 3432148992,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163164.3655043
+      },
+      {
+        "MemAvailable": 3433832448,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163164.8661342
+      },
+      {
+        "MemAvailable": 3435450368,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163165.3666368
+      },
+      {
+        "MemAvailable": 3435810816,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163165.8671017
+      },
+      {
+        "MemAvailable": 3436802048,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163166.3696527
+      },
+      {
+        "MemAvailable": 3437981696,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163166.8702235
+      },
+      {
+        "MemAvailable": 3438985216,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163167.3712575
+      },
+      {
+        "MemAvailable": 3441049600,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163167.871713
+      },
+      {
+        "MemAvailable": 3442573312,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163168.3721204
+      },
+      {
+        "MemAvailable": 3443052544,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163168.8756497
+      },
+      {
+        "MemAvailable": 3444637696,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163169.3761988
+      },
+      {
+        "MemAvailable": 3446067200,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163169.8768606
+      },
+      {
+        "MemAvailable": 3446386688,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163170.377342
+      },
+      {
+        "MemAvailable": 3449475072,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163170.8778815
+      },
+      {
+        "MemAvailable": 3450195968,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163171.3783975
+      },
+      {
+        "MemAvailable": 3451916288,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163171.8790786
+      },
+      {
+        "MemAvailable": 3452973056,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163172.3795369
+      },
+      {
+        "MemAvailable": 3453857792,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163172.8800113
+      },
+      {
+        "MemAvailable": 3454779392,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163173.3804252
+      },
+      {
+        "MemAvailable": 3455991808,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163173.8809326
+      },
+      {
+        "MemAvailable": 3456806912,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163174.381416
+      },
+      {
+        "MemAvailable": 3457658880,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163174.8822272
+      },
+      {
+        "MemAvailable": 3458781184,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163175.3827348
+      },
+      {
+        "MemAvailable": 3348410368,
+        "MemTotal": 4245315584,
+        "SwapFree": 522473472,
+        "at": 1792163175.8836758
+      },
+      {
+        "MemAvailable": 3234889728,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163176.3850496
+      },
+      {
+        "MemAvailable": 3236220928,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163176.885837
+      },
+      {
+        "MemAvailable": 3232665600,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163177.3864121
+      },
+      {
+        "MemAvailable": 3231641600,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163177.887032
+      },
+      {
+        "MemAvailable": 3230158848,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163178.3877368
+      },
+      {
+        "MemAvailable": 3231715328,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163178.888261
+      },
+      {
+        "MemAvailable": 3227799552,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163179.3886485
+      },
+      {
+        "MemAvailable": 3228807168,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163179.8891566
+      },
+      {
+        "MemAvailable": 3229704192,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163180.3898087
+      },
+      {
+        "MemAvailable": 3230318592,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163180.8901372
+      },
+      {
+        "MemAvailable": 3229044736,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163181.3906841
+      },
+      {
+        "MemAvailable": 3229925376,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163181.8913891
+      },
+      {
+        "MemAvailable": 3228774400,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163182.3919153
+      },
+      {
+        "MemAvailable": 3229470720,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163182.8923767
+      },
+      {
+        "MemAvailable": 3226435584,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163183.392812
+      },
+      {
+        "MemAvailable": 3227078656,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163183.8932636
+      },
+      {
+        "MemAvailable": 3228217344,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163184.3937452
+      },
+      {
+        "MemAvailable": 3228868608,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163184.8941896
+      },
+      {
+        "MemAvailable": 3220860928,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163185.3946698
+      },
+      {
+        "MemAvailable": 3221843968,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163185.8951442
+      },
+      {
+        "MemAvailable": 3220787200,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163186.395689
+      },
+      {
+        "MemAvailable": 3220697088,
+        "MemTotal": 3976880128,
+        "SwapFree": 522473472,
+        "at": 1792163186.8962104
+      },
+      {
+        "MemAvailable": 3217350656,
+        "MemTotal": 3976880128,
+        "SwapFree": 521715712,
+        "at": 1792163187.3967986
+      },
+      {
+        "MemAvailable": 3217620992,
+        "MemTotal": 3976880128,
+        "SwapFree": 521715712,
+        "at": 1792163187.8972623
+      },
+      {
+        "MemAvailable": 3218079744,
+        "MemTotal": 3976880128,
+        "SwapFree": 521719808,
+        "at": 1792163188.3977158
+      },
+      {
+        "MemAvailable": 3219009536,
+        "MemTotal": 3976880128,
+        "SwapFree": 521719808,
+        "at": 1792163188.8981807
+      },
+      {
+        "MemAvailable": 3219947520,
+        "MemTotal": 3976880128,
+        "SwapFree": 521719808,
+        "at": 1792163189.3985786
+      },
+      {
+        "MemAvailable": 3220692992,
+        "MemTotal": 3976880128,
+        "SwapFree": 521719808,
+        "at": 1792163189.8990045
+      },
+      {
+        "MemAvailable": 3219423232,
+        "MemTotal": 3976880128,
+        "SwapFree": 521719808,
+        "at": 1792163190.3996506
+      },
+      {
+        "MemAvailable": 3464269824,
+        "MemTotal": 4245315584,
+        "SwapFree": 521719808,
+        "at": 1792163190.9004602
+      },
+      {
+        "MemAvailable": 3465932800,
+        "MemTotal": 4245315584,
+        "SwapFree": 521719808,
+        "at": 1792163191.4012117
+      },
+      {
+        "MemAvailable": 3467038720,
+        "MemTotal": 4245315584,
+        "SwapFree": 521719808,
+        "at": 1792163191.9027424
+      },
+      {
+        "MemAvailable": 3463225344,
+        "MemTotal": 4245315584,
+        "SwapFree": 521134080,
+        "at": 1792163192.403233
+      },
+      {
+        "MemAvailable": 3463524352,
+        "MemTotal": 4245315584,
+        "SwapFree": 521134080,
+        "at": 1792163192.9039829
+      },
+      {
+        "MemAvailable": 3462369280,
+        "MemTotal": 4245315584,
+        "SwapFree": 521134080,
+        "at": 1792163193.4044428
+      },
+      {
+        "MemAvailable": 3460976640,
+        "MemTotal": 4245315584,
+        "SwapFree": 521134080,
+        "at": 1792163193.904864
+      },
+      {
+        "MemAvailable": 3452633088,
+        "MemTotal": 4245315584,
+        "SwapFree": 521134080,
+        "at": 1792163194.4053068
+      },
+      {
+        "MemAvailable": 3445612544,
+        "MemTotal": 4245315584,
+        "SwapFree": 521134080,
+        "at": 1792163194.9057984
+      },
+      {
+        "MemAvailable": 3438235648,
+        "MemTotal": 4245315584,
+        "SwapFree": 521134080,
+        "at": 1792163195.40628
+      },
+      {
+        "MemAvailable": 3430129664,
+        "MemTotal": 4245315584,
+        "SwapFree": 521134080,
+        "at": 1792163195.9066975
+      },
+      {
+        "MemAvailable": 3424788480,
+        "MemTotal": 4245315584,
+        "SwapFree": 521134080,
+        "at": 1792163196.407163
+      },
+      {
+        "MemAvailable": 3448377344,
+        "MemTotal": 4245315584,
+        "SwapFree": 521138176,
+        "at": 1792163196.9076946
+      },
+      {
+        "MemAvailable": 3470987264,
+        "MemTotal": 4245315584,
+        "SwapFree": 521129984,
+        "at": 1792163197.4083261
+      },
+      {
+        "MemAvailable": 3479101440,
+        "MemTotal": 4245315584,
+        "SwapFree": 521183232,
+        "at": 1792163197.908799
+      },
+      {
+        "MemAvailable": 3461754880,
+        "MemTotal": 4245315584,
+        "SwapFree": 521183232,
+        "at": 1792163198.4093285
+      },
+      {
+        "MemAvailable": 3462385664,
+        "MemTotal": 4245315584,
+        "SwapFree": 521183232,
+        "at": 1792163198.9112258
+      },
+      {
+        "MemAvailable": 3463426048,
+        "MemTotal": 4245315584,
+        "SwapFree": 521183232,
+        "at": 1792163199.4136472
+      },
+      {
+        "MemAvailable": 3464966144,
+        "MemTotal": 4245315584,
+        "SwapFree": 521183232,
+        "at": 1792163199.9142787
+      },
+      {
+        "MemAvailable": 3465715712,
+        "MemTotal": 4245315584,
+        "SwapFree": 521183232,
+        "at": 1792163200.4147837
+      },
+      {
+        "MemAvailable": 3466956800,
+        "MemTotal": 4245315584,
+        "SwapFree": 521199616,
+        "at": 1792163200.915251
+      },
+      {
+        "MemAvailable": 3467419648,
+        "MemTotal": 4245315584,
+        "SwapFree": 521199616,
+        "at": 1792163201.4160101
+      },
+      {
+        "MemAvailable": 3466878976,
+        "MemTotal": 4245315584,
+        "SwapFree": 521199616,
+        "at": 1792163201.9171634
+      },
+      {
+        "MemAvailable": 3470450688,
+        "MemTotal": 4245315584,
+        "SwapFree": 521154560,
+        "at": 1792163202.417667
+      },
+      {
+        "MemAvailable": 3471749120,
+        "MemTotal": 4245315584,
+        "SwapFree": 521154560,
+        "at": 1792163202.9182363
+      },
+      {
+        "MemAvailable": 3470897152,
+        "MemTotal": 4245315584,
+        "SwapFree": 521154560,
+        "at": 1792163203.4199905
+      },
+      {
+        "MemAvailable": 3472650240,
+        "MemTotal": 4245315584,
+        "SwapFree": 521154560,
+        "at": 1792163203.9209347
+      },
+      {
+        "MemAvailable": 3473629184,
+        "MemTotal": 4245315584,
+        "SwapFree": 521154560,
+        "at": 1792163204.4216294
+      },
+      {
+        "MemAvailable": 3475320832,
+        "MemTotal": 4245315584,
+        "SwapFree": 521154560,
+        "at": 1792163204.9221613
+      },
+      {
+        "MemAvailable": 3473121280,
+        "MemTotal": 4245315584,
+        "SwapFree": 521154560,
+        "at": 1792163205.4225845
+      },
+      {
+        "MemAvailable": 3474903040,
+        "MemTotal": 4245315584,
+        "SwapFree": 521154560,
+        "at": 1792163205.9230435
+      },
+      {
+        "MemAvailable": 3475972096,
+        "MemTotal": 4245315584,
+        "SwapFree": 521154560,
+        "at": 1792163206.4235878
+      },
+      {
+        "MemAvailable": 3478474752,
+        "MemTotal": 4245315584,
+        "SwapFree": 521138176,
+        "at": 1792163206.9246345
+      },
+      {
+        "MemAvailable": 3479351296,
+        "MemTotal": 4245315584,
+        "SwapFree": 521134080,
+        "at": 1792163207.425271
+      },
+      {
+        "MemAvailable": 3478827008,
+        "MemTotal": 4245315584,
+        "SwapFree": 521134080,
+        "at": 1792163207.9261115
+      },
+      {
+        "MemAvailable": 3478384640,
+        "MemTotal": 4245315584,
+        "SwapFree": 521134080,
+        "at": 1792163208.4287446
+      },
+      {
+        "MemAvailable": 3478503424,
+        "MemTotal": 4245315584,
+        "SwapFree": 521134080,
+        "at": 1792163208.929951
+      },
+      {
+        "MemAvailable": 3479388160,
+        "MemTotal": 4245315584,
+        "SwapFree": 521134080,
+        "at": 1792163209.4309368
+      },
+      {
+        "MemAvailable": 3479212032,
+        "MemTotal": 4245315584,
+        "SwapFree": 521134080,
+        "at": 1792163209.9316173
+      },
+      {
+        "MemAvailable": 3479371776,
+        "MemTotal": 4245315584,
+        "SwapFree": 521134080,
+        "at": 1792163210.43216
+      },
+      {
+        "MemAvailable": 3478577152,
+        "MemTotal": 4245315584,
+        "SwapFree": 521134080,
+        "at": 1792163210.9328184
+      },
+      {
+        "MemAvailable": 3475243008,
+        "MemTotal": 4245315584,
+        "SwapFree": 521134080,
+        "at": 1792163211.433343
+      },
+      {
+        "MemAvailable": 3474157568,
+        "MemTotal": 4245315584,
+        "SwapFree": 521129984,
+        "at": 1792163211.933829
+      },
+      {
+        "MemAvailable": 3467935744,
+        "MemTotal": 4245315584,
+        "SwapFree": 521129984,
+        "at": 1792163212.4344504
+      },
+      {
+        "MemAvailable": 3468623872,
+        "MemTotal": 4245315584,
+        "SwapFree": 521129984,
+        "at": 1792163212.9349165
+      },
+      {
+        "MemAvailable": 3468644352,
+        "MemTotal": 4245315584,
+        "SwapFree": 521129984,
+        "at": 1792163213.4353955
+      },
+      {
+        "MemAvailable": 3468120064,
+        "MemTotal": 4245315584,
+        "SwapFree": 521129984,
+        "at": 1792163213.9389338
+      },
+      {
+        "MemAvailable": 3469418496,
+        "MemTotal": 4245315584,
+        "SwapFree": 521129984,
+        "at": 1792163214.4413486
+      },
+      {
+        "MemAvailable": 3468804096,
+        "MemTotal": 4245315584,
+        "SwapFree": 521129984,
+        "at": 1792163214.9418123
+      },
+      {
+        "MemAvailable": 3468115968,
+        "MemTotal": 4245315584,
+        "SwapFree": 521129984,
+        "at": 1792163215.4426606
+      },
+      {
+        "MemAvailable": 3464589312,
+        "MemTotal": 4245315584,
+        "SwapFree": 521129984,
+        "at": 1792163215.9435997
+      },
+      {
+        "MemAvailable": 3465207808,
+        "MemTotal": 4245315584,
+        "SwapFree": 521129984,
+        "at": 1792163216.4442
+      },
+      {
+        "MemAvailable": 3473379328,
+        "MemTotal": 4245315584,
+        "SwapFree": 521129984,
+        "at": 1792163216.944722
+      },
+      {
+        "MemAvailable": 3474432000,
+        "MemTotal": 4245315584,
+        "SwapFree": 521129984,
+        "at": 1792163217.445429
+      },
+      {
+        "MemAvailable": 3475234816,
+        "MemTotal": 4245315584,
+        "SwapFree": 521129984,
+        "at": 1792163217.945999
+      },
+      {
+        "MemAvailable": 3475066880,
+        "MemTotal": 4245315584,
+        "SwapFree": 521146368,
+        "at": 1792163218.446767
+      },
+      {
+        "MemAvailable": 3475148800,
+        "MemTotal": 4245315584,
+        "SwapFree": 521146368,
+        "at": 1792163218.9472532
+      },
+      {
+        "MemAvailable": 3472928768,
+        "MemTotal": 4245315584,
+        "SwapFree": 521146368,
+        "at": 1792163219.447712
+      },
+      {
+        "MemAvailable": 3472171008,
+        "MemTotal": 4245315584,
+        "SwapFree": 521146368,
+        "at": 1792163219.9482877
+      },
+      {
+        "MemAvailable": 3472756736,
+        "MemTotal": 4245315584,
+        "SwapFree": 521146368,
+        "at": 1792163220.4489443
+      },
+      {
+        "MemAvailable": 3471486976,
+        "MemTotal": 4245315584,
+        "SwapFree": 521146368,
+        "at": 1792163220.9496763
+      },
+      {
+        "MemAvailable": 3471699968,
+        "MemTotal": 4245315584,
+        "SwapFree": 521146368,
+        "at": 1792163221.4502604
+      },
+      {
+        "MemAvailable": 3469930496,
+        "MemTotal": 4245315584,
+        "SwapFree": 519528448,
+        "at": 1792163221.9513004
+      },
+      {
+        "MemAvailable": 3474677760,
+        "MemTotal": 4245315584,
+        "SwapFree": 519528448,
+        "at": 1792163222.4526782
+      },
+      {
+        "MemAvailable": 3475968000,
+        "MemTotal": 4245315584,
+        "SwapFree": 519528448,
+        "at": 1792163222.953298
+      },
+      {
+        "MemAvailable": 3477073920,
+        "MemTotal": 4245315584,
+        "SwapFree": 519528448,
+        "at": 1792163223.4537675
+      },
+      {
+        "MemAvailable": 3477184512,
+        "MemTotal": 4245315584,
+        "SwapFree": 519528448,
+        "at": 1792163223.9542274
+      },
+      {
+        "MemAvailable": 3478151168,
+        "MemTotal": 4245315584,
+        "SwapFree": 519528448,
+        "at": 1792163224.454827
+      },
+      {
+        "MemAvailable": 3478986752,
+        "MemTotal": 4245315584,
+        "SwapFree": 519528448,
+        "at": 1792163224.9552886
+      },
+      {
+        "MemAvailable": 3479851008,
+        "MemTotal": 4245315584,
+        "SwapFree": 519528448,
+        "at": 1792163225.455706
+      },
+      {
+        "MemAvailable": 3480727552,
+        "MemTotal": 4245315584,
+        "SwapFree": 519528448,
+        "at": 1792163225.9563377
+      },
+      {
+        "MemAvailable": 3480596480,
+        "MemTotal": 4245315584,
+        "SwapFree": 519528448,
+        "at": 1792163226.4571514
+      },
+      {
+        "MemAvailable": 3479437312,
+        "MemTotal": 4245315584,
+        "SwapFree": 519528448,
+        "at": 1792163226.9620428
+      },
+      {
+        "MemAvailable": 3479629824,
+        "MemTotal": 4245315584,
+        "SwapFree": 519528448,
+        "at": 1792163227.4627805
+      },
+      {
+        "MemAvailable": 3479289856,
+        "MemTotal": 4245315584,
+        "SwapFree": 519528448,
+        "at": 1792163227.963329
+      },
+      {
+        "MemAvailable": 3478700032,
+        "MemTotal": 4245315584,
+        "SwapFree": 519528448,
+        "at": 1792163228.463736
+      },
+      {
+        "MemAvailable": 3479347200,
+        "MemTotal": 4245315584,
+        "SwapFree": 519528448,
+        "at": 1792163228.964224
+      },
+      {
+        "MemAvailable": 3479314432,
+        "MemTotal": 4245315584,
+        "SwapFree": 519528448,
+        "at": 1792163229.4647164
+      },
+      {
+        "MemAvailable": 3478568960,
+        "MemTotal": 4245315584,
+        "SwapFree": 519528448,
+        "at": 1792163229.9651532
+      },
+      {
+        "MemAvailable": 3469279232,
+        "MemTotal": 4245315584,
+        "SwapFree": 519573504,
+        "at": 1792163230.4658966
+      },
+      {
+        "MemAvailable": 3466231808,
+        "MemTotal": 4245315584,
+        "SwapFree": 519573504,
+        "at": 1792163230.966315
+      },
+      {
+        "MemAvailable": 3458826240,
+        "MemTotal": 4245315584,
+        "SwapFree": 519573504,
+        "at": 1792163231.4668777
+      },
+      {
+        "MemAvailable": 3414941696,
+        "MemTotal": 4245315584,
+        "SwapFree": 516366336,
+        "at": 1792163231.9682653
+      },
+      {
+        "MemAvailable": 3409924096,
+        "MemTotal": 4245315584,
+        "SwapFree": 516366336,
+        "at": 1792163232.469019
+      },
+      {
+        "MemAvailable": 3407626240,
+        "MemTotal": 4245315584,
+        "SwapFree": 516370432,
+        "at": 1792163232.9731069
+      },
+      {
+        "MemAvailable": 3429261312,
+        "MemTotal": 4245315584,
+        "SwapFree": 516481024,
+        "at": 1792163233.4737039
+      },
+      {
+        "MemAvailable": 3437309952,
+        "MemTotal": 4245315584,
+        "SwapFree": 516517888,
+        "at": 1792163233.9750004
+      },
+      {
+        "MemAvailable": 3438469120,
+        "MemTotal": 4245315584,
+        "SwapFree": 516517888,
+        "at": 1792163234.4772444
+      }
+    ],
+    "status": "passed",
+    "synthetic": true,
+    "wall_time_s": 151.93269016593695
+  },
+  "scheduler": {
+    "budget": {
+      "actual_spent_usd": 0.0,
+      "budget_policy": "actual-spend",
+      "call_limit_multiplier": 3,
+      "outstanding_estimate_usd": 0.0,
+      "overrun": false,
+      "pending_calls": 0,
+      "protocol_violation": false,
+      "spent_or_reserved_usd": 0.0,
+      "trials": [
+        {
+          "actual_spent_usd": 0.0,
+          "cost_usd": 0.0,
+          "id": "capacity-first-tinydb-X-engine-core",
+          "stage": "development",
+          "unsettled_calls": 0
+        },
+        {
+          "actual_spent_usd": 0.0,
+          "cost_usd": 0.0,
+          "id": "capacity-first-tinydb-X-mini-swe-agent",
+          "stage": "development",
+          "unsettled_calls": 0
+        },
+        {
+          "actual_spent_usd": 0.0,
+          "cost_usd": 0.0,
+          "id": "capacity-refill-tinydb-X-engine-core",
+          "stage": "development",
+          "unsettled_calls": 0
+        },
+        {
+          "actual_spent_usd": 0.0,
+          "cost_usd": 0.0,
+          "id": "capacity-refill-tinydb-X-mini-swe-agent",
+          "stage": "development",
+          "unsettled_calls": 0
+        },
+        {
+          "actual_spent_usd": 0.0,
+          "cost_usd": 0.0,
+          "id": "capacity-second-dotenv-X-engine-core",
+          "stage": "development",
+          "unsettled_calls": 0
+        },
+        {
+          "actual_spent_usd": 0.0,
+          "cost_usd": 0.0,
+          "id": "capacity-second-dotenv-X-mini-swe-agent",
+          "stage": "development",
+          "unsettled_calls": 0
+        },
+        {
+          "actual_spent_usd": 0.0,
+          "cost_usd": 0.0,
+          "id": "capacity-slow-pqueue-X-engine-core",
+          "stage": "development",
+          "unsettled_calls": 0
+        },
+        {
+          "actual_spent_usd": 0.0,
+          "cost_usd": 0.0,
+          "id": "capacity-slow-pqueue-X-mini-swe-agent",
+          "stage": "development",
+          "unsettled_calls": 0
+        }
+      ],
+      "unknown_bills": 0,
+      "unknown_calls": 0
+    },
+    "events": [
+      {
+        "at": 1792163083.4965143,
+        "id": "capacity-first-tinydb-X-mini-swe-agent",
+        "reason": null,
+        "seq": 1,
+        "state": "queued"
+      },
+      {
+        "at": 1792163083.4967,
+        "id": "capacity-first-tinydb-X-engine-core",
+        "reason": null,
+        "seq": 2,
+        "state": "queued"
+      },
+      {
+        "at": 1792163083.4967277,
+        "id": "capacity-second-dotenv-X-mini-swe-agent",
+        "reason": null,
+        "seq": 3,
+        "state": "queued"
+      },
+      {
+        "at": 1792163083.4967408,
+        "id": "capacity-second-dotenv-X-engine-core",
+        "reason": null,
+        "seq": 4,
+        "state": "queued"
+      },
+      {
+        "at": 1792163083.4967506,
+        "id": "capacity-slow-pqueue-X-mini-swe-agent",
+        "reason": null,
+        "seq": 5,
+        "state": "queued"
+      },
+      {
+        "at": 1792163083.4967594,
+        "id": "capacity-slow-pqueue-X-engine-core",
+        "reason": null,
+        "seq": 6,
+        "state": "queued"
+      },
+      {
+        "at": 1792163083.4967673,
+        "id": "capacity-refill-tinydb-X-mini-swe-agent",
+        "reason": null,
+        "seq": 7,
+        "state": "queued"
+      },
+      {
+        "at": 1792163083.4967756,
+        "id": "capacity-refill-tinydb-X-engine-core",
+        "reason": null,
+        "seq": 8,
+        "state": "queued"
+      },
+      {
+        "at": 1792163083.530938,
+        "id": "capacity-first-tinydb-X-engine-core",
+        "reason": null,
+        "seq": 9,
+        "state": "admitted"
+      },
+      {
+        "at": 1792163083.530977,
+        "id": "capacity-first-tinydb-X-mini-swe-agent",
+        "reason": null,
+        "seq": 10,
+        "state": "admitted"
+      },
+      {
+        "at": 1792163083.5504465,
+        "id": "capacity-second-dotenv-X-engine-core",
+        "reason": null,
+        "seq": 11,
+        "state": "admitted"
+      },
+      {
+        "at": 1792163083.5504775,
+        "id": "capacity-second-dotenv-X-mini-swe-agent",
+        "reason": null,
+        "seq": 12,
+        "state": "admitted"
+      },
+      {
+        "at": 1792163083.5606506,
+        "id": "capacity-slow-pqueue-X-engine-core",
+        "reason": null,
+        "seq": 13,
+        "state": "admitted"
+      },
+      {
+        "at": 1792163083.56068,
+        "id": "capacity-slow-pqueue-X-mini-swe-agent",
+        "reason": null,
+        "seq": 14,
+        "state": "admitted"
+      },
+      {
+        "at": 1792163083.574734,
+        "id": "capacity-first-tinydb-X-engine-core",
+        "reason": null,
+        "seq": 15,
+        "state": "running"
+      },
+      {
+        "at": 1792163083.5839114,
+        "id": "capacity-first-tinydb-X-mini-swe-agent",
+        "reason": null,
+        "seq": 16,
+        "state": "running"
+      },
+      {
+        "at": 1792163083.5946712,
+        "id": "capacity-second-dotenv-X-engine-core",
+        "reason": null,
+        "seq": 17,
+        "state": "running"
+      },
+      {
+        "at": 1792163083.6131358,
+        "id": "capacity-second-dotenv-X-mini-swe-agent",
+        "reason": null,
+        "seq": 18,
+        "state": "running"
+      },
+      {
+        "at": 1792163083.6304712,
+        "id": "capacity-slow-pqueue-X-engine-core",
+        "reason": null,
+        "seq": 19,
+        "state": "running"
+      },
+      {
+        "at": 1792163083.6551173,
+        "id": "capacity-slow-pqueue-X-mini-swe-agent",
+        "reason": null,
+        "seq": 20,
+        "state": "running"
+      },
+      {
+        "at": 1792163119.6711369,
+        "id": "capacity-second-dotenv-X-mini-swe-agent",
+        "reason": null,
+        "seq": 21,
+        "state": "sealing"
+      },
+      {
+        "at": 1792163119.8821108,
+        "id": "capacity-first-tinydb-X-mini-swe-agent",
+        "reason": null,
+        "seq": 22,
+        "state": "sealing"
+      },
+      {
+        "at": 1792163120.1448524,
+        "id": "capacity-second-dotenv-X-engine-core",
+        "reason": null,
+        "seq": 23,
+        "state": "sealing"
+      },
+      {
+        "at": 1792163120.1641319,
+        "id": "capacity-first-tinydb-X-engine-core",
+        "reason": null,
+        "seq": 24,
+        "state": "sealing"
+      },
+      {
+        "at": 1792163126.1676214,
+        "id": "capacity-first-tinydb-X-engine-core",
+        "reason": null,
+        "seq": 25,
+        "state": "grading"
+      },
+      {
+        "at": 1792163131.5802848,
+        "id": "capacity-first-tinydb-X-engine-core",
+        "reason": null,
+        "seq": 26,
+        "state": "finished"
+      },
+      {
+        "at": 1792163131.5999358,
+        "id": "capacity-first-tinydb-X-mini-swe-agent",
+        "reason": null,
+        "seq": 27,
+        "state": "grading"
+      },
+      {
+        "at": 1792163134.178846,
+        "id": "capacity-slow-pqueue-X-mini-swe-agent",
+        "reason": null,
+        "seq": 28,
+        "state": "sealing"
+      },
+      {
+        "at": 1792163136.38186,
+        "id": "capacity-first-tinydb-X-mini-swe-agent",
+        "reason": null,
+        "seq": 29,
+        "state": "finished"
+      },
+      {
+        "at": 1792163136.408212,
+        "id": "capacity-refill-tinydb-X-engine-core",
+        "reason": null,
+        "seq": 30,
+        "state": "admitted"
+      },
+      {
+        "at": 1792163136.4082992,
+        "id": "capacity-refill-tinydb-X-mini-swe-agent",
+        "reason": null,
+        "seq": 31,
+        "state": "admitted"
+      },
+      {
+        "at": 1792163136.435695,
+        "id": "capacity-second-dotenv-X-engine-core",
+        "reason": null,
+        "seq": 32,
+        "state": "grading"
+      },
+      {
+        "at": 1792163136.4487777,
+        "id": "capacity-refill-tinydb-X-engine-core",
+        "reason": null,
+        "seq": 33,
+        "state": "running"
+      },
+      {
+        "at": 1792163136.4625306,
+        "id": "capacity-refill-tinydb-X-mini-swe-agent",
+        "reason": null,
+        "seq": 34,
+        "state": "running"
+      },
+      {
+        "at": 1792163140.218942,
+        "id": "capacity-slow-pqueue-X-engine-core",
+        "reason": null,
+        "seq": 35,
+        "state": "sealing"
+      },
+      {
+        "at": 1792163143.2097938,
+        "id": "capacity-second-dotenv-X-engine-core",
+        "reason": null,
+        "seq": 36,
+        "state": "finished"
+      },
+      {
+        "at": 1792163143.2225451,
+        "id": "capacity-second-dotenv-X-mini-swe-agent",
+        "reason": null,
+        "seq": 37,
+        "state": "grading"
+      },
+      {
+        "at": 1792163149.8637052,
+        "id": "capacity-refill-tinydb-X-mini-swe-agent",
+        "reason": null,
+        "seq": 38,
+        "state": "sealing"
+      },
+      {
+        "at": 1792163151.0444431,
+        "id": "capacity-second-dotenv-X-mini-swe-agent",
+        "reason": null,
+        "seq": 39,
+        "state": "finished"
+      },
+      {
+        "at": 1792163154.0286474,
+        "id": "capacity-refill-tinydb-X-mini-swe-agent",
+        "reason": null,
+        "seq": 40,
+        "state": "grading"
+      },
+      {
+        "at": 1792163154.263774,
+        "id": "capacity-refill-tinydb-X-engine-core",
+        "reason": null,
+        "seq": 41,
+        "state": "sealing"
+      },
+      {
+        "at": 1792163159.1404262,
+        "id": "capacity-refill-tinydb-X-mini-swe-agent",
+        "reason": null,
+        "seq": 42,
+        "state": "finished"
+      },
+      {
+        "at": 1792163159.2138999,
+        "id": "capacity-refill-tinydb-X-engine-core",
+        "reason": null,
+        "seq": 43,
+        "state": "grading"
+      },
+      {
+        "at": 1792163163.1507933,
+        "id": "capacity-refill-tinydb-X-engine-core",
+        "reason": null,
+        "seq": 44,
+        "state": "finished"
+      },
+      {
+        "at": 1792163163.1645696,
+        "id": "capacity-slow-pqueue-X-engine-core",
+        "reason": null,
+        "seq": 45,
+        "state": "grading"
+      },
+      {
+        "at": 1792163197.495108,
+        "id": "capacity-slow-pqueue-X-engine-core",
+        "reason": null,
+        "seq": 46,
+        "state": "finished"
+      },
+      {
+        "at": 1792163197.510223,
+        "id": "capacity-slow-pqueue-X-mini-swe-agent",
+        "reason": null,
+        "seq": 47,
+        "state": "grading"
+      },
+      {
+        "at": 1792163234.5823708,
+        "id": "capacity-slow-pqueue-X-mini-swe-agent",
+        "reason": null,
+        "seq": 48,
+        "state": "finished"
+      }
+    ],
+    "jobs": [
+      {
+        "agent_s": 36.58939790725708,
+        "created_at": 1792163083.4967,
+        "evaluation_s": 5.412663459777832,
+        "id": "capacity-first-tinydb-X-engine-core",
+        "pair_id": "first",
+        "priority": 0,
+        "queue_s": 0.0780339241027832,
+        "result": {
+          "budget_policy": "actual-spend",
+          "call_limit_multiplier": 3,
+          "controller_termination": "completed",
+          "cost_is_conservative": false,
+          "cost_usd": 0.0,
+          "elapsed_s": 34.59292598697357,
+          "evaluation_elapsed_s": 5.375756424968131,
+          "functional_verification": {
+            "checks": [
+              {
+                "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py",
+                "kind": "hidden",
+                "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n__________________________________ test_flush __________________________________\n\ntmp_path = PosixPath('/tmp/pytest-of-bench/pytest-0/test_flush0')\n\n    def test_flush(tmp_path):\n>       assert Storage.flush(MemoryStorage()) is None\n               ^^^^^^^^^^^^^\nE       AttributeError: type object 'Storage' has no attribute 'flush'\n\n/tmp/oracle/check.py:7: AttributeError\n=============================== warnings summary ===============================\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-57gk_ybm'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/lastfailed: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-1hod1k89'\n    config.cache.set(\"cache/lastfailed\", self.lastfailed)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED ../tmp/oracle/check.py::test_flush - AttributeError: type object 'Stor...\n1 failed, 2 warnings in 0.12s\n",
+                "repeat": 0,
+                "returncode": 1
+              }
+            ],
+            "pass": false,
+            "reason": "verification"
+          },
+          "id": "capacity-first-tinydb-X-engine-core",
+          "limit_usd": 4,
+          "new_failing_check_commands": [],
+          "request_count": 4,
+          "retry_of": null,
+          "stage": "development",
+          "system": "engine-core",
+          "task_id": "tinydb-X",
+          "termination": "completed",
+          "tool_evidence": {
+            "checks": {},
+            "pass": true,
+            "required": {}
+          },
+          "upstream_check_failures": [],
+          "verification": {
+            "checks": [
+              {
+                "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py",
+                "kind": "hidden",
+                "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n__________________________________ test_flush __________________________________\n\ntmp_path = PosixPath('/tmp/pytest-of-bench/pytest-0/test_flush0')\n\n    def test_flush(tmp_path):\n>       assert Storage.flush(MemoryStorage()) is None\n               ^^^^^^^^^^^^^\nE       AttributeError: type object 'Storage' has no attribute 'flush'\n\n/tmp/oracle/check.py:7: AttributeError\n=============================== warnings summary ===============================\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-57gk_ybm'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/lastfailed: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-1hod1k89'\n    config.cache.set(\"cache/lastfailed\", self.lastfailed)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED ../tmp/oracle/check.py::test_flush - AttributeError: type object 'Stor...\n1 failed, 2 warnings in 0.12s\n",
+                "repeat": 0,
+                "returncode": 1
+              }
+            ],
+            "pass": false,
+            "reason": "verification"
+          },
+          "watchdog_s": 120
+        },
+        "runtime": {
+          "cpus": 0.5,
+          "memory_gb": 0.375
+        },
+        "stage": "development",
+        "state": "finished",
+        "system": "engine-core",
+        "task_id": "tinydb-X",
+        "updated_at": 1792163131.5802848
+      },
+      {
+        "agent_s": 36.29819941520691,
+        "created_at": 1792163083.4965143,
+        "evaluation_s": 4.781924247741699,
+        "id": "capacity-first-tinydb-X-mini-swe-agent",
+        "pair_id": "first",
+        "priority": 0,
+        "queue_s": 0.08739709854125977,
+        "result": {
+          "budget_policy": "actual-spend",
+          "call_limit_multiplier": 3,
+          "controller_termination": "completed",
+          "cost_is_conservative": false,
+          "cost_usd": 0.0,
+          "elapsed_s": 34.301679423078895,
+          "evaluation_elapsed_s": 4.746897121076472,
+          "functional_verification": {
+            "checks": [
+              {
+                "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py",
+                "kind": "hidden",
+                "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n__________________________________ test_flush __________________________________\n\ntmp_path = PosixPath('/tmp/pytest-of-bench/pytest-0/test_flush0')\n\n    def test_flush(tmp_path):\n>       assert Storage.flush(MemoryStorage()) is None\n               ^^^^^^^^^^^^^\nE       AttributeError: type object 'Storage' has no attribute 'flush'\n\n/tmp/oracle/check.py:7: AttributeError\n=============================== warnings summary ===============================\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-z78kkgoy'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/lastfailed: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-ha2x0avp'\n    config.cache.set(\"cache/lastfailed\", self.lastfailed)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED ../tmp/oracle/check.py::test_flush - AttributeError: type object 'Stor...\n1 failed, 2 warnings in 0.11s\n",
+                "repeat": 0,
+                "returncode": 1
+              }
+            ],
+            "pass": false,
+            "reason": "verification"
+          },
+          "id": "capacity-first-tinydb-X-mini-swe-agent",
+          "limit_usd": 4,
+          "new_failing_check_commands": [],
+          "request_count": 2,
+          "retry_of": null,
+          "stage": "development",
+          "system": "mini-swe-agent",
+          "task_id": "tinydb-X",
+          "termination": "completed",
+          "tool_evidence": {
+            "checks": {},
+            "pass": true,
+            "required": {}
+          },
+          "upstream_check_failures": [],
+          "verification": {
+            "checks": [
+              {
+                "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py",
+                "kind": "hidden",
+                "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n__________________________________ test_flush __________________________________\n\ntmp_path = PosixPath('/tmp/pytest-of-bench/pytest-0/test_flush0')\n\n    def test_flush(tmp_path):\n>       assert Storage.flush(MemoryStorage()) is None\n               ^^^^^^^^^^^^^\nE       AttributeError: type object 'Storage' has no attribute 'flush'\n\n/tmp/oracle/check.py:7: AttributeError\n=============================== warnings summary ===============================\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-z78kkgoy'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/lastfailed: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-ha2x0avp'\n    config.cache.set(\"cache/lastfailed\", self.lastfailed)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED ../tmp/oracle/check.py::test_flush - AttributeError: type object 'Stor...\n1 failed, 2 warnings in 0.11s\n",
+                "repeat": 0,
+                "returncode": 1
+              }
+            ],
+            "pass": false,
+            "reason": "verification"
+          },
+          "watchdog_s": 120
+        },
+        "runtime": {
+          "cpus": 0.5,
+          "memory_gb": 0.375
+        },
+        "stage": "development",
+        "state": "finished",
+        "system": "mini-swe-agent",
+        "task_id": "tinydb-X",
+        "updated_at": 1792163136.38186
+      },
+      {
+        "agent_s": 36.5501811504364,
+        "created_at": 1792163083.4967408,
+        "evaluation_s": 6.774098873138428,
+        "id": "capacity-second-dotenv-X-engine-core",
+        "pair_id": "second",
+        "priority": 1,
+        "queue_s": 0.0979304313659668,
+        "result": {
+          "budget_policy": "actual-spend",
+          "call_limit_multiplier": 3,
+          "controller_termination": "completed",
+          "cost_is_conservative": false,
+          "cost_usd": 0.0,
+          "elapsed_s": 34.478502630023286,
+          "evaluation_elapsed_s": 6.750739492010325,
+          "functional_verification": {
+            "checks": [
+              {
+                "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py",
+                "kind": "hidden",
+                "output": "\n==================================== ERRORS ====================================\n__________________________ ERROR collecting check.py ___________________________\nImportError while importing test module '/tmp/oracle/check.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/tmp/oracle/check.py:3: in <module>\n    from dotenv import load_dotenv, dotenv_values, DotEnvParseError\nE   ImportError: cannot import name 'DotEnvParseError' from 'dotenv' (/task/src/dotenv/__init__.py)\n=============================== warnings summary ===============================\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-eej4cr5i'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/lastfailed: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-rco4c_oh'\n    config.cache.set(\"cache/lastfailed\", self.lastfailed)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR ../tmp/oracle/check.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n2 warnings, 1 error in 0.41s\n",
+                "repeat": 0,
+                "returncode": 2
+              }
+            ],
+            "pass": false,
+            "reason": "verification"
+          },
+          "id": "capacity-second-dotenv-X-engine-core",
+          "limit_usd": 4,
+          "new_failing_check_commands": [],
+          "request_count": 4,
+          "retry_of": null,
+          "stage": "development",
+          "system": "engine-core",
+          "task_id": "dotenv-X",
+          "termination": "completed",
+          "tool_evidence": {
+            "checks": {},
+            "pass": true,
+            "required": {}
+          },
+          "upstream_check_failures": [],
+          "verification": {
+            "checks": [
+              {
+                "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py",
+                "kind": "hidden",
+                "output": "\n==================================== ERRORS ====================================\n__________________________ ERROR collecting check.py ___________________________\nImportError while importing test module '/tmp/oracle/check.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/tmp/oracle/check.py:3: in <module>\n    from dotenv import load_dotenv, dotenv_values, DotEnvParseError\nE   ImportError: cannot import name 'DotEnvParseError' from 'dotenv' (/task/src/dotenv/__init__.py)\n=============================== warnings summary ===============================\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-eej4cr5i'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/lastfailed: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-rco4c_oh'\n    config.cache.set(\"cache/lastfailed\", self.lastfailed)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR ../tmp/oracle/check.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n2 warnings, 1 error in 0.41s\n",
+                "repeat": 0,
+                "returncode": 2
+              }
+            ],
+            "pass": false,
+            "reason": "verification"
+          },
+          "watchdog_s": 120
+        },
+        "runtime": {
+          "cpus": 0.5,
+          "memory_gb": 0.375
+        },
+        "stage": "development",
+        "state": "finished",
+        "system": "engine-core",
+        "task_id": "dotenv-X",
+        "updated_at": 1792163143.2097938
+      },
+      {
+        "agent_s": 36.05800104141235,
+        "created_at": 1792163083.4967277,
+        "evaluation_s": 7.821897983551025,
+        "id": "capacity-second-dotenv-X-mini-swe-agent",
+        "pair_id": "second",
+        "priority": 1,
+        "queue_s": 0.11640810966491699,
+        "result": {
+          "budget_policy": "actual-spend",
+          "call_limit_multiplier": 3,
+          "controller_termination": "completed",
+          "cost_is_conservative": false,
+          "cost_usd": 0.0,
+          "elapsed_s": 33.762126076966524,
+          "evaluation_elapsed_s": 7.786888299044222,
+          "functional_verification": {
+            "checks": [
+              {
+                "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py",
+                "kind": "hidden",
+                "output": "\n==================================== ERRORS ====================================\n__________________________ ERROR collecting check.py ___________________________\nImportError while importing test module '/tmp/oracle/check.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/tmp/oracle/check.py:3: in <module>\n    from dotenv import load_dotenv, dotenv_values, DotEnvParseError\nE   ImportError: cannot import name 'DotEnvParseError' from 'dotenv' (/task/src/dotenv/__init__.py)\n=============================== warnings summary ===============================\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-vcm1bwb4'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/lastfailed: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-d_sxzvtg'\n    config.cache.set(\"cache/lastfailed\", self.lastfailed)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR ../tmp/oracle/check.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n2 warnings, 1 error in 0.33s\n",
+                "repeat": 0,
+                "returncode": 2
+              }
+            ],
+            "pass": false,
+            "reason": "verification"
+          },
+          "id": "capacity-second-dotenv-X-mini-swe-agent",
+          "limit_usd": 4,
+          "new_failing_check_commands": [],
+          "request_count": 2,
+          "retry_of": null,
+          "stage": "development",
+          "system": "mini-swe-agent",
+          "task_id": "dotenv-X",
+          "termination": "completed",
+          "tool_evidence": {
+            "checks": {},
+            "pass": true,
+            "required": {}
+          },
+          "upstream_check_failures": [],
+          "verification": {
+            "checks": [
+              {
+                "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py",
+                "kind": "hidden",
+                "output": "\n==================================== ERRORS ====================================\n__________________________ ERROR collecting check.py ___________________________\nImportError while importing test module '/tmp/oracle/check.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/tmp/oracle/check.py:3: in <module>\n    from dotenv import load_dotenv, dotenv_values, DotEnvParseError\nE   ImportError: cannot import name 'DotEnvParseError' from 'dotenv' (/task/src/dotenv/__init__.py)\n=============================== warnings summary ===============================\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-vcm1bwb4'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/lastfailed: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-d_sxzvtg'\n    config.cache.set(\"cache/lastfailed\", self.lastfailed)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR ../tmp/oracle/check.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n2 warnings, 1 error in 0.33s\n",
+                "repeat": 0,
+                "returncode": 2
+              }
+            ],
+            "pass": false,
+            "reason": "verification"
+          },
+          "watchdog_s": 120
+        },
+        "runtime": {
+          "cpus": 0.5,
+          "memory_gb": 0.375
+        },
+        "stage": "development",
+        "state": "finished",
+        "system": "mini-swe-agent",
+        "task_id": "dotenv-X",
+        "updated_at": 1792163151.0444431
+      },
+      {
+        "agent_s": 56.588470697402954,
+        "created_at": 1792163083.4967594,
+        "evaluation_s": 34.330538272857666,
+        "id": "capacity-slow-pqueue-X-engine-core",
+        "pair_id": "slow",
+        "priority": 2,
+        "queue_s": 0.1337118148803711,
+        "result": {
+          "budget_policy": "actual-spend",
+          "call_limit_multiplier": 3,
+          "controller_termination": "completed",
+          "cost_is_conservative": false,
+          "cost_usd": 0.0,
+          "elapsed_s": 54.54571996303275,
+          "evaluation_elapsed_s": 34.3166692230152,
+          "functional_verification": {
+            "checks": [
+              {
+                "command": "node --import=tsx/esm /tmp/oracle/check.ts",
+                "kind": "hidden",
+                "output": "/tmp/oracle/check.ts:6\nq.setPriorities([{id:'c',priority:2},{id:'c',priority:3}]);\n  ^\n\nTypeError: q.setPriorities is not a function\n    at <anonymous> (/tmp/oracle/check.ts:6:3)\n    at ModuleJob.run (node:internal/modules/esm/module_job:377:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:691:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\n\nNode.js v24.10.0\n",
+                "repeat": 0,
+                "returncode": 1
+              }
+            ],
+            "pass": false,
+            "reason": "verification"
+          },
+          "id": "capacity-slow-pqueue-X-engine-core",
+          "limit_usd": 4,
+          "new_failing_check_commands": [],
+          "request_count": 4,
+          "retry_of": null,
+          "stage": "development",
+          "system": "engine-core",
+          "task_id": "pqueue-X",
+          "termination": "completed",
+          "tool_evidence": {
+            "checks": {},
+            "pass": true,
+            "required": {}
+          },
+          "upstream_check_failures": [],
+          "verification": {
+            "checks": [
+              {
+                "command": "node --import=tsx/esm /tmp/oracle/check.ts",
+                "kind": "hidden",
+                "output": "/tmp/oracle/check.ts:6\nq.setPriorities([{id:'c',priority:2},{id:'c',priority:3}]);\n  ^\n\nTypeError: q.setPriorities is not a function\n    at <anonymous> (/tmp/oracle/check.ts:6:3)\n    at ModuleJob.run (node:internal/modules/esm/module_job:377:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:691:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\n\nNode.js v24.10.0\n",
+                "repeat": 0,
+                "returncode": 1
+              }
+            ],
+            "pass": false,
+            "reason": "verification"
+          },
+          "watchdog_s": 120
+        },
+        "runtime": {
+          "cpus": 0.5,
+          "memory_gb": 0.375
+        },
+        "stage": "development",
+        "state": "finished",
+        "system": "engine-core",
+        "task_id": "pqueue-X",
+        "updated_at": 1792163197.495108
+      },
+      {
+        "agent_s": 50.52372860908508,
+        "created_at": 1792163083.4967506,
+        "evaluation_s": 37.072147846221924,
+        "id": "capacity-slow-pqueue-X-mini-swe-agent",
+        "pair_id": "slow",
+        "priority": 2,
+        "queue_s": 0.15836668014526367,
+        "result": {
+          "budget_policy": "actual-spend",
+          "call_limit_multiplier": 3,
+          "controller_termination": "completed",
+          "cost_is_conservative": false,
+          "cost_usd": 0.0,
+          "elapsed_s": 48.365997579996474,
+          "evaluation_elapsed_s": 36.96810384397395,
+          "functional_verification": {
+            "checks": [
+              {
+                "command": "node --import=tsx/esm /tmp/oracle/check.ts",
+                "kind": "hidden",
+                "output": "/tmp/oracle/check.ts:6\nq.setPriorities([{id:'c',priority:2},{id:'c',priority:3}]);\n  ^\n\nTypeError: q.setPriorities is not a function\n    at <anonymous> (/tmp/oracle/check.ts:6:3)\n    at ModuleJob.run (node:internal/modules/esm/module_job:377:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:691:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\n\nNode.js v24.10.0\n",
+                "repeat": 0,
+                "returncode": 1
+              }
+            ],
+            "pass": false,
+            "reason": "verification"
+          },
+          "id": "capacity-slow-pqueue-X-mini-swe-agent",
+          "limit_usd": 4,
+          "new_failing_check_commands": [],
+          "request_count": 2,
+          "retry_of": null,
+          "stage": "development",
+          "system": "mini-swe-agent",
+          "task_id": "pqueue-X",
+          "termination": "completed",
+          "tool_evidence": {
+            "checks": {},
+            "pass": true,
+            "required": {}
+          },
+          "upstream_check_failures": [],
+          "verification": {
+            "checks": [
+              {
+                "command": "node --import=tsx/esm /tmp/oracle/check.ts",
+                "kind": "hidden",
+                "output": "/tmp/oracle/check.ts:6\nq.setPriorities([{id:'c',priority:2},{id:'c',priority:3}]);\n  ^\n\nTypeError: q.setPriorities is not a function\n    at <anonymous> (/tmp/oracle/check.ts:6:3)\n    at ModuleJob.run (node:internal/modules/esm/module_job:377:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:691:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\n\nNode.js v24.10.0\n",
+                "repeat": 0,
+                "returncode": 1
+              }
+            ],
+            "pass": false,
+            "reason": "verification"
+          },
+          "watchdog_s": 120
+        },
+        "runtime": {
+          "cpus": 0.5,
+          "memory_gb": 0.375
+        },
+        "stage": "development",
+        "state": "finished",
+        "system": "mini-swe-agent",
+        "task_id": "pqueue-X",
+        "updated_at": 1792163234.5823708
+      },
+      {
+        "agent_s": 17.814996242523193,
+        "created_at": 1792163083.4967756,
+        "evaluation_s": 3.9368934631347656,
+        "id": "capacity-refill-tinydb-X-engine-core",
+        "pair_id": "refill",
+        "priority": 3,
+        "queue_s": 52.95200204849243,
+        "result": {
+          "budget_policy": "actual-spend",
+          "call_limit_multiplier": 3,
+          "controller_termination": "completed",
+          "cost_is_conservative": false,
+          "cost_usd": 0.0,
+          "elapsed_s": 15.919704525033012,
+          "evaluation_elapsed_s": 3.9210621049860492,
+          "functional_verification": {
+            "checks": [
+              {
+                "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py",
+                "kind": "hidden",
+                "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n__________________________________ test_flush __________________________________\n\ntmp_path = PosixPath('/tmp/pytest-of-bench/pytest-0/test_flush0')\n\n    def test_flush(tmp_path):\n>       assert Storage.flush(MemoryStorage()) is None\n               ^^^^^^^^^^^^^\nE       AttributeError: type object 'Storage' has no attribute 'flush'\n\n/tmp/oracle/check.py:7: AttributeError\n=============================== warnings summary ===============================\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-64rkspmg'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/lastfailed: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-h294ieyp'\n    config.cache.set(\"cache/lastfailed\", self.lastfailed)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED ../tmp/oracle/check.py::test_flush - AttributeError: type object 'Stor...\n1 failed, 2 warnings in 0.09s\n",
+                "repeat": 0,
+                "returncode": 1
+              }
+            ],
+            "pass": false,
+            "reason": "verification"
+          },
+          "id": "capacity-refill-tinydb-X-engine-core",
+          "limit_usd": 4,
+          "new_failing_check_commands": [],
+          "request_count": 4,
+          "retry_of": null,
+          "stage": "development",
+          "system": "engine-core",
+          "task_id": "tinydb-X",
+          "termination": "completed",
+          "tool_evidence": {
+            "checks": {},
+            "pass": true,
+            "required": {}
+          },
+          "upstream_check_failures": [],
+          "verification": {
+            "checks": [
+              {
+                "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py",
+                "kind": "hidden",
+                "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n__________________________________ test_flush __________________________________\n\ntmp_path = PosixPath('/tmp/pytest-of-bench/pytest-0/test_flush0')\n\n    def test_flush(tmp_path):\n>       assert Storage.flush(MemoryStorage()) is None\n               ^^^^^^^^^^^^^\nE       AttributeError: type object 'Storage' has no attribute 'flush'\n\n/tmp/oracle/check.py:7: AttributeError\n=============================== warnings summary ===============================\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-64rkspmg'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/lastfailed: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-h294ieyp'\n    config.cache.set(\"cache/lastfailed\", self.lastfailed)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED ../tmp/oracle/check.py::test_flush - AttributeError: type object 'Stor...\n1 failed, 2 warnings in 0.09s\n",
+                "repeat": 0,
+                "returncode": 1
+              }
+            ],
+            "pass": false,
+            "reason": "verification"
+          },
+          "watchdog_s": 120
+        },
+        "runtime": {
+          "cpus": 0.5,
+          "memory_gb": 0.375
+        },
+        "stage": "development",
+        "state": "finished",
+        "system": "engine-core",
+        "task_id": "tinydb-X",
+        "updated_at": 1792163163.1507933
+      },
+      {
+        "agent_s": 13.401174545288086,
+        "created_at": 1792163083.4967673,
+        "evaluation_s": 5.111778736114502,
+        "id": "capacity-refill-tinydb-X-mini-swe-agent",
+        "pair_id": "refill",
+        "priority": 3,
+        "queue_s": 52.965763330459595,
+        "result": {
+          "budget_policy": "actual-spend",
+          "call_limit_multiplier": 3,
+          "controller_termination": "completed",
+          "cost_is_conservative": false,
+          "cost_usd": 0.0,
+          "elapsed_s": 11.593521096976474,
+          "evaluation_elapsed_s": 5.078663057065569,
+          "functional_verification": {
+            "checks": [
+              {
+                "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py",
+                "kind": "hidden",
+                "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n__________________________________ test_flush __________________________________\n\ntmp_path = PosixPath('/tmp/pytest-of-bench/pytest-0/test_flush0')\n\n    def test_flush(tmp_path):\n>       assert Storage.flush(MemoryStorage()) is None\n               ^^^^^^^^^^^^^\nE       AttributeError: type object 'Storage' has no attribute 'flush'\n\n/tmp/oracle/check.py:7: AttributeError\n=============================== warnings summary ===============================\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-4ijrejp7'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/lastfailed: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-pqujj26d'\n    config.cache.set(\"cache/lastfailed\", self.lastfailed)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED ../tmp/oracle/check.py::test_flush - AttributeError: type object 'Stor...\n1 failed, 2 warnings in 0.10s\n",
+                "repeat": 0,
+                "returncode": 1
+              }
+            ],
+            "pass": false,
+            "reason": "verification"
+          },
+          "id": "capacity-refill-tinydb-X-mini-swe-agent",
+          "limit_usd": 4,
+          "new_failing_check_commands": [],
+          "request_count": 2,
+          "retry_of": null,
+          "stage": "development",
+          "system": "mini-swe-agent",
+          "task_id": "tinydb-X",
+          "termination": "completed",
+          "tool_evidence": {
+            "checks": {},
+            "pass": true,
+            "required": {}
+          },
+          "upstream_check_failures": [],
+          "verification": {
+            "checks": [
+              {
+                "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py",
+                "kind": "hidden",
+                "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n__________________________________ test_flush __________________________________\n\ntmp_path = PosixPath('/tmp/pytest-of-bench/pytest-0/test_flush0')\n\n    def test_flush(tmp_path):\n>       assert Storage.flush(MemoryStorage()) is None\n               ^^^^^^^^^^^^^\nE       AttributeError: type object 'Storage' has no attribute 'flush'\n\n/tmp/oracle/check.py:7: AttributeError\n=============================== warnings summary ===============================\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-4ijrejp7'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n../usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429\n  /usr/local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tmp/oracle/.pytest_cache/v/cache/lastfailed: [Errno 13] Permission denied: '/tmp/oracle/pytest-cache-files-pqujj26d'\n    config.cache.set(\"cache/lastfailed\", self.lastfailed)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED ../tmp/oracle/check.py::test_flush - AttributeError: type object 'Stor...\n1 failed, 2 warnings in 0.10s\n",
+                "repeat": 0,
+                "returncode": 1
+              }
+            ],
+            "pass": false,
+            "reason": "verification"
+          },
+          "watchdog_s": 120
+        },
+        "runtime": {
+          "cpus": 0.5,
+          "memory_gb": 0.375
+        },
+        "stage": "development",
+        "state": "finished",
+        "system": "mini-swe-agent",
+        "task_id": "tinydb-X",
+        "updated_at": 1792163159.1404262
+      }
+    ],
+    "observed_parallel_attempts": 6
+  },
+  "sealed": [
+    {
+      "id": "capacity-second-dotenv-X-engine-core",
+      "task_id": "dotenv-X",
+      "system": "engine-core",
+      "termination": "completed",
+      "elapsed_s": 34.478502630023286,
+      "cost_usd": 0.0
+    },
+    {
+      "id": "capacity-second-dotenv-X-mini-swe-agent",
+      "task_id": "dotenv-X",
+      "system": "mini-swe-agent",
+      "termination": "completed",
+      "elapsed_s": 33.762126076966524,
+      "cost_usd": 0.0
+    },
+    {
+      "id": "capacity-slow-pqueue-X-engine-core",
+      "task_id": "pqueue-X",
+      "system": "engine-core",
+      "termination": "completed",
+      "elapsed_s": 54.54571996303275,
+      "cost_usd": 0.0
+    },
+    {
+      "id": "capacity-slow-pqueue-X-mini-swe-agent",
+      "task_id": "pqueue-X",
+      "system": "mini-swe-agent",
+      "termination": "completed",
+      "elapsed_s": 48.365997579996474,
+      "cost_usd": 0.0
+    },
+    {
+      "id": "capacity-refill-tinydb-X-engine-core",
+      "task_id": "tinydb-X",
+      "system": "engine-core",
+      "termination": "completed",
+      "elapsed_s": 15.919704525033012,
+      "cost_usd": 0.0
+    },
+    {
+      "id": "capacity-first-tinydb-X-engine-core",
+      "task_id": "tinydb-X",
+      "system": "engine-core",
+      "termination": "completed",
+      "elapsed_s": 34.59292598697357,
+      "cost_usd": 0.0
+    },
+    {
+      "id": "capacity-first-tinydb-X-mini-swe-agent",
+      "task_id": "tinydb-X",
+      "system": "mini-swe-agent",
+      "termination": "completed",
+      "elapsed_s": 34.301679423078895,
+      "cost_usd": 0.0
+    },
+    {
+      "id": "capacity-refill-tinydb-X-mini-swe-agent",
+      "task_id": "tinydb-X",
+      "system": "mini-swe-agent",
+      "termination": "completed",
+      "elapsed_s": 11.593521096976474,
+      "cost_usd": 0.0
+    }
+  ],
+  "remaining_containers": "8891978c6e6a practical_cori \"sleep infinity\"\n5b79b05629b3 hopeful_beaver \"sleep infinity\"\n",
+  "remaining_probe_processes": [],
+  "source": {
+    "remote_directory": "/root/benchmark-capacity-probe-1792162551674911000-quick",
+    "source_sha256": "c5a2472f66596b1c1bb0d1af571d4babfa17103c89f09bc1bdab0920d6cfa1f8",
+    "archive_bytes": 212208,
+    "probe_sha256": "318a4d50a818d61d70ad278e5a322eff574e02337aa219ae5896e446a07d2b72",
+    "previous_probe": "/root/benchmark-capacity-probe-1792162551674911000"
+  }
+}

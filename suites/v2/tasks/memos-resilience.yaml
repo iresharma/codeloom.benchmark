@@ -1,0 +1,144 @@
+id: memos-resilience
+repo: memos
+upstream: https://github.com/usememos/memos.git
+commit: d20362e722ae6efe682007e7eea377a4689e8484
+title: Resilient reader detail and error states
+prompt: 'Support /reader?memo=memos/alpha and other direct memo names using GET /api/v1/{memo}. A 404
+  must show role=alert Memo not found; other HTTP/network failures show role=alert Memos unavailable.
+  Missing creator metadata must show Unknown author. Invalid memo names must not cause requests outside
+  /api/v1/memos/. Preserve a working feed at /reader. Start the seeded real Memos backend/frontend with
+  python .bench/serve_memos.py and use http://127.0.0.1:3001/reader. The CodeLoom tester must call browser_open,
+  browser_screenshot, browser_console and browser_network. Shell agents use python /opt/benchmark-public/browser_check.py
+  http://127.0.0.1:3001/reader. Browser interactions are not required.
+
+
+  Work autonomously in the main task checkout. Production source, documentation and new benchmark_tests/
+  tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/
+  are immutable. Leave the final patch on this checkout.'
+category: browser
+language: typescript
+provenance: authored-feature
+allowed_paths:
+- web/src/pages/Reader.tsx
+- web/src/lib/reader.ts
+- web/src/css/reader.css
+- web/src/components/*
+- benchmark_tests/*
+setup:
+  web/src/pages/Reader.tsx: "import { useEffect, useState } from \"react\";\nimport MemoContent from \"\
+    @/components/MemoContent\";\nimport { loadMemos, selectMemos } from \"@/lib/reader\";\nimport { Memo\
+    \ } from \"@/types/proto/api/v1/memo_service\";\nimport \"@/css/reader.css\";\nexport default function\
+    \ Reader() {\n  const [memos, setMemos] = useState<Memo[]>([]);\n  const [error, setError] = useState(\"\
+    \");\n  useEffect(() => { loadMemos().then(setMemos).catch(() => setError(\"Memos unavailable\"));\
+    \ }, []);\n  const params = new URLSearchParams(location.search);\n  const visible = selectMemos(memos,\
+    \ params);\n  return <main className=\"memo-reader\">\n    <header className=\"reader-toolbar\"><h1>Public\
+    \ memo reader</h1><a href=\"/explore\">Open Memos</a></header>\n    {error && <p>{error}</p>}\n  \
+    \  <section className=\"reader-feed\">{visible.map(memo => <article key={memo.name} data-memo={memo.name}>\n\
+    \      <p className=\"reader-meta\">{memo.creator} \xB7 {memo.displayTime?.toISOString()}</p>\n  \
+    \    <MemoContent nodes={memo.nodes} readonly />\n      <div className=\"reader-attachments\">{memo.resources.map(resource\
+    \ => <a key={resource.name} href={resource.externalLink || `/file/${resource.name}/${resource.filename}`}>{resource.filename}</a>)}</div>\n\
+    \    </article>)}</section>\n  </main>;\n}\n"
+  web/src/lib/reader.ts: "import { Memo } from \"@/types/proto/api/v1/memo_service\";\nexport async function\
+    \ loadMemos(): Promise<Memo[]> {\n  const response = await fetch(\"/api/v1/memos?pageSize=100\");\n\
+    \  if (!response.ok) throw new Error(\"Memos unavailable\");\n  const data = await response.json();\n\
+    \  return (data.memos || []).map((memo: unknown) => Memo.fromPartial({ ...(memo as Memo), displayTime:\
+    \ (memo as Memo).displayTime ? new Date(String((memo as Memo).displayTime)) : undefined }));\n}\n\
+    export function selectMemos(memos: Memo[], _params: URLSearchParams): Memo[] { return memos; }\n"
+  web/src/css/reader.css: '.memo-reader { padding: 24px; }
+
+    .reader-feed { display: grid; gap: 20px; }
+
+    .reader-feed article { padding: 16px; border: 1px solid #bbb; }
+
+    '
+  web/package.json:
+  - old: '"@usememos/mui": "0.1.0-20250601165716"'
+    new: '"@usememos/mui": "npm:@mui/joy@5.0.0-beta.51"'
+  .bench/serve_memos.py: "import os, pathlib, sqlite3, subprocess, time, urllib.request\ndata = pathlib.Path(\"\
+    /tmp/memos-data\")\ndata.mkdir(exist_ok=True)\ndatabase = data / \"memos_prod.db\"\nif not database.exists():\n\
+    \  with sqlite3.connect(database) as db:\n    db.executescript(pathlib.Path(\"store/migration/sqlite/LATEST.sql\"\
+    ).read_text())\n    db.execute(\"INSERT INTO migration_history(version) VALUES ('0.24.4')\")\n   \
+    \ db.execute(\"INSERT INTO user(id,username,role,nickname,password_hash) VALUES (1,'reader','HOST','Reader','unused')\"\
+    )\n    db.execute(\"INSERT INTO memo(id,uid,creator_id,content,visibility,created_ts,updated_ts) VALUES(1,'alpha',1,?,'PUBLIC',1700000000,1700000000)\"\
+    , (\"# Alpha release\\n\\n#release \\n\\n\" + \"VeryLongMemo\"*80 + \"\\n\\n| Name | State |\\n| ---\
+    \ | --- |\\n| Alpha | Ready |\\n\\n```python\\nprint('ready')\\n```\",))\n    db.execute(\"INSERT\
+    \ INTO memo(id,uid,creator_id,content,visibility,created_ts,updated_ts) VALUES(2,'beta',1,'# Beta\
+    \ planning\\n\\n#planning Next steps','PUBLIC',1700000010,1700000010)\")\n    db.execute(\"INSERT\
+    \ INTO resource(id,uid,creator_id,filename,type,size,memo_id,storage_type,reference) VALUES(1,'attachment',1,?,'application/pdf',100,1,'EXTERNAL','https://example.com/report.pdf')\"\
+    , ('quarterly-report-'*20+'.pdf',))\nbackend = subprocess.Popen(['/opt/benchmark/memos','--mode','prod','--data',str(data),'--port','8081'])\n\
+    try:\n  for _ in range(120):\n    try:\n      urllib.request.urlopen('http://127.0.0.1:8081/api/v1/memos',\
+    \ timeout=1).close()\n      break\n    except OSError: time.sleep(.5)\n  frontend = subprocess.Popen(['npm','run','dev','--','--host','127.0.0.1'],\
+    \ cwd='web')\n  frontend.wait()\nfinally: backend.terminate()\n"
+  web/src/router/index.tsx:
+  - old: const router = createBrowserRouter([
+    new: "import Reader from \"@/pages/Reader\";\n\nconst router = createBrowserRouter([\n  { path: \"\
+      /reader\", element: <Reader /> },"
+  web/src/legacy-mui.tsx: "// Compatibility for the unpublished historical @usememos/mui wrapper.\nimport\
+    \ { Button as JoyButton, ButtonProps, Textarea as JoyTextarea, TextareaProps } from \"@mui/joy\";\n\
+    export * from \"@mui/joy\";\nexport function Button({asChild, ...props}: ButtonProps & {asChild?:\
+    \ boolean}) {\n  return <JoyButton {...props} component={asChild ? \"span\" : \"button\"} />;\n}\n\
+    export function Textarea({rows,fullWidth,...props}: TextareaProps & {rows?:number;fullWidth?:boolean})\
+    \ {\n  return <JoyTextarea {...props} minRows={rows ?? props.minRows} sx={{...(fullWidth ? {width:\"\
+    100%\"} : {}),...props.sx}} />;\n}\n"
+  web/vite.config.ts:
+  - old: 'alias: {'
+    new: "alias: {\n      \"@usememos/mui\": `${resolve(__dirname, \"src\")}/legacy-mui.tsx`,"
+  web/tsconfig.json:
+  - old: '"moduleResolution": "Node"'
+    new: '"moduleResolution": "Bundler"'
+  - old: '"paths": {'
+    new: "\"paths\": {\n      \"@usememos/mui\": [\"./src/legacy-mui.tsx\"],"
+  web/src/main.tsx:
+  - old: import "@usememos/mui/dist/index.css";
+    new: // Historical wrapper CSS is supplied by Joy CssVarsProvider in this fixture.
+reference:
+  web/src/pages/Reader.tsx: "import { useEffect, useState } from \"react\";\nimport MemoContent from \"\
+    @/components/MemoContent\";\nimport { loadMemos, selectMemos } from \"@/lib/reader\";\nimport { Memo\
+    \ } from \"@/types/proto/api/v1/memo_service\";\nimport \"@/css/reader.css\";\nexport default function\
+    \ Reader() {\n  const [memos, setMemos] = useState<Memo[]>([]);\n  const [error, setError] = useState(\"\
+    \");\n  useEffect(() => { loadMemos().then(setMemos).catch((error:Error) => setError(error.message));\
+    \ }, []);\n  const params = new URLSearchParams(location.search);\n  const visible = selectMemos(memos,\
+    \ params);\n  return <main className=\"memo-reader\">\n    <header className=\"reader-toolbar\"><h1>Public\
+    \ memo reader</h1><a href=\"/explore\">Open Memos</a></header>\n    {error && <p role=\"alert\">{error}</p>}\n\
+    \    <section className=\"reader-feed\">{visible.map(memo => <article key={memo.name} data-memo={memo.name}>\n\
+    \      <p className=\"reader-meta\">{memo.creator || \"Unknown author\"} \xB7 {memo.displayTime?.toISOString()}</p>\n\
+    \      <MemoContent nodes={memo.nodes} readonly />\n      <div className=\"reader-attachments\">{memo.resources.map(resource\
+    \ => <a key={resource.name} href={resource.externalLink || `/file/${resource.name}/${resource.filename}`}>{resource.filename}</a>)}</div>\n\
+    \    </article>)}</section>\n  </main>;\n}\n"
+  web/src/lib/reader.ts: "import { Memo } from \"@/types/proto/api/v1/memo_service\";\nexport async function\
+    \ loadMemos(): Promise<Memo[]> {\n  const response = await fetch(new URLSearchParams(location.search).get(\"\
+    memo\") ? \"/api/v1/\" + validMemoName(new URLSearchParams(location.search).get(\"memo\")!) : \"/api/v1/memos?pageSize=100\"\
+    );\n  if (!response.ok) throw new Error(response.status===404 ? \"Memo not found\" : \"Memos unavailable\"\
+    );\n  const data = await response.json();\n  return (data.memos || (data.name ? [data] : [])).map((memo:\
+    \ unknown) => Memo.fromPartial({ ...(memo as Memo), displayTime: (memo as Memo).displayTime ? new\
+    \ Date(String((memo as Memo).displayTime)) : undefined }));\n}\nexport function selectMemos(memos:\
+    \ Memo[], _params: URLSearchParams): Memo[] { return memos; }\n\nfunction validMemoName(name:string):string\
+    \ { if(!/^memos\\/[a-zA-Z0-9_-]+$/.test(name)) throw new Error(\"Memo not found\"); return name; }\n"
+  web/src/css/reader.css: '.memo-reader { padding: 24px; }
+
+    .reader-feed { display: grid; gap: 20px; }
+
+    .reader-feed article { padding: 16px; border: 1px solid #bbb; }
+
+    '
+mutants: []
+verification:
+- cd web && ./node_modules/.bin/tsc --noEmit --skipLibCheck
+runtime:
+  cpus: 2
+  memory_gb: 4
+  browser: true
+  node_workdir: web
+  go_modules: true
+  prepare: chown -R bench:bench /task /tmp /opt/benchmark
+  services:
+  - command: python .bench/serve_memos.py
+    ready: curl -fsS http://127.0.0.1:3001/reader >/dev/null
+    readiness_attempts: 120
+evidence:
+  browser: true
+grader:
+  command: python -m pytest -o addopts= -q /tmp/oracle/check.py
+dependency_note: Pinned upstream MUI prerelease is no longer published; fixture setup uses an npm alias
+  to the existing compatible Joy UI 5.0.0-beta.51 API before locking dependencies. This is part of the
+  disclosed starting snapshot, not an agent change.

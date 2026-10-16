@@ -1,0 +1,42 @@
+id: starlette-mounts
+repo: starlette
+upstream: https://github.com/Kludex/starlette.git
+commit: cb8f84f5284dc301ca7a31eb732b9e140769dd48
+title: Repair nested URL generation
+prompt: 'Repair nested named mounts and URLPath.make_absolute_url so root paths, escaped path parameters
+  and secure scheme/host information are preserved. Restore existing public behavior; retain request isolation.
+
+
+  Work autonomously in the main task checkout. Production source, documentation and new benchmark_tests/
+  tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/
+  are immutable. Leave the final patch on this checkout.'
+category: bug
+language: python
+provenance: fabricated-regression
+allowed_paths:
+- starlette/*.py
+- docs/*
+- benchmark_tests/*
+setup:
+  starlette/routing.py:
+  - old: path=path_prefix.rstrip("/") + str(url)
+    new: path=path_prefix.strip("/") + str(url)
+  starlette/datastructures.py:
+  - old: path = base_url.path.rstrip("/") + str(self)
+    new: path = str(self)
+reference:
+  starlette/routing.py:
+  - old: path=path_prefix.strip("/") + str(url)
+    new: path=path_prefix.rstrip("/") + str(url)
+  starlette/datastructures.py:
+  - old: path = str(self)
+    new: path = base_url.path.rstrip("/") + str(self)
+mutants: []
+verification:
+- python -m pytest -o addopts= -q tests/test_routing.py tests/test_datastructures.py
+runtime:
+  cpus: 2
+  memory_gb: 3
+evidence: {}
+grader:
+  command: python -m pytest -o addopts= -q /tmp/oracle/check.py

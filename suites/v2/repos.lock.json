@@ -1,0 +1,30 @@
+{
+  "memos": {
+    "upstream": "usememos/memos",
+    "commit": "d20362e722ae6efe682007e7eea377a4689e8484"
+  },
+  "starlette": {
+    "upstream": "Kludex/starlette",
+    "commit": "cb8f84f5284dc301ca7a31eb732b9e140769dd48"
+  },
+  "httpie": {
+    "upstream": "httpie/cli",
+    "commit": "2105caa49bae87c5809c274e407619a0de2639d1"
+  },
+  "httpx": {
+    "upstream": "encode/httpx",
+    "commit": "26d48e0634e6ee9cdc0533996db289ce4b430177"
+  },
+  "dotenv": {
+    "upstream": "theskumar/python-dotenv",
+    "commit": "0b2880591780a426b0551436f47a17e7a76d954f"
+  },
+  "pqueue": {
+    "upstream": "sindresorhus/p-queue",
+    "commit": "7f272ab5ff2254c0dc2537b7977e88ede1cd55e8"
+  },
+  "tinydb": {
+    "upstream": "msiemens/tinydb",
+    "commit": "6d7c4fc3e04d398b1282876514660a33a7897b41"
+  }
+}

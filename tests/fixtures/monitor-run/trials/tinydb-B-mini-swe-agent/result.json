@@ -1,0 +1,9 @@
+{
+  "id": "tinydb-B-mini-swe-agent",
+  "task_id": "tinydb-B",
+  "system": "mini-swe-agent",
+  "termination": "completed",
+  "verification": {"pass": true},
+  "cost_usd": 0.026,
+  "elapsed_s": 240
+}

@@ -1,0 +1,61 @@
+id: httpx-redirects
+repo: httpx
+upstream: https://github.com/encode/httpx.git
+commit: 26d48e0634e6ee9cdc0533996db289ce4b430177
+title: Research and repair redirects
+prompt: 'Use web search and the pinned GitHub source to investigate and repair cross-origin redirects:
+  remove credentials except a same-host default-port HTTP-to-HTTPS upgrade; do not carry raw Cookie headers
+  into redirect requests. Before editing, obtain a researcher briefing. Leave research.md citing external
+  sources and the pinned GitHub commit, explaining the compatibility contract and the changes. Shell-native
+  agents use python /opt/benchmark-public/research.py search ''{"query":"HTTPX redirects"}'' and github
+  ''{"args":["api","repos/encode/httpx/contents/httpx/_client.py?ref=26d48e0634e6ee9cdc0533996db289ce4b430177","-H","Accept:
+  application/vnd.github.raw"]}''. Successful search and GitHub source access are required.
+
+
+  Work autonomously in the main task checkout. Production source, documentation and new benchmark_tests/
+  tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/
+  are immutable. Leave the final patch on this checkout.'
+category: research
+language: python
+provenance: fabricated-regression
+allowed_paths:
+- httpx/*.py
+- docs/*
+- research.md
+- benchmark_tests/*
+setup:
+  httpx/_client.py:
+  - old: headers.pop("Authorization", None)
+    new: headers.pop("X-Unused-Authorization", None)
+  - old: headers.pop("Cookie", None)
+    new: headers.pop("X-Unused-Cookie", None)
+  httpx/_urls.py:
+  - old: 'host: str = self._uri_reference.host'
+    new: 'host: str = self._uri_reference.host.upper()'
+reference:
+  httpx/_client.py:
+  - old: headers.pop("X-Unused-Cookie", None)
+    new: headers.pop("Cookie", None)
+  - old: headers.pop("X-Unused-Authorization", None)
+    new: headers.pop("Authorization", None)
+  httpx/_urls.py:
+  - old: 'host: str = self._uri_reference.host.upper()'
+    new: 'host: str = self._uri_reference.host'
+mutants: []
+verification:
+- python -m pytest -o addopts= -q tests/client/test_redirects.py tests/models/test_url.py
+runtime:
+  cpus: 2
+  memory_gb: 3
+evidence:
+  research: true
+grader:
+  command: python -m pytest -o addopts= -q /tmp/oracle/check.py
+research:
+  repo_refs:
+    encode/httpx: 26d48e0634e6ee9cdc0533996db289ce4b430177
+  hosts:
+  - www.python-httpx.org
+  - www.rfc-editor.org
+  - httpwg.org
+  - docs.python.org

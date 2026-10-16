@@ -1,0 +1,11 @@
+minisweagent.environment: DEBUG: Starting container with command: docker run -d 
+--name minisweagent-e1c6d434 -w /task --platform linux/amd64 --cap-drop=ALL     
+--security-opt=no-new-privileges --pids-limit=512 --memory=3g --cpus=2 --network
+bench-74a9e1b0c1e4 -e ENGINE_RESEARCH_GATEWAY=http://127.0.0.1:65342/research -e
+ENGINE_RESEARCH_TOKEN=<trial-token>               
+sha256:9af257dd6b85eacea3e7e699225c7fed4166ef5771f7e43b35f5635be131c56d sleep   
+720s                                                                            
+minisweagent.environment: INFO: Started container minisweagent-e1c6d434 with ID 
+1a5b21c7117a0fcf3a630ca926d05d7cac83c9632a2d83968616a48c2894623f                
+20:09:42 - LiteLLM:WARNING: litellm_logging.py:1991 - Billable request priced at $0 and logged as such (model_group=openrouter/deepseek/deepseek-v4-pro-0813 model=openrouter/deepseek/deepseek-v4-pro-0813 provider=openrouter prompt_tokens=10 completion_tokens=1): pricing entry 'openrouter/deepseek/deepseek-v4-pro-0813' declares non-zero rates for this usage, but the cost calculator returned $0. Counted in litellm_zero_cost_requests_total{reason="pricing_not_applied"}
+20:09:42 - LiteLLM:WARNING: litellm_logging.py:1991 - Billable request priced at $0 and logged as such (model_group=openrouter/deepseek/deepseek-v4-pro-0813 model=openrouter/deepseek/deepseek-v4-pro-0813 provider=openrouter prompt_tokens=10 completion_tokens=1): pricing entry 'openrouter/deepseek/deepseek-v4-pro-0813' declares non-zero rates for this usage, but the cost calculator returned $0. Counted in litellm_zero_cost_requests_total{reason="pricing_not_applied"}

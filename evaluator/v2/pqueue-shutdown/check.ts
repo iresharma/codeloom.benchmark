@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import PQueue from '/task/source/index.ts';
+const queue=new PQueue({concurrency:1});
+let release!:()=>void;
+const running=queue.add(()=>new Promise<void>(resolve=>{release=resolve}));
+let executed=false;
+const queued=queue.add(()=>{executed=true});
+const rejected=assert.rejects(queued,{name:'AbortError'});
+queue.clear(); release();
+await Promise.race([Promise.all([running,rejected,queue.onIdle()]),new Promise((_,reject)=>setTimeout(()=>reject(new Error('unsettled clear')),500))]);
+assert.equal(executed,false);
+const controller=new AbortController();
+queue.pause();
+const aborted=queue.add(()=>{executed=true},{signal:controller.signal});
+const abortAssertion=assert.rejects(aborted,{name:'AbortError'});
+controller.abort(); await abortAssertion;
+queue.start(); await queue.onIdle(); assert.equal(executed,false);

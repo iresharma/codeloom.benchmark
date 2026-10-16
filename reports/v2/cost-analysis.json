@@ -1,0 +1,22 @@
+{
+  "attempt_count": 30,
+  "campaign_target_usd": 50,
+  "hard_ceiling": false,
+  "individual_attempt_targets_usd": 120,
+  "inference_target_usd": 45,
+  "limitations": [
+    "Targets are not guaranteed allocations or measured cost forecasts.",
+    "Concurrent final calls can exceed stage and campaign targets.",
+    "Fresh representative calibration is required before measurement."
+  ],
+  "max_parallel_attempts": 6,
+  "outstanding_estimate_gate_usd": 72,
+  "stage_targets_usd": {
+    "development": 8,
+    "measured": 32,
+    "recovery": 5
+  },
+  "status": "assumptions",
+  "suite": "v2",
+  "task_count": 15
+}

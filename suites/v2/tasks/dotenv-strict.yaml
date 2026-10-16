@@ -1,0 +1,80 @@
+id: dotenv-strict
+repo: dotenv
+upstream: https://github.com/theskumar/python-dotenv.git
+commit: 0b2880591780a426b0551436f47a17e7a76d954f
+category: cross-file
+language: python
+title: Strict dotenv loading API and CLI
+prompt: 'Add strict: bool=False to DotEnv, load_dotenv and dotenv_values. In strict mode a malformed binding
+  raises public dotenv.DotEnvParseError(ValueError), with .line (1-based int) and .path (input path or
+  None for streams), before setting any environment variable. Lenient defaults remain unchanged. Add dotenv
+  run --strict that uses this API and exits nonzero on invalid input; valid files still run the command.
+
+
+  Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You
+  may edit production source and add tests under benchmark_tests/, but existing tests/configuration and
+  .bench files are immutable.
+
+
+  Work autonomously in the main task checkout. Production source, documentation and new benchmark_tests/
+  tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/
+  are immutable. Leave the final patch on this checkout.'
+allowed_paths:
+- src/dotenv/*.py
+- tests/*.py
+- benchmark_tests/*
+verification:
+- python -m pytest -q tests
+provenance: cross-file
+setup: {}
+reference:
+  src/dotenv/main.py:
+  - old: 'class DotEnv:
+
+      '
+    new: "class DotEnvParseError(ValueError):\n    def __init__(self, line: int, path=None):\n       \
+      \ self.line = line\n        self.path = path\n        super().__init__(f\"Invalid binding at line\
+      \ {line}: {path or '<stream>'}\")\n\n\nclass DotEnv:\n"
+  - old: "        override: bool = True,\n    ) -> None:"
+    new: "        override: bool = True,\n        strict: bool = False,\n    ) -> None:"
+  - old: '        self.override: bool = override'
+    new: "        self.override: bool = override\n        self.strict = strict"
+  - old: "                if mapping.key is not None:\n                    yield mapping.key, mapping.value"
+    new: "                if mapping.error and self.strict:\n                    raise DotEnvParseError(mapping.original.line,\
+      \ self.dotenv_path)\n                if mapping.key is not None:\n                    yield mapping.key,\
+      \ mapping.value"
+  - old: '    encoding: Optional[str] = "utf-8",
+
+      ) -> bool:'
+    new: "    encoding: Optional[str] = \"utf-8\",\n    strict: bool = False,\n) -> bool:"
+  - old: '    encoding: Optional[str] = "utf-8",
+
+      ) -> Dict[str, Optional[str]]:'
+    new: "    encoding: Optional[str] = \"utf-8\",\n    strict: bool = False,\n) -> Dict[str, Optional[str]]:"
+  - old: "        interpolate=interpolate,\n        override=override,\n        encoding=encoding,\n \
+      \   )"
+    new: "        interpolate=interpolate,\n        override=override,\n        encoding=encoding,\n \
+      \       strict=strict,\n    )"
+  - old: "        override=True,\n        encoding=encoding,\n    ).dict()"
+    new: "        override=True,\n        encoding=encoding,\n        strict=strict,\n    ).dict()"
+  src/dotenv/cli.py:
+  - old: 'def run(ctx: click.Context, override: bool, commandline: tuple[str, ...]) -> None:'
+    new: '@click.option("--strict", is_flag=True, default=False)
+
+      def run(ctx: click.Context, override: bool, commandline: tuple[str, ...], strict: bool = False)
+      -> None:'
+  - old: DotEnv(file, override=override, encoding="utf-8")
+    new: DotEnv(file, override=override, encoding="utf-8", strict=strict)
+  src/dotenv/__init__.py:
+  - old: from .main import dotenv_values,
+    new: from .main import DotEnvParseError, dotenv_values,
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.
+runtime:
+  cpus: 2
+  memory_gb: 3
+evidence: {}
+grader:
+  command: python -m pytest -o addopts= -q /tmp/oracle/check.py

@@ -1,0 +1,47 @@
+id: httpie-downloads
+repo: httpie
+upstream: https://github.com/httpie/cli.git
+commit: 2105caa49bae87c5809c274e407619a0de2639d1
+title: Repair terminal downloads
+prompt: 'Repair resumed downloads: send Range for an existing partial file; validate Content-Range before
+  appending; restart rather than append if the server replies 200; malformed ranges must fail without
+  modifying the existing file. Reproduce with actual python -m httpie commands against a local HTTP server.
+  Record commands and observed exit codes in your report.
+
+
+  Work autonomously in the main task checkout. Production source, documentation and new benchmark_tests/
+  tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/
+  are immutable. Leave the final patch on this checkout.'
+category: terminal
+language: python
+provenance: fabricated-regression
+allowed_paths:
+- httpie/*.py
+- httpie/legacy/*.py
+- docs/*
+- benchmark_tests/*
+setup:
+  httpie/downloads.py:
+  - old: request_headers['Range'] = f'bytes={bytes_have}-'
+    new: request_headers['Range'] = 'bytes=0-'
+  httpie/core.py:
+  - old: resume=args.download_resume)
+    new: resume=False)
+reference:
+  httpie/downloads.py:
+  - old: request_headers['Range'] = 'bytes=0-'
+    new: request_headers['Range'] = f'bytes={bytes_have}-'
+  httpie/core.py:
+  - old: resume=False)
+    new: resume=args.download_resume)
+mutants: []
+verification:
+- python -m pytest -o addopts= -q tests/test_downloads.py
+runtime:
+  cpus: 2
+  memory_gb: 3
+evidence:
+  terminal: true
+  command_pattern: python(?:3)?\s+-m\s+httpie\b
+grader:
+  command: python -m pytest -o addopts= -q /tmp/oracle/check.py

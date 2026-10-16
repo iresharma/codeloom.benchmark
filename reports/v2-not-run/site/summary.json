@@ -1,0 +1,632 @@
+{
+  "blocked_reason": null,
+  "budget_is_hard_ceiling": false,
+  "budget_policy": "actual-spend",
+  "budget_usd": 50,
+  "calibration_status": "not_run",
+  "call_limit_multiplier": 3,
+  "campaign_wall_s": 0,
+  "classifier": "off",
+  "concurrency": {
+    "evaluation_workers": 2,
+    "max_parallel_attempts": 6,
+    "max_parallel_task_pairs": 3
+  },
+  "difficulty_mix": {
+    "heavy": 15
+  },
+  "limitations": [
+    "Author-designed corpus; no independent review.",
+    "One run per task; no reliability, interaction, or component-effect claims.",
+    "Synthetic bugs keep upstream tests, which can reveal the regression.",
+    "Test-generation features are supplied with their reference tests withheld.",
+    "Offline report rebuilding is reproducible; model outputs, endpoint availability and prices are not.",
+    "Host ARM64 runs Linux AMD64 through emulation."
+  ],
+  "model": "deepseek/deepseek-v4-pro-0813",
+  "paid_runs_authorized": false,
+  "pairs": {
+    "both_fail": 0,
+    "both_pass": 0,
+    "engine_only": 0,
+    "mini_only": 0,
+    "unresolved": 0,
+    "unrun": 15
+  },
+  "platform": "linux/amd64",
+  "preregistration_commit": null,
+  "provider": "baidu/fp8",
+  "reasoning_effort": "high",
+  "repeat_count": 0,
+  "repo_count": 7,
+  "run_id": "v2-not-run",
+  "scheduler": {
+    "events": [],
+    "jobs": []
+  },
+  "schema_version": 2,
+  "status": "not_run",
+  "suite": "v2",
+  "systems": [
+    {
+      "budget_hits": 0,
+      "call_cost_limit_hits": 0,
+      "cost_per_success_usd": null,
+      "cost_usd": null,
+      "evaluated": 0,
+      "id": "mini-swe-agent",
+      "max_elapsed_s": null,
+      "median_elapsed_s": null,
+      "min_elapsed_s": null,
+      "passed": 0,
+      "regressions": 0,
+      "scheduled": 15,
+      "unknown_costs": 0,
+      "unresolved": 0,
+      "unrun": 15,
+      "watchdog_hits": 0
+    },
+    {
+      "budget_hits": 0,
+      "call_cost_limit_hits": 0,
+      "cost_per_success_usd": null,
+      "cost_usd": null,
+      "evaluated": 0,
+      "id": "engine-core",
+      "max_elapsed_s": null,
+      "median_elapsed_s": null,
+      "min_elapsed_s": null,
+      "passed": 0,
+      "regressions": 0,
+      "scheduled": 15,
+      "unknown_costs": 0,
+      "unresolved": 0,
+      "unrun": 15,
+      "watchdog_hits": 0
+    }
+  ],
+  "task_count": 15,
+  "tasks": [
+    {
+      "attempt_limit_usd": 4,
+      "category": "browser",
+      "difficulty": "heavy",
+      "id": "memos-responsive",
+      "language": "typescript",
+      "provenance": "authored-feature",
+      "repo": "memos",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        }
+      },
+      "title": "Responsive public memo reader"
+    },
+    {
+      "attempt_limit_usd": 4,
+      "category": "browser",
+      "difficulty": "heavy",
+      "id": "memos-search",
+      "language": "typescript",
+      "provenance": "authored-feature",
+      "repo": "memos",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        }
+      },
+      "title": "URL-driven accessible memo search"
+    },
+    {
+      "attempt_limit_usd": 4,
+      "category": "browser",
+      "difficulty": "heavy",
+      "id": "memos-print",
+      "language": "typescript",
+      "provenance": "authored-feature",
+      "repo": "memos",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        }
+      },
+      "title": "Readable printable memo pages"
+    },
+    {
+      "attempt_limit_usd": 4,
+      "category": "browser",
+      "difficulty": "heavy",
+      "id": "memos-resilience",
+      "language": "typescript",
+      "provenance": "authored-feature",
+      "repo": "memos",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        }
+      },
+      "title": "Resilient reader detail and error states"
+    },
+    {
+      "attempt_limit_usd": 4,
+      "category": "bug",
+      "difficulty": "heavy",
+      "id": "starlette-mounts",
+      "language": "python",
+      "provenance": "fabricated-regression",
+      "repo": "starlette",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        }
+      },
+      "title": "Repair nested URL generation"
+    },
+    {
+      "attempt_limit_usd": 4,
+      "category": "bug",
+      "difficulty": "heavy",
+      "id": "starlette-streaming",
+      "language": "python",
+      "provenance": "fabricated-regression",
+      "repo": "starlette",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        }
+      },
+      "title": "Repair streaming and background lifecycle"
+    },
+    {
+      "attempt_limit_usd": 4,
+      "category": "bug",
+      "difficulty": "heavy",
+      "id": "starlette-middleware",
+      "language": "python",
+      "provenance": "fabricated-regression",
+      "repo": "starlette",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        }
+      },
+      "title": "Restore concurrent middleware isolation"
+    },
+    {
+      "attempt_limit_usd": 4,
+      "category": "research",
+      "difficulty": "heavy",
+      "id": "httpx-redirects",
+      "language": "python",
+      "provenance": "fabricated-regression",
+      "repo": "httpx",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        }
+      },
+      "title": "Research and repair redirects"
+    },
+    {
+      "attempt_limit_usd": 4,
+      "category": "research",
+      "difficulty": "heavy",
+      "id": "httpx-timeouts",
+      "language": "python",
+      "provenance": "fabricated-regression",
+      "repo": "httpx",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        }
+      },
+      "title": "Research and repair timeouts"
+    },
+    {
+      "attempt_limit_usd": 4,
+      "category": "cross-file",
+      "difficulty": "heavy",
+      "id": "dotenv-strict",
+      "language": "python",
+      "provenance": "cross-file",
+      "repo": "dotenv",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        }
+      },
+      "title": "Strict dotenv loading API and CLI"
+    },
+    {
+      "attempt_limit_usd": 4,
+      "category": "cross-file",
+      "difficulty": "heavy",
+      "id": "pqueue-bulk",
+      "language": "typescript",
+      "provenance": "cross-file",
+      "repo": "pqueue",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        }
+      },
+      "title": "Atomic bulk queue priority updates"
+    },
+    {
+      "attempt_limit_usd": 4,
+      "category": "bug",
+      "difficulty": "heavy",
+      "id": "pqueue-shutdown",
+      "language": "typescript",
+      "provenance": "fabricated-regression",
+      "repo": "pqueue",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        }
+      },
+      "title": "Repair cancellation and shutdown bookkeeping"
+    },
+    {
+      "attempt_limit_usd": 4,
+      "category": "terminal",
+      "difficulty": "heavy",
+      "id": "httpie-downloads",
+      "language": "python",
+      "provenance": "fabricated-regression",
+      "repo": "httpie",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        }
+      },
+      "title": "Repair terminal downloads"
+    },
+    {
+      "attempt_limit_usd": 4,
+      "category": "terminal",
+      "difficulty": "heavy",
+      "id": "httpie-sessions",
+      "language": "python",
+      "provenance": "fabricated-regression",
+      "repo": "httpie",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        }
+      },
+      "title": "Repair terminal sessions"
+    },
+    {
+      "attempt_limit_usd": 4,
+      "category": "cross-file",
+      "difficulty": "heavy",
+      "id": "tinydb-snapshots",
+      "language": "python",
+      "provenance": "authored-feature",
+      "repo": "tinydb",
+      "systems": {
+        "engine-core": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        },
+        "mini-swe-agent": {
+          "artifact_path": null,
+          "attempt_id": null,
+          "cost_usd": null,
+          "elapsed_s": null,
+          "execution_state": "queued",
+          "functional_pass": null,
+          "regressions": null,
+          "status": "unrun",
+          "termination": null,
+          "tool_evidence": null
+        }
+      },
+      "title": "Atomic database snapshot import and export"
+    }
+  ],
+  "thinking_enabled": true
+}

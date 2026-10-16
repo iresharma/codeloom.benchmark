@@ -1,0 +1,48 @@
+expected_mix:
+  heavy: 15
+tasks:
+- id: memos-responsive
+  difficulty: heavy
+  rationale: Substantial multi-component behavior with independent private verification.
+- id: memos-search
+  difficulty: heavy
+  rationale: Substantial multi-component behavior with independent private verification.
+- id: memos-print
+  difficulty: heavy
+  rationale: Substantial multi-component behavior with independent private verification.
+- id: memos-resilience
+  difficulty: heavy
+  rationale: Substantial multi-component behavior with independent private verification.
+- id: starlette-mounts
+  difficulty: heavy
+  rationale: Substantial multi-component behavior with independent private verification.
+- id: starlette-streaming
+  difficulty: heavy
+  rationale: Substantial multi-component behavior with independent private verification.
+- id: starlette-middleware
+  difficulty: heavy
+  rationale: Substantial multi-component behavior with independent private verification.
+- id: httpx-redirects
+  difficulty: heavy
+  rationale: Substantial multi-component behavior with independent private verification.
+- id: httpx-timeouts
+  difficulty: heavy
+  rationale: Substantial multi-component behavior with independent private verification.
+- id: dotenv-strict
+  difficulty: heavy
+  rationale: Substantial multi-component behavior with independent private verification.
+- id: pqueue-bulk
+  difficulty: heavy
+  rationale: Substantial multi-component behavior with independent private verification.
+- id: pqueue-shutdown
+  difficulty: heavy
+  rationale: Substantial multi-component behavior with independent private verification.
+- id: httpie-downloads
+  difficulty: heavy
+  rationale: Substantial multi-component behavior with independent private verification.
+- id: httpie-sessions
+  difficulty: heavy
+  rationale: Substantial multi-component behavior with independent private verification.
+- id: tinydb-snapshots
+  difficulty: heavy
+  rationale: Substantial multi-component behavior with independent private verification.

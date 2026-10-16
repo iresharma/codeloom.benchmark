@@ -1,0 +1,7 @@
+{
+  "id": "chi-B-mini-swe-agent",
+  "termination": "completed",
+  "verification": {"pass": false},
+  "cost_usd": 0.029,
+  "elapsed_s": 420
+}

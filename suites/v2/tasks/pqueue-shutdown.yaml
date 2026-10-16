@@ -1,0 +1,45 @@
+id: pqueue-shutdown
+repo: pqueue
+upstream: https://github.com/sindresorhus/p-queue.git
+commit: 7f272ab5ff2254c0dc2537b7977e88ede1cd55e8
+title: Repair cancellation and shutdown bookkeeping
+prompt: 'Repair queued cancellation and clear(): canceled work must not execute; every queued promise
+  must reject with AbortError when cleared; running work completes normally; onIdle and onPendingZero
+  resolve at their documented boundaries. Cover cancellation of the first and later queued items with
+  stable ordering.
+
+
+  Work autonomously in the main task checkout. Production source, documentation and new benchmark_tests/
+  tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/
+  are immutable. Leave the final patch on this checkout.'
+category: bug
+language: typescript
+provenance: fabricated-regression
+allowed_paths:
+- source/*.ts
+- readme.md
+- benchmark_tests/*
+setup:
+  source/index.ts:
+  - old: waitingTask.reject!(error);
+    new: 'void error; // Regression: cleared promises never settle.'
+  source/priority-queue.ts:
+  - old: if (index === this.#head) {
+    new: if (index === this.#head && false) {
+reference:
+  source/index.ts:
+  - old: 'void error; // Regression: cleared promises never settle.'
+    new: waitingTask.reject!(error);
+  source/priority-queue.ts:
+  - old: if (index === this.#head && false) {
+    new: if (index === this.#head) {
+mutants: []
+verification:
+- node --import=tsx/esm --test --test-timeout=60000 test/*.ts
+runtime:
+  cpus: 2
+  memory_gb: 3
+  node_workdir: ''
+evidence: {}
+grader:
+  command: node --import=tsx/esm /tmp/oracle/check.ts

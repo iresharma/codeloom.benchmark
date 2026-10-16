@@ -1,0 +1,7 @@
+--- a/tinydb/table.py
++++ b/tinydb/table.py
+@@ -10,6 +10,7 @@
+     def insert(self, document):
+         doc_id = super().insert(document)
++        self._query_cache.clear()
+         return doc_id

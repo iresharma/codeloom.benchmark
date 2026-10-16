@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "run_id",
+    "status",
+    "model",
+    "provider",
+    "task_count",
+    "repo_count",
+    "pairs",
+    "systems",
+    "tasks",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_-]+$"
+    },
+    "status": {
+      "enum": [
+        "not_run",
+        "partial",
+        "complete"
+      ]
+    },
+    "task_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "repo_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "pairs": {
+      "type": "object",
+      "required": [
+        "engine_only",
+        "mini_only",
+        "both_pass",
+        "both_fail",
+        "unresolved",
+        "unrun"
+      ],
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "systems": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "passed",
+          "evaluated",
+          "scheduled",
+          "cost_usd",
+          "cost_per_success_usd"
+        ],
+        "properties": {
+          "id": {
+            "enum": [
+              "mini-swe-agent",
+              "engine-core"
+            ]
+          },
+          "passed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "cost_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "repo",
+          "category",
+          "systems"
+        ],
+        "properties": {
+          "category": {
+            "enum": [
+              "bug",
+              "cross-file",
+              "navigation",
+              "test-generation",
+              "browser",
+              "research",
+              "terminal"
+            ]
+          },
+          "systems": {
+            "type": "object",
+            "required": [
+              "mini-swe-agent",
+              "engine-core"
+            ],
+            "additionalProperties": {
+              "type": "object",
+              "required": [
+                "status",
+                "cost_usd",
+                "elapsed_s"
+              ],
+              "properties": {
+                "status": {
+                  "enum": [
+                    "pass",
+                    "fail",
+                    "unresolved",
+                    "unrun"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

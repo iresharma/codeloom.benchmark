@@ -1,0 +1,49 @@
+id: tinydb-snapshots
+repo: tinydb
+upstream: https://github.com/msiemens/tinydb.git
+commit: 6d7c4fc3e04d398b1282876514660a33a7897b41
+title: Atomic database snapshot import and export
+prompt: 'Add TinyDB.export_json() -> str and import_json(text: str) -> None. Export all tables preserving
+  document IDs; import replaces the database only after validating the entire JSON object (table names
+  map to objects of positive integer-string IDs mapping to document objects). Reject malformed input with
+  ValueError before any write. Exported data must be independent of caller mutations; existing Table handles
+  must immediately see imports with caches and next-ID allocation reset. A failed storage.write must not
+  invalidate existing table caches. Existing storage APIs remain compatible.
+
+
+  Work autonomously in the main task checkout. Production source, documentation and new benchmark_tests/
+  tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/
+  are immutable. Leave the final patch on this checkout.'
+category: cross-file
+language: python
+provenance: authored-feature
+allowed_paths:
+- tinydb/*.py
+- docs/*
+- benchmark_tests/*
+setup: {}
+reference:
+  tinydb/database.py:
+  - old: '    def __init__(self, *args, **kwargs) -> None:'
+    new: "    def export_json(self) -> str:\n        from .snapshots import encode\n        return encode(self.storage.read()\
+      \ or {})\n\n    def import_json(self, text: str) -> None:\n        from .snapshots import decode\n\
+      \        data = decode(text)\n        self.storage.write(data)\n        for table in self._tables.values():\n\
+      \            table.clear_cache()\n            table._next_id = None\n\n    def __init__(self, *args,\
+      \ **kwargs) -> None:"
+  tinydb/snapshots.py: "\"\"\"Validate snapshots before the database performs its single write.\"\"\"\n\
+    import json\ndef encode(data):\n    return json.dumps(data, sort_keys=True)\ndef decode(text):\n \
+    \   try: data=json.loads(text)\n    except (TypeError, ValueError) as exc: raise ValueError(\"Invalid\
+    \ snapshot\") from exc\n    if not isinstance(data,dict): raise ValueError(\"Expected tables object\"\
+    )\n    for name,table in data.items():\n        if not isinstance(name,str) or not isinstance(table,dict):\
+    \ raise ValueError(\"Invalid table\")\n        for key,document in table.items():\n            if\
+    \ not key.isascii() or not key.isdigit() or str(int(key))!=key or int(key)<1 or not isinstance(document,dict):\
+    \ raise ValueError(\"Invalid document\")\n    return data\n"
+mutants: []
+verification:
+- python -m pytest -o addopts= -q tests
+runtime:
+  cpus: 2
+  memory_gb: 3
+evidence: {}
+grader:
+  command: python -m pytest -o addopts= -q /tmp/oracle/check.py

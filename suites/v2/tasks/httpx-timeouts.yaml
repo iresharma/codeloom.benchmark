@@ -1,0 +1,58 @@
+id: httpx-timeouts
+repo: httpx
+upstream: https://github.com/encode/httpx.git
+commit: 26d48e0634e6ee9cdc0533996db289ce4b430177
+title: Research and repair timeouts
+prompt: 'Use web search and the pinned GitHub source to investigate and repair timeout propagation: explicit
+  request extensions win; otherwise requests inherit the client timeout. Timeout tuple connect/read/write/pool
+  fields must retain their respective values, and None disables timeouts. Before editing, obtain a researcher
+  briefing. Leave research.md citing external sources and the pinned GitHub commit, explaining the compatibility
+  contract and the changes. Shell-native agents use python /opt/benchmark-public/research.py search ''{"query":"HTTPX
+  timeouts"}'' and github ''{"args":["api","repos/encode/httpx/contents/httpx/_client.py?ref=26d48e0634e6ee9cdc0533996db289ce4b430177","-H","Accept:
+  application/vnd.github.raw"]}''. Successful search and GitHub source access are required.
+
+
+  Work autonomously in the main task checkout. Production source, documentation and new benchmark_tests/
+  tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/
+  are immutable. Leave the final patch on this checkout.'
+category: research
+language: python
+provenance: fabricated-regression
+allowed_paths:
+- httpx/*.py
+- docs/*
+- research.md
+- benchmark_tests/*
+setup:
+  httpx/_client.py:
+  - old: request.extensions = dict(**request.extensions, timeout=timeout.as_dict())
+    new: request.extensions = dict(**request.extensions, timeout=Timeout(None).as_dict())
+  httpx/_config.py:
+  - old: self.write = None if len(timeout) < 3 else timeout[2]
+    new: self.write = None if len(timeout) < 3 else timeout[1]
+reference:
+  httpx/_client.py:
+  - old: request.extensions = dict(**request.extensions, timeout=Timeout(None).as_dict())
+    new: request.extensions = dict(**request.extensions, timeout=timeout.as_dict())
+  httpx/_config.py:
+  - old: self.write = None if len(timeout) < 3 else timeout[1]
+    new: self.write = None if len(timeout) < 3 else timeout[2]
+mutants: []
+verification:
+- python -m pytest -o addopts= -q tests/test_config.py tests/client/test_properties.py tests/client/test_client.py
+  tests/client/test_async_client.py
+runtime:
+  cpus: 2
+  memory_gb: 3
+evidence:
+  research: true
+grader:
+  command: python -m pytest -o addopts= -q /tmp/oracle/check.py
+research:
+  repo_refs:
+    encode/httpx: 26d48e0634e6ee9cdc0533996db289ce4b430177
+  hosts:
+  - www.python-httpx.org
+  - www.rfc-editor.org
+  - httpwg.org
+  - docs.python.org

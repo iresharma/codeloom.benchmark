@@ -1,0 +1,13 @@
+{
+  "budget_policy": "actual-spend",
+  "call_limit_multiplier": 3,
+  "difficulty": "heavy",
+  "id": "adapter-engine-core",
+  "limit_usd": 0.5,
+  "retry_of": null,
+  "stage": "development",
+  "started_at": 1792161591.906801,
+  "system": "engine-core",
+  "task_id": "tinydb-snapshots",
+  "watchdog_s": 120
+}

@@ -1,0 +1,14 @@
+{
+  "run_id": "monitor-fixture",
+  "suite": "v1",
+  "settings": {
+    "model": "deepseek/deepseek-v4-pro-0813",
+    "provider": "baidu/fp8"
+  },
+  "tasks": [
+    {"id": "tinydb-B", "title": "Query cache survives writes", "repo": "tinydb", "category": "bug", "difficulty": "light"},
+    {"id": "chi-B", "title": "Pooled context leaks URL params", "repo": "chi", "category": "bug", "difficulty": "light"},
+    {"id": "chi-N", "title": "Code path and lifecycle navigation", "repo": "chi", "category": "navigation", "difficulty": "medium"},
+    {"id": "dotenv-X", "title": "Strict dotenv loading API and CLI", "repo": "dotenv", "category": "cross-file", "difficulty": "heavy"}
+  ]
+}

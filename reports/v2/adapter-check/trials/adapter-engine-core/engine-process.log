@@ -1,0 +1,10 @@
+=== Engine Server Startup ===
+workspace: /task
+engine dir: /task/.engine
+db path: /task/.engine/session.db
+socket path: /task/.engine/engine.sock
+python version: 3.12.12
+platform: Linux-6.12.76-linuxkit-x86_64-with-glibc2.36
+==============================
+judge: off
+listening on /task/.engine/engine.sock

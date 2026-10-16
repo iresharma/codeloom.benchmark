@@ -1,0 +1,13 @@
+{
+  "budget_policy": "actual-spend",
+  "call_limit_multiplier": 3,
+  "difficulty": "heavy",
+  "id": "adapter-mini-swe-agent",
+  "limit_usd": 0.5,
+  "retry_of": null,
+  "stage": "development",
+  "started_at": 1792161579.6249862,
+  "system": "mini-swe-agent",
+  "task_id": "tinydb-snapshots",
+  "watchdog_s": 120
+}

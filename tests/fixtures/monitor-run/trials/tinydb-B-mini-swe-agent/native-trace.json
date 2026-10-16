@@ -1,0 +1,22 @@
+{
+  "messages": [
+    {"role": "user", "content": "Fix the TinyDB query cache."},
+    {
+      "role": "assistant",
+      "content": "I will inspect table.py and patch cache invalidation.",
+      "reasoning_content": "The cache is stale after insert.",
+      "tool_calls": [
+        {
+          "id": "call-1",
+          "function": {"name": "bash", "arguments": "{\"command\": \"sed -n '1,80p' tinydb/table.py\"}"}
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call-1",
+      "content": "class Table:",
+      "extra": {"returncode": 0}
+    }
+  ]
+}

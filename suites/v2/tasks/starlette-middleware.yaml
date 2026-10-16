@@ -1,0 +1,44 @@
+id: starlette-middleware
+repo: starlette
+upstream: https://github.com/Kludex/starlette.git
+commit: cb8f84f5284dc301ca7a31eb732b9e140769dd48
+title: Restore concurrent middleware isolation
+prompt: 'Repair GZip response isolation and repeated Set-Cookie headers. Concurrent compressed and uncompressed
+  requests must retain their own headers/body; multiple response cookies must survive without replacement.
+  Keep excluded event streams unchanged.
+
+
+  Work autonomously in the main task checkout. Production source, documentation and new benchmark_tests/
+  tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/
+  are immutable. Leave the final patch on this checkout.'
+category: bug
+language: python
+provenance: fabricated-regression
+allowed_paths:
+- starlette/*.py
+- starlette/middleware/*.py
+- docs/*
+- benchmark_tests/*
+setup:
+  starlette/middleware/gzip.py:
+  - old: self.initial_message = message
+    new: 'self.initial_message = {**message, "headers": []}'
+  starlette/responses.py:
+  - old: self.raw_headers.append((b"set-cookie", cookie_val.encode("latin-1")))
+    new: self.headers["set-cookie"] = cookie_val
+reference:
+  starlette/middleware/gzip.py:
+  - old: 'self.initial_message = {**message, "headers": []}'
+    new: self.initial_message = message
+  starlette/responses.py:
+  - old: self.headers["set-cookie"] = cookie_val
+    new: self.raw_headers.append((b"set-cookie", cookie_val.encode("latin-1")))
+mutants: []
+verification:
+- python -m pytest -o addopts= -q tests/middleware/test_gzip.py tests/test_responses.py
+runtime:
+  cpus: 2
+  memory_gb: 3
+evidence: {}
+grader:
+  command: python -m pytest -o addopts= -q /tmp/oracle/check.py

@@ -1,0 +1,48 @@
+id: httpie-sessions
+repo: httpie
+upstream: https://github.com/httpie/cli.git
+commit: 2105caa49bae87c5809c274e407619a0de2639d1
+title: Repair terminal sessions
+prompt: 'Repair persistent session handling: existing --session-read-only files must remain byte-identical
+  after a request, the explicit session upgrade CLI must migrate legacy dictionary header stores to the
+  supported name/value list layout, and ordinary sessions must continue saving headers/cookies. Reproduce
+  with actual python -m httpie commands against a local HTTP server. Record commands and observed exit
+  codes in your report.
+
+
+  Work autonomously in the main task checkout. Production source, documentation and new benchmark_tests/
+  tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/
+  are immutable. Leave the final patch on this checkout.'
+category: terminal
+language: python
+provenance: fabricated-regression
+allowed_paths:
+- httpie/*.py
+- httpie/legacy/*.py
+- docs/*
+- benchmark_tests/*
+setup:
+  httpie/client.py:
+  - old: 'if httpie_session.is_new() or not args.session_read_only:'
+    new: 'if True:'
+  httpie/legacy/v3_2_0_session_header_format.py:
+  - old: session['headers'] = materialize_headers(session['headers'])
+    new: session['headers'] = []
+reference:
+  httpie/client.py:
+  - old: 'if True:'
+    new: 'if httpie_session.is_new() or not args.session_read_only:'
+  httpie/legacy/v3_2_0_session_header_format.py:
+  - old: session['headers'] = []
+    new: session['headers'] = materialize_headers(session['headers'])
+mutants: []
+verification:
+- python -m pytest -o addopts= -q tests/test_sessions.py
+runtime:
+  cpus: 2
+  memory_gb: 3
+evidence:
+  terminal: true
+  command_pattern: python(?:3)?\s+-m\s+httpie\b
+grader:
+  command: python -m pytest -o addopts= -q /tmp/oracle/check.py

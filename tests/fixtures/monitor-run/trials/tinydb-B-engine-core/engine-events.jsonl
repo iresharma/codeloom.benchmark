@@ -1,0 +1,7 @@
+{"type": "AgentStarted", "agent_id": "coder-1", "profile": "coder", "parent_id": "", "task": "Fix query cache invalidation on writes"}
+{"type": "ToolCallStarted", "call_id": "t1", "name": "read_file", "arguments_json": "{\"path\": \"tinydb/table.py\"}", "agent_id": "coder-1"}
+{"type": "ToolCallFinished", "call_id": "t1", "name": "read_file", "preview": "class Table:\n    def insert(self, document):", "ok": true, "duration_ms": 18, "agent_id": "coder-1"}
+{"type": "ToolCallStarted", "call_id": "t2", "name": "edit_file", "arguments_json": "{\"path\": \"tinydb/table.py\", \"old\": \"self._query_cache = None\", \"new\": \"self._query_cache.clear()\"}", "agent_id": "coder-1"}
+{"type": "ToolCallFinished", "call_id": "t2", "name": "edit_file", "preview": "patched insert and update", "ok": true, "duration_ms": 41, "agent_id": "coder-1"}
+{"type": "ChatMessageAdded", "id": "m1", "role": "assistant", "text": "Clear the query cache after writes so searches see new rows.", "agent_id": "coder-1"}
+{"type": "AgentFinished", "agent_id": "coder-1", "profile": "coder", "status": "ok", "summary": "cache invalidation"}

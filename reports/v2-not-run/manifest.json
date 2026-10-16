@@ -1,0 +1,1178 @@
+{
+  "calibration_status": "not_run",
+  "host_architecture": "arm64",
+  "limitations": [
+    "Author-designed corpus; no independent review.",
+    "One run per task; no reliability, interaction, or component-effect claims.",
+    "Synthetic bugs keep upstream tests, which can reveal the regression.",
+    "Test-generation features are supplied with their reference tests withheld.",
+    "Offline report rebuilding is reproducible; model outputs, endpoint availability and prices are not.",
+    "Host ARM64 runs Linux AMD64 through emulation."
+  ],
+  "platform": "linux/amd64",
+  "run_id": "v2-not-run",
+  "schema_version": 2,
+  "settings": {
+    "budget_policy": "actual-spend",
+    "calibration_tasks": [
+      "memos-responsive",
+      "httpie-downloads",
+      "httpx-redirects"
+    ],
+    "call_limit_multiplier": 3,
+    "campaign_limit_usd": 45,
+    "certification_workers": 2,
+    "difficulty_limits_usd": {
+      "heavy": 4
+    },
+    "evaluation_workers": 2,
+    "evaluator_resources": {
+      "cpus": 2,
+      "memory_gb": 4
+    },
+    "excluded": [],
+    "input_per_million": 1.32,
+    "max_parallel_attempts": 6,
+    "max_parallel_task_pairs": 3,
+    "max_tokens": 32768,
+    "model": "deepseek/deepseek-v4-pro-0813",
+    "output_per_million": 3.96,
+    "paid_runs_authorized": false,
+    "platform": "linux/amd64",
+    "provider": "baidu/fp8",
+    "provider_name": "Baidu",
+    "reasoning_effort": "high",
+    "recovery_max_per_system_task": 1,
+    "request_timeout_s": 2400,
+    "resource_headroom_gb": 2,
+    "schedule_seed": 20261016,
+    "screenshot_mode": "artifact-only",
+    "secondary_models": {
+      "anthropic/claude-haiku-4.5": {
+        "input_per_million": 1.0,
+        "output_per_million": 5.0,
+        "provider": "anthropic",
+        "provider_name": "Anthropic"
+      }
+    },
+    "stage_limits": {
+      "development": 8,
+      "measured": 32,
+      "recovery": 5
+    },
+    "suite": "v2",
+    "systems": [
+      "mini-swe-agent",
+      "engine-core"
+    ],
+    "thinking_enabled": true,
+    "trial_limit_usd": 4,
+    "watchdog_s": null
+  },
+  "suite": "v2",
+  "tasks": [
+    {
+      "allowed_paths": [
+        "web/src/pages/Reader.tsx",
+        "web/src/lib/reader.ts",
+        "web/src/css/reader.css",
+        "web/src/components/*",
+        "benchmark_tests/*"
+      ],
+      "category": "browser",
+      "commit": "d20362e722ae6efe682007e7eea377a4689e8484",
+      "dependency_note": "Pinned upstream MUI prerelease is no longer published; fixture setup uses an npm alias to the existing compatible Joy UI 5.0.0-beta.51 API before locking dependencies. This is part of the disclosed starting snapshot, not an agent change.",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Substantial multi-component behavior with independent private verification.",
+      "evidence": {
+        "browser": true
+      },
+      "grader": {
+        "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py"
+      },
+      "id": "memos-responsive",
+      "language": "typescript",
+      "mutants": [],
+      "prompt": "Make the supplied /reader feed responsive at 375px and 1280px. Long unbroken memo content and attachment names must stay inside their cards; code/tables may scroll locally. Keep creator/date metadata readable and images bounded. Edit the page, reader helper and stylesheet as needed. Start the seeded real Memos backend/frontend with python .bench/serve_memos.py and use http://127.0.0.1:3001/reader. The CodeLoom tester must call browser_open, browser_screenshot, browser_console and browser_network. Shell agents use python /opt/benchmark-public/browser_check.py http://127.0.0.1:3001/reader. Browser interactions are not required.\n\nWork autonomously in the main task checkout. Production source, documentation and new benchmark_tests/ tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/ are immutable. Leave the final patch on this checkout.",
+      "provenance": "authored-feature",
+      "reference": {
+        "web/src/css/reader.css": ".memo-reader { padding: 24px; }\n.reader-feed { display: grid; gap: 20px; }\n.reader-feed article { padding: 16px; border: 1px solid #bbb; }\n\n.memo-reader { max-width: 1100px; width: 100%; min-width: 0; margin: auto; box-sizing: border-box; }\n.reader-feed, .reader-feed article { min-width:0; max-width:100%; overflow-wrap:anywhere; }\n.reader-feed pre,.reader-feed table { display:block; overflow-x:auto; max-width:100%; }\n.reader-feed img { max-width:100%; height:auto; }\n.reader-meta,.reader-attachments a { overflow-wrap:anywhere; }\n@media(max-width:600px) { .memo-reader { padding:12px; } .reader-feed article { padding:12px; } }\n",
+        "web/src/lib/reader.ts": "import { Memo } from \"@/types/proto/api/v1/memo_service\";\nexport async function loadMemos(): Promise<Memo[]> {\n  const response = await fetch(\"/api/v1/memos?pageSize=100\");\n  if (!response.ok) throw new Error(\"Memos unavailable\");\n  const data = await response.json();\n  return (data.memos || []).map((memo: unknown) => Memo.fromPartial({ ...(memo as Memo), displayTime: (memo as Memo).displayTime ? new Date(String((memo as Memo).displayTime)) : undefined }));\n}\nexport function selectMemos(memos: Memo[], _params: URLSearchParams): Memo[] { return memos; }\n",
+        "web/src/pages/Reader.tsx": "import { useEffect, useState } from \"react\";\nimport MemoContent from \"@/components/MemoContent\";\nimport { loadMemos, selectMemos } from \"@/lib/reader\";\nimport { Memo } from \"@/types/proto/api/v1/memo_service\";\nimport \"@/css/reader.css\";\nexport default function Reader() {\n  const [memos, setMemos] = useState<Memo[]>([]);\n  const [error, setError] = useState(\"\");\n  useEffect(() => { loadMemos().then(setMemos).catch(() => setError(\"Memos unavailable\")); }, []);\n  const params = new URLSearchParams(location.search);\n  const visible = selectMemos(memos, params);\n  return <main className=\"memo-reader\">\n    <header className=\"reader-toolbar\"><h1>Public memo reader</h1><a href=\"/explore\">Open Memos</a></header>\n    {error && <p>{error}</p>}\n    <section className=\"reader-feed\" aria-label=\"Public memos\">{visible.map(memo => <article key={memo.name} data-memo={memo.name}>\n      <p className=\"reader-meta\">{memo.creator} · {memo.displayTime?.toISOString()}</p>\n      <MemoContent nodes={memo.nodes} readonly />\n      <div className=\"reader-attachments\">{memo.resources.map(resource => <a key={resource.name} href={resource.externalLink || `/file/${resource.name}/${resource.filename}`}>{resource.filename}</a>)}</div>\n    </article>)}</section>\n  </main>;\n}\n"
+      },
+      "repo": "memos",
+      "runtime": {
+        "browser": true,
+        "cpus": 2,
+        "go_modules": true,
+        "memory_gb": 4,
+        "node_workdir": "web",
+        "prepare": "chown -R bench:bench /task /tmp /opt/benchmark",
+        "services": [
+          {
+            "command": "python .bench/serve_memos.py",
+            "readiness_attempts": 120,
+            "ready": "curl -fsS http://127.0.0.1:3001/reader >/dev/null"
+          }
+        ]
+      },
+      "setup": {
+        ".bench/serve_memos.py": "import os, pathlib, sqlite3, subprocess, time, urllib.request\ndata = pathlib.Path(\"/tmp/memos-data\")\ndata.mkdir(exist_ok=True)\ndatabase = data / \"memos_prod.db\"\nif not database.exists():\n  with sqlite3.connect(database) as db:\n    db.executescript(pathlib.Path(\"store/migration/sqlite/LATEST.sql\").read_text())\n    db.execute(\"INSERT INTO migration_history(version) VALUES ('0.24.4')\")\n    db.execute(\"INSERT INTO user(id,username,role,nickname,password_hash) VALUES (1,'reader','HOST','Reader','unused')\")\n    db.execute(\"INSERT INTO memo(id,uid,creator_id,content,visibility,created_ts,updated_ts) VALUES(1,'alpha',1,?,'PUBLIC',1700000000,1700000000)\", (\"# Alpha release\\n\\n#release \\n\\n\" + \"VeryLongMemo\"*80 + \"\\n\\n| Name | State |\\n| --- | --- |\\n| Alpha | Ready |\\n\\n```python\\nprint('ready')\\n```\",))\n    db.execute(\"INSERT INTO memo(id,uid,creator_id,content,visibility,created_ts,updated_ts) VALUES(2,'beta',1,'# Beta planning\\n\\n#planning Next steps','PUBLIC',1700000010,1700000010)\")\n    db.execute(\"INSERT INTO resource(id,uid,creator_id,filename,type,size,memo_id,storage_type,reference) VALUES(1,'attachment',1,?,'application/pdf',100,1,'EXTERNAL','https://example.com/report.pdf')\", ('quarterly-report-'*20+'.pdf',))\nbackend = subprocess.Popen(['/opt/benchmark/memos','--mode','prod','--data',str(data),'--port','8081'])\ntry:\n  for _ in range(120):\n    try:\n      urllib.request.urlopen('http://127.0.0.1:8081/api/v1/memos', timeout=1).close()\n      break\n    except OSError: time.sleep(.5)\n  frontend = subprocess.Popen(['npm','run','dev','--','--host','127.0.0.1'], cwd='web')\n  frontend.wait()\nfinally: backend.terminate()\n",
+        "web/package.json": [
+          {
+            "new": "\"@usememos/mui\": \"npm:@mui/joy@5.0.0-beta.51\"",
+            "old": "\"@usememos/mui\": \"0.1.0-20250601165716\""
+          }
+        ],
+        "web/src/css/reader.css": ".memo-reader { padding: 24px; }\n.reader-feed { display: grid; gap: 20px; }\n.reader-feed article { padding: 16px; border: 1px solid #bbb; }\n",
+        "web/src/legacy-mui.tsx": "// Compatibility for the unpublished historical @usememos/mui wrapper.\nimport { Button as JoyButton, ButtonProps, Textarea as JoyTextarea, TextareaProps } from \"@mui/joy\";\nexport * from \"@mui/joy\";\nexport function Button({asChild, ...props}: ButtonProps & {asChild?: boolean}) {\n  return <JoyButton {...props} component={asChild ? \"span\" : \"button\"} />;\n}\nexport function Textarea({rows,fullWidth,...props}: TextareaProps & {rows?:number;fullWidth?:boolean}) {\n  return <JoyTextarea {...props} minRows={rows ?? props.minRows} sx={{...(fullWidth ? {width:\"100%\"} : {}),...props.sx}} />;\n}\n",
+        "web/src/lib/reader.ts": "import { Memo } from \"@/types/proto/api/v1/memo_service\";\nexport async function loadMemos(): Promise<Memo[]> {\n  const response = await fetch(\"/api/v1/memos?pageSize=100\");\n  if (!response.ok) throw new Error(\"Memos unavailable\");\n  const data = await response.json();\n  return (data.memos || []).map((memo: unknown) => Memo.fromPartial({ ...(memo as Memo), displayTime: (memo as Memo).displayTime ? new Date(String((memo as Memo).displayTime)) : undefined }));\n}\nexport function selectMemos(memos: Memo[], _params: URLSearchParams): Memo[] { return memos; }\n",
+        "web/src/main.tsx": [
+          {
+            "new": "// Historical wrapper CSS is supplied by Joy CssVarsProvider in this fixture.",
+            "old": "import \"@usememos/mui/dist/index.css\";"
+          }
+        ],
+        "web/src/pages/Reader.tsx": "import { useEffect, useState } from \"react\";\nimport MemoContent from \"@/components/MemoContent\";\nimport { loadMemos, selectMemos } from \"@/lib/reader\";\nimport { Memo } from \"@/types/proto/api/v1/memo_service\";\nimport \"@/css/reader.css\";\nexport default function Reader() {\n  const [memos, setMemos] = useState<Memo[]>([]);\n  const [error, setError] = useState(\"\");\n  useEffect(() => { loadMemos().then(setMemos).catch(() => setError(\"Memos unavailable\")); }, []);\n  const params = new URLSearchParams(location.search);\n  const visible = selectMemos(memos, params);\n  return <main className=\"memo-reader\">\n    <header className=\"reader-toolbar\"><h1>Public memo reader</h1><a href=\"/explore\">Open Memos</a></header>\n    {error && <p>{error}</p>}\n    <section className=\"reader-feed\">{visible.map(memo => <article key={memo.name} data-memo={memo.name}>\n      <p className=\"reader-meta\">{memo.creator} · {memo.displayTime?.toISOString()}</p>\n      <MemoContent nodes={memo.nodes} readonly />\n      <div className=\"reader-attachments\">{memo.resources.map(resource => <a key={resource.name} href={resource.externalLink || `/file/${resource.name}/${resource.filename}`}>{resource.filename}</a>)}</div>\n    </article>)}</section>\n  </main>;\n}\n",
+        "web/src/router/index.tsx": [
+          {
+            "new": "import Reader from \"@/pages/Reader\";\n\nconst router = createBrowserRouter([\n  { path: \"/reader\", element: <Reader /> },",
+            "old": "const router = createBrowserRouter(["
+          }
+        ],
+        "web/tsconfig.json": [
+          {
+            "new": "\"moduleResolution\": \"Bundler\"",
+            "old": "\"moduleResolution\": \"Node\""
+          },
+          {
+            "new": "\"paths\": {\n      \"@usememos/mui\": [\"./src/legacy-mui.tsx\"],",
+            "old": "\"paths\": {"
+          }
+        ],
+        "web/vite.config.ts": [
+          {
+            "new": "alias: {\n      \"@usememos/mui\": `${resolve(__dirname, \"src\")}/legacy-mui.tsx`,",
+            "old": "alias: {"
+          }
+        ]
+      },
+      "suite": "v2",
+      "title": "Responsive public memo reader",
+      "upstream": "https://github.com/usememos/memos.git",
+      "verification": [
+        "cd web && ./node_modules/.bin/tsc --noEmit --skipLibCheck"
+      ]
+    },
+    {
+      "allowed_paths": [
+        "web/src/pages/Reader.tsx",
+        "web/src/lib/reader.ts",
+        "web/src/css/reader.css",
+        "web/src/components/*",
+        "benchmark_tests/*"
+      ],
+      "category": "browser",
+      "commit": "d20362e722ae6efe682007e7eea377a4689e8484",
+      "dependency_note": "Pinned upstream MUI prerelease is no longer published; fixture setup uses an npm alias to the existing compatible Joy UI 5.0.0-beta.51 API before locking dependencies. This is part of the disclosed starting snapshot, not an agent change.",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Substantial multi-component behavior with independent private verification.",
+      "evidence": {
+        "browser": true
+      },
+      "grader": {
+        "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py"
+      },
+      "id": "memos-search",
+      "language": "typescript",
+      "mutants": [],
+      "prompt": "Implement case-insensitive /reader?q=...&tag=... filtering; combine both filters with AND. Match q against memo text and tag against exact memo.tags entries. Trim query whitespace. Expose a role=status result count and an explicit No memos found empty state. Highlight query matches using safe React text in a result summary; keep URLs directly loadable. Start the seeded real Memos backend/frontend with python .bench/serve_memos.py and use http://127.0.0.1:3001/reader. The CodeLoom tester must call browser_open, browser_screenshot, browser_console and browser_network. Shell agents use python /opt/benchmark-public/browser_check.py http://127.0.0.1:3001/reader. Browser interactions are not required.\n\nWork autonomously in the main task checkout. Production source, documentation and new benchmark_tests/ tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/ are immutable. Leave the final patch on this checkout.",
+      "provenance": "authored-feature",
+      "reference": {
+        "web/src/css/reader.css": ".memo-reader { padding: 24px; }\n.reader-feed { display: grid; gap: 20px; }\n.reader-feed article { padding: 16px; border: 1px solid #bbb; }\n",
+        "web/src/lib/reader.ts": "import { Memo } from \"@/types/proto/api/v1/memo_service\";\nexport async function loadMemos(): Promise<Memo[]> {\n  const response = await fetch(\"/api/v1/memos?pageSize=100\");\n  if (!response.ok) throw new Error(\"Memos unavailable\");\n  const data = await response.json();\n  return (data.memos || []).map((memo: unknown) => Memo.fromPartial({ ...(memo as Memo), displayTime: (memo as Memo).displayTime ? new Date(String((memo as Memo).displayTime)) : undefined }));\n}\nexport function selectMemos(memos: Memo[], _params: URLSearchParams): Memo[] { const q=(_params.get(\"q\")||\"\").trim().toLowerCase(); const tag=(_params.get(\"tag\")||\"\").trim(); return memos.filter(m => (!q || m.content.toLowerCase().includes(q)) && (!tag || m.tags.includes(tag))); }\n\nexport function queryParts(text:string,query:string): string[] { const q=query.trim(); if(!q) return [text]; const escaped=q.replace(/[.*+?^${}()|[\\]\\\\]/g,\"\\\\$&\"); return text.split(new RegExp(`(${escaped})`,\"gi\")); }\n",
+        "web/src/pages/Reader.tsx": "import { useEffect, useState } from \"react\";\nimport MemoContent from \"@/components/MemoContent\";\nimport { loadMemos, selectMemos, queryParts } from \"@/lib/reader\";\nimport { Memo } from \"@/types/proto/api/v1/memo_service\";\nimport \"@/css/reader.css\";\nexport default function Reader() {\n  const [memos, setMemos] = useState<Memo[]>([]);\n  const [error, setError] = useState(\"\");\n  useEffect(() => { loadMemos().then(setMemos).catch(() => setError(\"Memos unavailable\")); }, []);\n  const params = new URLSearchParams(location.search);\n  const visible = selectMemos(memos, params);\n  return <main className=\"memo-reader\">\n    <header className=\"reader-toolbar\"><h1>Public memo reader</h1><a href=\"/explore\">Open Memos</a></header>\n    {error && <p>{error}</p>}\n    <p role=\"status\">{visible.length} {visible.length === 1 ? \"memo\" : \"memos\"}</p>\n        {visible.length === 0 && <p>No memos found</p>}\n        <section className=\"reader-feed\">{visible.map(memo => <article key={memo.name} data-memo={memo.name}>\n      <p className=\"reader-meta\">{memo.creator} · {memo.displayTime?.toISOString()}</p>\n      <p>{queryParts(memo.content, params.get(\"q\") || \"\").map((part,index) => part.toLowerCase() === (params.get(\"q\") || \"\").trim().toLowerCase() ? <mark key={index}>{part}</mark> : part)}</p><MemoContent nodes={memo.nodes} readonly />\n      <div className=\"reader-attachments\">{memo.resources.map(resource => <a key={resource.name} href={resource.externalLink || `/file/${resource.name}/${resource.filename}`}>{resource.filename}</a>)}</div>\n    </article>)}</section>\n  </main>;\n}\n"
+      },
+      "repo": "memos",
+      "runtime": {
+        "browser": true,
+        "cpus": 2,
+        "go_modules": true,
+        "memory_gb": 4,
+        "node_workdir": "web",
+        "prepare": "chown -R bench:bench /task /tmp /opt/benchmark",
+        "services": [
+          {
+            "command": "python .bench/serve_memos.py",
+            "readiness_attempts": 120,
+            "ready": "curl -fsS http://127.0.0.1:3001/reader >/dev/null"
+          }
+        ]
+      },
+      "setup": {
+        ".bench/serve_memos.py": "import os, pathlib, sqlite3, subprocess, time, urllib.request\ndata = pathlib.Path(\"/tmp/memos-data\")\ndata.mkdir(exist_ok=True)\ndatabase = data / \"memos_prod.db\"\nif not database.exists():\n  with sqlite3.connect(database) as db:\n    db.executescript(pathlib.Path(\"store/migration/sqlite/LATEST.sql\").read_text())\n    db.execute(\"INSERT INTO migration_history(version) VALUES ('0.24.4')\")\n    db.execute(\"INSERT INTO user(id,username,role,nickname,password_hash) VALUES (1,'reader','HOST','Reader','unused')\")\n    db.execute(\"INSERT INTO memo(id,uid,creator_id,content,visibility,created_ts,updated_ts) VALUES(1,'alpha',1,?,'PUBLIC',1700000000,1700000000)\", (\"# Alpha release\\n\\n#release \\n\\n\" + \"VeryLongMemo\"*80 + \"\\n\\n| Name | State |\\n| --- | --- |\\n| Alpha | Ready |\\n\\n```python\\nprint('ready')\\n```\",))\n    db.execute(\"INSERT INTO memo(id,uid,creator_id,content,visibility,created_ts,updated_ts) VALUES(2,'beta',1,'# Beta planning\\n\\n#planning Next steps','PUBLIC',1700000010,1700000010)\")\n    db.execute(\"INSERT INTO resource(id,uid,creator_id,filename,type,size,memo_id,storage_type,reference) VALUES(1,'attachment',1,?,'application/pdf',100,1,'EXTERNAL','https://example.com/report.pdf')\", ('quarterly-report-'*20+'.pdf',))\nbackend = subprocess.Popen(['/opt/benchmark/memos','--mode','prod','--data',str(data),'--port','8081'])\ntry:\n  for _ in range(120):\n    try:\n      urllib.request.urlopen('http://127.0.0.1:8081/api/v1/memos', timeout=1).close()\n      break\n    except OSError: time.sleep(.5)\n  frontend = subprocess.Popen(['npm','run','dev','--','--host','127.0.0.1'], cwd='web')\n  frontend.wait()\nfinally: backend.terminate()\n",
+        "web/package.json": [
+          {
+            "new": "\"@usememos/mui\": \"npm:@mui/joy@5.0.0-beta.51\"",
+            "old": "\"@usememos/mui\": \"0.1.0-20250601165716\""
+          }
+        ],
+        "web/src/css/reader.css": ".memo-reader { padding: 24px; }\n.reader-feed { display: grid; gap: 20px; }\n.reader-feed article { padding: 16px; border: 1px solid #bbb; }\n",
+        "web/src/legacy-mui.tsx": "// Compatibility for the unpublished historical @usememos/mui wrapper.\nimport { Button as JoyButton, ButtonProps, Textarea as JoyTextarea, TextareaProps } from \"@mui/joy\";\nexport * from \"@mui/joy\";\nexport function Button({asChild, ...props}: ButtonProps & {asChild?: boolean}) {\n  return <JoyButton {...props} component={asChild ? \"span\" : \"button\"} />;\n}\nexport function Textarea({rows,fullWidth,...props}: TextareaProps & {rows?:number;fullWidth?:boolean}) {\n  return <JoyTextarea {...props} minRows={rows ?? props.minRows} sx={{...(fullWidth ? {width:\"100%\"} : {}),...props.sx}} />;\n}\n",
+        "web/src/lib/reader.ts": "import { Memo } from \"@/types/proto/api/v1/memo_service\";\nexport async function loadMemos(): Promise<Memo[]> {\n  const response = await fetch(\"/api/v1/memos?pageSize=100\");\n  if (!response.ok) throw new Error(\"Memos unavailable\");\n  const data = await response.json();\n  return (data.memos || []).map((memo: unknown) => Memo.fromPartial({ ...(memo as Memo), displayTime: (memo as Memo).displayTime ? new Date(String((memo as Memo).displayTime)) : undefined }));\n}\nexport function selectMemos(memos: Memo[], _params: URLSearchParams): Memo[] { return memos; }\n",
+        "web/src/main.tsx": [
+          {
+            "new": "// Historical wrapper CSS is supplied by Joy CssVarsProvider in this fixture.",
+            "old": "import \"@usememos/mui/dist/index.css\";"
+          }
+        ],
+        "web/src/pages/Reader.tsx": "import { useEffect, useState } from \"react\";\nimport MemoContent from \"@/components/MemoContent\";\nimport { loadMemos, selectMemos } from \"@/lib/reader\";\nimport { Memo } from \"@/types/proto/api/v1/memo_service\";\nimport \"@/css/reader.css\";\nexport default function Reader() {\n  const [memos, setMemos] = useState<Memo[]>([]);\n  const [error, setError] = useState(\"\");\n  useEffect(() => { loadMemos().then(setMemos).catch(() => setError(\"Memos unavailable\")); }, []);\n  const params = new URLSearchParams(location.search);\n  const visible = selectMemos(memos, params);\n  return <main className=\"memo-reader\">\n    <header className=\"reader-toolbar\"><h1>Public memo reader</h1><a href=\"/explore\">Open Memos</a></header>\n    {error && <p>{error}</p>}\n    <section className=\"reader-feed\">{visible.map(memo => <article key={memo.name} data-memo={memo.name}>\n      <p className=\"reader-meta\">{memo.creator} · {memo.displayTime?.toISOString()}</p>\n      <MemoContent nodes={memo.nodes} readonly />\n      <div className=\"reader-attachments\">{memo.resources.map(resource => <a key={resource.name} href={resource.externalLink || `/file/${resource.name}/${resource.filename}`}>{resource.filename}</a>)}</div>\n    </article>)}</section>\n  </main>;\n}\n",
+        "web/src/router/index.tsx": [
+          {
+            "new": "import Reader from \"@/pages/Reader\";\n\nconst router = createBrowserRouter([\n  { path: \"/reader\", element: <Reader /> },",
+            "old": "const router = createBrowserRouter(["
+          }
+        ],
+        "web/tsconfig.json": [
+          {
+            "new": "\"moduleResolution\": \"Bundler\"",
+            "old": "\"moduleResolution\": \"Node\""
+          },
+          {
+            "new": "\"paths\": {\n      \"@usememos/mui\": [\"./src/legacy-mui.tsx\"],",
+            "old": "\"paths\": {"
+          }
+        ],
+        "web/vite.config.ts": [
+          {
+            "new": "alias: {\n      \"@usememos/mui\": `${resolve(__dirname, \"src\")}/legacy-mui.tsx`,",
+            "old": "alias: {"
+          }
+        ]
+      },
+      "suite": "v2",
+      "title": "URL-driven accessible memo search",
+      "upstream": "https://github.com/usememos/memos.git",
+      "verification": [
+        "cd web && ./node_modules/.bin/tsc --noEmit --skipLibCheck"
+      ]
+    },
+    {
+      "allowed_paths": [
+        "web/src/pages/Reader.tsx",
+        "web/src/lib/reader.ts",
+        "web/src/css/reader.css",
+        "web/src/components/*",
+        "benchmark_tests/*"
+      ],
+      "category": "browser",
+      "commit": "d20362e722ae6efe682007e7eea377a4689e8484",
+      "dependency_note": "Pinned upstream MUI prerelease is no longer published; fixture setup uses an npm alias to the existing compatible Joy UI 5.0.0-beta.51 API before locking dependencies. This is part of the disclosed starting snapshot, not an agent change.",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Substantial multi-component behavior with independent private verification.",
+      "evidence": {
+        "browser": true
+      },
+      "grader": {
+        "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py"
+      },
+      "id": "memos-print",
+      "language": "typescript",
+      "mutants": [],
+      "prompt": "Implement a print view for /reader that preserves semantic Markdown tables, pre/code, headings, creator/date metadata, and attachment filenames. Hide reader navigation when printing; remove card shadows/borders, constrain long content, and keep whole short cards together where possible. Screen rendering must remain usable. Start the seeded real Memos backend/frontend with python .bench/serve_memos.py and use http://127.0.0.1:3001/reader. The CodeLoom tester must call browser_open, browser_screenshot, browser_console and browser_network. Shell agents use python /opt/benchmark-public/browser_check.py http://127.0.0.1:3001/reader. Browser interactions are not required.\n\nWork autonomously in the main task checkout. Production source, documentation and new benchmark_tests/ tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/ are immutable. Leave the final patch on this checkout.",
+      "provenance": "authored-feature",
+      "reference": {
+        "web/src/css/reader.css": ".memo-reader { padding: 24px; }\n.reader-feed { display: grid; gap: 20px; }\n.reader-feed article { padding: 16px; border: 1px solid #bbb; }\n\n.reader-feed article { overflow-wrap:anywhere; }\n.reader-feed pre,.reader-feed table { max-width:100%; overflow:auto; }\n@media print { .reader-toolbar { display:none; } .reader-feed article { box-shadow:none; border:0; break-inside:avoid; } .memo-reader { padding:0; } .reader-feed pre { white-space:pre-wrap; } .reader-feed table { display:table; } }\n",
+        "web/src/lib/reader.ts": "import { Memo } from \"@/types/proto/api/v1/memo_service\";\nexport async function loadMemos(): Promise<Memo[]> {\n  const response = await fetch(\"/api/v1/memos?pageSize=100\");\n  if (!response.ok) throw new Error(\"Memos unavailable\");\n  const data = await response.json();\n  return (data.memos || []).map((memo: unknown) => Memo.fromPartial({ ...(memo as Memo), displayTime: (memo as Memo).displayTime ? new Date(String((memo as Memo).displayTime)) : undefined }));\n}\nexport function selectMemos(memos: Memo[], _params: URLSearchParams): Memo[] { return memos; }\n",
+        "web/src/pages/Reader.tsx": "import { useEffect, useState } from \"react\";\nimport MemoContent from \"@/components/MemoContent\";\nimport { loadMemos, selectMemos } from \"@/lib/reader\";\nimport { Memo } from \"@/types/proto/api/v1/memo_service\";\nimport \"@/css/reader.css\";\nexport default function Reader() {\n  const [memos, setMemos] = useState<Memo[]>([]);\n  const [error, setError] = useState(\"\");\n  useEffect(() => { loadMemos().then(setMemos).catch(() => setError(\"Memos unavailable\")); }, []);\n  const params = new URLSearchParams(location.search);\n  const visible = selectMemos(memos, params);\n  return <main className=\"memo-reader\">\n    <header className=\"reader-toolbar\"><h1>Public memo reader</h1><a href=\"/explore\">Open Memos</a></header>\n    {error && <p>{error}</p>}\n    <section className=\"reader-feed\">{visible.map(memo => <article key={memo.name} data-memo={memo.name}>\n      <p className=\"reader-meta\">{memo.creator} · {memo.displayTime?.toISOString()}</p>\n      <MemoContent nodes={memo.nodes} readonly />\n      <div className=\"reader-attachments\" aria-label=\"Attachments\">{memo.resources.map(resource => <a key={resource.name} href={resource.externalLink || `/file/${resource.name}/${resource.filename}`}>{resource.filename}</a>)}</div>\n    </article>)}</section>\n  </main>;\n}\n"
+      },
+      "repo": "memos",
+      "runtime": {
+        "browser": true,
+        "cpus": 2,
+        "go_modules": true,
+        "memory_gb": 4,
+        "node_workdir": "web",
+        "prepare": "chown -R bench:bench /task /tmp /opt/benchmark",
+        "services": [
+          {
+            "command": "python .bench/serve_memos.py",
+            "readiness_attempts": 120,
+            "ready": "curl -fsS http://127.0.0.1:3001/reader >/dev/null"
+          }
+        ]
+      },
+      "setup": {
+        ".bench/serve_memos.py": "import os, pathlib, sqlite3, subprocess, time, urllib.request\ndata = pathlib.Path(\"/tmp/memos-data\")\ndata.mkdir(exist_ok=True)\ndatabase = data / \"memos_prod.db\"\nif not database.exists():\n  with sqlite3.connect(database) as db:\n    db.executescript(pathlib.Path(\"store/migration/sqlite/LATEST.sql\").read_text())\n    db.execute(\"INSERT INTO migration_history(version) VALUES ('0.24.4')\")\n    db.execute(\"INSERT INTO user(id,username,role,nickname,password_hash) VALUES (1,'reader','HOST','Reader','unused')\")\n    db.execute(\"INSERT INTO memo(id,uid,creator_id,content,visibility,created_ts,updated_ts) VALUES(1,'alpha',1,?,'PUBLIC',1700000000,1700000000)\", (\"# Alpha release\\n\\n#release \\n\\n\" + \"VeryLongMemo\"*80 + \"\\n\\n| Name | State |\\n| --- | --- |\\n| Alpha | Ready |\\n\\n```python\\nprint('ready')\\n```\",))\n    db.execute(\"INSERT INTO memo(id,uid,creator_id,content,visibility,created_ts,updated_ts) VALUES(2,'beta',1,'# Beta planning\\n\\n#planning Next steps','PUBLIC',1700000010,1700000010)\")\n    db.execute(\"INSERT INTO resource(id,uid,creator_id,filename,type,size,memo_id,storage_type,reference) VALUES(1,'attachment',1,?,'application/pdf',100,1,'EXTERNAL','https://example.com/report.pdf')\", ('quarterly-report-'*20+'.pdf',))\nbackend = subprocess.Popen(['/opt/benchmark/memos','--mode','prod','--data',str(data),'--port','8081'])\ntry:\n  for _ in range(120):\n    try:\n      urllib.request.urlopen('http://127.0.0.1:8081/api/v1/memos', timeout=1).close()\n      break\n    except OSError: time.sleep(.5)\n  frontend = subprocess.Popen(['npm','run','dev','--','--host','127.0.0.1'], cwd='web')\n  frontend.wait()\nfinally: backend.terminate()\n",
+        "web/package.json": [
+          {
+            "new": "\"@usememos/mui\": \"npm:@mui/joy@5.0.0-beta.51\"",
+            "old": "\"@usememos/mui\": \"0.1.0-20250601165716\""
+          }
+        ],
+        "web/src/css/reader.css": ".memo-reader { padding: 24px; }\n.reader-feed { display: grid; gap: 20px; }\n.reader-feed article { padding: 16px; border: 1px solid #bbb; }\n",
+        "web/src/legacy-mui.tsx": "// Compatibility for the unpublished historical @usememos/mui wrapper.\nimport { Button as JoyButton, ButtonProps, Textarea as JoyTextarea, TextareaProps } from \"@mui/joy\";\nexport * from \"@mui/joy\";\nexport function Button({asChild, ...props}: ButtonProps & {asChild?: boolean}) {\n  return <JoyButton {...props} component={asChild ? \"span\" : \"button\"} />;\n}\nexport function Textarea({rows,fullWidth,...props}: TextareaProps & {rows?:number;fullWidth?:boolean}) {\n  return <JoyTextarea {...props} minRows={rows ?? props.minRows} sx={{...(fullWidth ? {width:\"100%\"} : {}),...props.sx}} />;\n}\n",
+        "web/src/lib/reader.ts": "import { Memo } from \"@/types/proto/api/v1/memo_service\";\nexport async function loadMemos(): Promise<Memo[]> {\n  const response = await fetch(\"/api/v1/memos?pageSize=100\");\n  if (!response.ok) throw new Error(\"Memos unavailable\");\n  const data = await response.json();\n  return (data.memos || []).map((memo: unknown) => Memo.fromPartial({ ...(memo as Memo), displayTime: (memo as Memo).displayTime ? new Date(String((memo as Memo).displayTime)) : undefined }));\n}\nexport function selectMemos(memos: Memo[], _params: URLSearchParams): Memo[] { return memos; }\n",
+        "web/src/main.tsx": [
+          {
+            "new": "// Historical wrapper CSS is supplied by Joy CssVarsProvider in this fixture.",
+            "old": "import \"@usememos/mui/dist/index.css\";"
+          }
+        ],
+        "web/src/pages/Reader.tsx": "import { useEffect, useState } from \"react\";\nimport MemoContent from \"@/components/MemoContent\";\nimport { loadMemos, selectMemos } from \"@/lib/reader\";\nimport { Memo } from \"@/types/proto/api/v1/memo_service\";\nimport \"@/css/reader.css\";\nexport default function Reader() {\n  const [memos, setMemos] = useState<Memo[]>([]);\n  const [error, setError] = useState(\"\");\n  useEffect(() => { loadMemos().then(setMemos).catch(() => setError(\"Memos unavailable\")); }, []);\n  const params = new URLSearchParams(location.search);\n  const visible = selectMemos(memos, params);\n  return <main className=\"memo-reader\">\n    <header className=\"reader-toolbar\"><h1>Public memo reader</h1><a href=\"/explore\">Open Memos</a></header>\n    {error && <p>{error}</p>}\n    <section className=\"reader-feed\">{visible.map(memo => <article key={memo.name} data-memo={memo.name}>\n      <p className=\"reader-meta\">{memo.creator} · {memo.displayTime?.toISOString()}</p>\n      <MemoContent nodes={memo.nodes} readonly />\n      <div className=\"reader-attachments\">{memo.resources.map(resource => <a key={resource.name} href={resource.externalLink || `/file/${resource.name}/${resource.filename}`}>{resource.filename}</a>)}</div>\n    </article>)}</section>\n  </main>;\n}\n",
+        "web/src/router/index.tsx": [
+          {
+            "new": "import Reader from \"@/pages/Reader\";\n\nconst router = createBrowserRouter([\n  { path: \"/reader\", element: <Reader /> },",
+            "old": "const router = createBrowserRouter(["
+          }
+        ],
+        "web/tsconfig.json": [
+          {
+            "new": "\"moduleResolution\": \"Bundler\"",
+            "old": "\"moduleResolution\": \"Node\""
+          },
+          {
+            "new": "\"paths\": {\n      \"@usememos/mui\": [\"./src/legacy-mui.tsx\"],",
+            "old": "\"paths\": {"
+          }
+        ],
+        "web/vite.config.ts": [
+          {
+            "new": "alias: {\n      \"@usememos/mui\": `${resolve(__dirname, \"src\")}/legacy-mui.tsx`,",
+            "old": "alias: {"
+          }
+        ]
+      },
+      "suite": "v2",
+      "title": "Readable printable memo pages",
+      "upstream": "https://github.com/usememos/memos.git",
+      "verification": [
+        "cd web && ./node_modules/.bin/tsc --noEmit --skipLibCheck"
+      ]
+    },
+    {
+      "allowed_paths": [
+        "web/src/pages/Reader.tsx",
+        "web/src/lib/reader.ts",
+        "web/src/css/reader.css",
+        "web/src/components/*",
+        "benchmark_tests/*"
+      ],
+      "category": "browser",
+      "commit": "d20362e722ae6efe682007e7eea377a4689e8484",
+      "dependency_note": "Pinned upstream MUI prerelease is no longer published; fixture setup uses an npm alias to the existing compatible Joy UI 5.0.0-beta.51 API before locking dependencies. This is part of the disclosed starting snapshot, not an agent change.",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Substantial multi-component behavior with independent private verification.",
+      "evidence": {
+        "browser": true
+      },
+      "grader": {
+        "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py"
+      },
+      "id": "memos-resilience",
+      "language": "typescript",
+      "mutants": [],
+      "prompt": "Support /reader?memo=memos/alpha and other direct memo names using GET /api/v1/{memo}. A 404 must show role=alert Memo not found; other HTTP/network failures show role=alert Memos unavailable. Missing creator metadata must show Unknown author. Invalid memo names must not cause requests outside /api/v1/memos/. Preserve a working feed at /reader. Start the seeded real Memos backend/frontend with python .bench/serve_memos.py and use http://127.0.0.1:3001/reader. The CodeLoom tester must call browser_open, browser_screenshot, browser_console and browser_network. Shell agents use python /opt/benchmark-public/browser_check.py http://127.0.0.1:3001/reader. Browser interactions are not required.\n\nWork autonomously in the main task checkout. Production source, documentation and new benchmark_tests/ tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/ are immutable. Leave the final patch on this checkout.",
+      "provenance": "authored-feature",
+      "reference": {
+        "web/src/css/reader.css": ".memo-reader { padding: 24px; }\n.reader-feed { display: grid; gap: 20px; }\n.reader-feed article { padding: 16px; border: 1px solid #bbb; }\n",
+        "web/src/lib/reader.ts": "import { Memo } from \"@/types/proto/api/v1/memo_service\";\nexport async function loadMemos(): Promise<Memo[]> {\n  const response = await fetch(new URLSearchParams(location.search).get(\"memo\") ? \"/api/v1/\" + validMemoName(new URLSearchParams(location.search).get(\"memo\")!) : \"/api/v1/memos?pageSize=100\");\n  if (!response.ok) throw new Error(response.status===404 ? \"Memo not found\" : \"Memos unavailable\");\n  const data = await response.json();\n  return (data.memos || (data.name ? [data] : [])).map((memo: unknown) => Memo.fromPartial({ ...(memo as Memo), displayTime: (memo as Memo).displayTime ? new Date(String((memo as Memo).displayTime)) : undefined }));\n}\nexport function selectMemos(memos: Memo[], _params: URLSearchParams): Memo[] { return memos; }\n\nfunction validMemoName(name:string):string { if(!/^memos\\/[a-zA-Z0-9_-]+$/.test(name)) throw new Error(\"Memo not found\"); return name; }\n",
+        "web/src/pages/Reader.tsx": "import { useEffect, useState } from \"react\";\nimport MemoContent from \"@/components/MemoContent\";\nimport { loadMemos, selectMemos } from \"@/lib/reader\";\nimport { Memo } from \"@/types/proto/api/v1/memo_service\";\nimport \"@/css/reader.css\";\nexport default function Reader() {\n  const [memos, setMemos] = useState<Memo[]>([]);\n  const [error, setError] = useState(\"\");\n  useEffect(() => { loadMemos().then(setMemos).catch((error:Error) => setError(error.message)); }, []);\n  const params = new URLSearchParams(location.search);\n  const visible = selectMemos(memos, params);\n  return <main className=\"memo-reader\">\n    <header className=\"reader-toolbar\"><h1>Public memo reader</h1><a href=\"/explore\">Open Memos</a></header>\n    {error && <p role=\"alert\">{error}</p>}\n    <section className=\"reader-feed\">{visible.map(memo => <article key={memo.name} data-memo={memo.name}>\n      <p className=\"reader-meta\">{memo.creator || \"Unknown author\"} · {memo.displayTime?.toISOString()}</p>\n      <MemoContent nodes={memo.nodes} readonly />\n      <div className=\"reader-attachments\">{memo.resources.map(resource => <a key={resource.name} href={resource.externalLink || `/file/${resource.name}/${resource.filename}`}>{resource.filename}</a>)}</div>\n    </article>)}</section>\n  </main>;\n}\n"
+      },
+      "repo": "memos",
+      "runtime": {
+        "browser": true,
+        "cpus": 2,
+        "go_modules": true,
+        "memory_gb": 4,
+        "node_workdir": "web",
+        "prepare": "chown -R bench:bench /task /tmp /opt/benchmark",
+        "services": [
+          {
+            "command": "python .bench/serve_memos.py",
+            "readiness_attempts": 120,
+            "ready": "curl -fsS http://127.0.0.1:3001/reader >/dev/null"
+          }
+        ]
+      },
+      "setup": {
+        ".bench/serve_memos.py": "import os, pathlib, sqlite3, subprocess, time, urllib.request\ndata = pathlib.Path(\"/tmp/memos-data\")\ndata.mkdir(exist_ok=True)\ndatabase = data / \"memos_prod.db\"\nif not database.exists():\n  with sqlite3.connect(database) as db:\n    db.executescript(pathlib.Path(\"store/migration/sqlite/LATEST.sql\").read_text())\n    db.execute(\"INSERT INTO migration_history(version) VALUES ('0.24.4')\")\n    db.execute(\"INSERT INTO user(id,username,role,nickname,password_hash) VALUES (1,'reader','HOST','Reader','unused')\")\n    db.execute(\"INSERT INTO memo(id,uid,creator_id,content,visibility,created_ts,updated_ts) VALUES(1,'alpha',1,?,'PUBLIC',1700000000,1700000000)\", (\"# Alpha release\\n\\n#release \\n\\n\" + \"VeryLongMemo\"*80 + \"\\n\\n| Name | State |\\n| --- | --- |\\n| Alpha | Ready |\\n\\n```python\\nprint('ready')\\n```\",))\n    db.execute(\"INSERT INTO memo(id,uid,creator_id,content,visibility,created_ts,updated_ts) VALUES(2,'beta',1,'# Beta planning\\n\\n#planning Next steps','PUBLIC',1700000010,1700000010)\")\n    db.execute(\"INSERT INTO resource(id,uid,creator_id,filename,type,size,memo_id,storage_type,reference) VALUES(1,'attachment',1,?,'application/pdf',100,1,'EXTERNAL','https://example.com/report.pdf')\", ('quarterly-report-'*20+'.pdf',))\nbackend = subprocess.Popen(['/opt/benchmark/memos','--mode','prod','--data',str(data),'--port','8081'])\ntry:\n  for _ in range(120):\n    try:\n      urllib.request.urlopen('http://127.0.0.1:8081/api/v1/memos', timeout=1).close()\n      break\n    except OSError: time.sleep(.5)\n  frontend = subprocess.Popen(['npm','run','dev','--','--host','127.0.0.1'], cwd='web')\n  frontend.wait()\nfinally: backend.terminate()\n",
+        "web/package.json": [
+          {
+            "new": "\"@usememos/mui\": \"npm:@mui/joy@5.0.0-beta.51\"",
+            "old": "\"@usememos/mui\": \"0.1.0-20250601165716\""
+          }
+        ],
+        "web/src/css/reader.css": ".memo-reader { padding: 24px; }\n.reader-feed { display: grid; gap: 20px; }\n.reader-feed article { padding: 16px; border: 1px solid #bbb; }\n",
+        "web/src/legacy-mui.tsx": "// Compatibility for the unpublished historical @usememos/mui wrapper.\nimport { Button as JoyButton, ButtonProps, Textarea as JoyTextarea, TextareaProps } from \"@mui/joy\";\nexport * from \"@mui/joy\";\nexport function Button({asChild, ...props}: ButtonProps & {asChild?: boolean}) {\n  return <JoyButton {...props} component={asChild ? \"span\" : \"button\"} />;\n}\nexport function Textarea({rows,fullWidth,...props}: TextareaProps & {rows?:number;fullWidth?:boolean}) {\n  return <JoyTextarea {...props} minRows={rows ?? props.minRows} sx={{...(fullWidth ? {width:\"100%\"} : {}),...props.sx}} />;\n}\n",
+        "web/src/lib/reader.ts": "import { Memo } from \"@/types/proto/api/v1/memo_service\";\nexport async function loadMemos(): Promise<Memo[]> {\n  const response = await fetch(\"/api/v1/memos?pageSize=100\");\n  if (!response.ok) throw new Error(\"Memos unavailable\");\n  const data = await response.json();\n  return (data.memos || []).map((memo: unknown) => Memo.fromPartial({ ...(memo as Memo), displayTime: (memo as Memo).displayTime ? new Date(String((memo as Memo).displayTime)) : undefined }));\n}\nexport function selectMemos(memos: Memo[], _params: URLSearchParams): Memo[] { return memos; }\n",
+        "web/src/main.tsx": [
+          {
+            "new": "// Historical wrapper CSS is supplied by Joy CssVarsProvider in this fixture.",
+            "old": "import \"@usememos/mui/dist/index.css\";"
+          }
+        ],
+        "web/src/pages/Reader.tsx": "import { useEffect, useState } from \"react\";\nimport MemoContent from \"@/components/MemoContent\";\nimport { loadMemos, selectMemos } from \"@/lib/reader\";\nimport { Memo } from \"@/types/proto/api/v1/memo_service\";\nimport \"@/css/reader.css\";\nexport default function Reader() {\n  const [memos, setMemos] = useState<Memo[]>([]);\n  const [error, setError] = useState(\"\");\n  useEffect(() => { loadMemos().then(setMemos).catch(() => setError(\"Memos unavailable\")); }, []);\n  const params = new URLSearchParams(location.search);\n  const visible = selectMemos(memos, params);\n  return <main className=\"memo-reader\">\n    <header className=\"reader-toolbar\"><h1>Public memo reader</h1><a href=\"/explore\">Open Memos</a></header>\n    {error && <p>{error}</p>}\n    <section className=\"reader-feed\">{visible.map(memo => <article key={memo.name} data-memo={memo.name}>\n      <p className=\"reader-meta\">{memo.creator} · {memo.displayTime?.toISOString()}</p>\n      <MemoContent nodes={memo.nodes} readonly />\n      <div className=\"reader-attachments\">{memo.resources.map(resource => <a key={resource.name} href={resource.externalLink || `/file/${resource.name}/${resource.filename}`}>{resource.filename}</a>)}</div>\n    </article>)}</section>\n  </main>;\n}\n",
+        "web/src/router/index.tsx": [
+          {
+            "new": "import Reader from \"@/pages/Reader\";\n\nconst router = createBrowserRouter([\n  { path: \"/reader\", element: <Reader /> },",
+            "old": "const router = createBrowserRouter(["
+          }
+        ],
+        "web/tsconfig.json": [
+          {
+            "new": "\"moduleResolution\": \"Bundler\"",
+            "old": "\"moduleResolution\": \"Node\""
+          },
+          {
+            "new": "\"paths\": {\n      \"@usememos/mui\": [\"./src/legacy-mui.tsx\"],",
+            "old": "\"paths\": {"
+          }
+        ],
+        "web/vite.config.ts": [
+          {
+            "new": "alias: {\n      \"@usememos/mui\": `${resolve(__dirname, \"src\")}/legacy-mui.tsx`,",
+            "old": "alias: {"
+          }
+        ]
+      },
+      "suite": "v2",
+      "title": "Resilient reader detail and error states",
+      "upstream": "https://github.com/usememos/memos.git",
+      "verification": [
+        "cd web && ./node_modules/.bin/tsc --noEmit --skipLibCheck"
+      ]
+    },
+    {
+      "allowed_paths": [
+        "starlette/*.py",
+        "docs/*",
+        "benchmark_tests/*"
+      ],
+      "category": "bug",
+      "commit": "cb8f84f5284dc301ca7a31eb732b9e140769dd48",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Substantial multi-component behavior with independent private verification.",
+      "evidence": {},
+      "grader": {
+        "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py"
+      },
+      "id": "starlette-mounts",
+      "language": "python",
+      "mutants": [],
+      "prompt": "Repair nested named mounts and URLPath.make_absolute_url so root paths, escaped path parameters and secure scheme/host information are preserved. Restore existing public behavior; retain request isolation.\n\nWork autonomously in the main task checkout. Production source, documentation and new benchmark_tests/ tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/ are immutable. Leave the final patch on this checkout.",
+      "provenance": "fabricated-regression",
+      "reference": {
+        "starlette/datastructures.py": [
+          {
+            "new": "path = base_url.path.rstrip(\"/\") + str(self)",
+            "old": "path = str(self)"
+          }
+        ],
+        "starlette/routing.py": [
+          {
+            "new": "path=path_prefix.rstrip(\"/\") + str(url)",
+            "old": "path=path_prefix.strip(\"/\") + str(url)"
+          }
+        ]
+      },
+      "repo": "starlette",
+      "runtime": {
+        "cpus": 2,
+        "memory_gb": 3
+      },
+      "setup": {
+        "starlette/datastructures.py": [
+          {
+            "new": "path = str(self)",
+            "old": "path = base_url.path.rstrip(\"/\") + str(self)"
+          }
+        ],
+        "starlette/routing.py": [
+          {
+            "new": "path=path_prefix.strip(\"/\") + str(url)",
+            "old": "path=path_prefix.rstrip(\"/\") + str(url)"
+          }
+        ]
+      },
+      "suite": "v2",
+      "title": "Repair nested URL generation",
+      "upstream": "https://github.com/Kludex/starlette.git",
+      "verification": [
+        "python -m pytest -o addopts= -q tests/test_routing.py tests/test_datastructures.py"
+      ]
+    },
+    {
+      "allowed_paths": [
+        "starlette/*.py",
+        "docs/*",
+        "benchmark_tests/*"
+      ],
+      "category": "bug",
+      "commit": "cb8f84f5284dc301ca7a31eb732b9e140769dd48",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Substantial multi-component behavior with independent private verification.",
+      "evidence": {},
+      "grader": {
+        "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py"
+      },
+      "id": "starlette-streaming",
+      "language": "python",
+      "mutants": [],
+      "prompt": "Repair streaming disconnect cancellation and BackgroundTasks ordering. Disconnects must terminate streaming rather than leave the producer running; normal completion must await every registered background task in registration order. Preserve sync/async task support.\n\nWork autonomously in the main task checkout. Production source, documentation and new benchmark_tests/ tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/ are immutable. Leave the final patch on this checkout.",
+      "provenance": "fabricated-regression",
+      "reference": {
+        "starlette/background.py": [
+          {
+            "new": "for task in self.tasks:",
+            "old": "for task in self.tasks[:1]:"
+          }
+        ],
+        "starlette/responses.py": [
+          {
+            "new": "task_group.cancel_scope.cancel()",
+            "old": "await anyio.sleep(3600)"
+          }
+        ]
+      },
+      "repo": "starlette",
+      "runtime": {
+        "cpus": 2,
+        "memory_gb": 3
+      },
+      "setup": {
+        "starlette/background.py": [
+          {
+            "new": "for task in self.tasks[:1]:",
+            "old": "for task in self.tasks:"
+          }
+        ],
+        "starlette/responses.py": [
+          {
+            "new": "await anyio.sleep(3600)",
+            "old": "task_group.cancel_scope.cancel()"
+          }
+        ]
+      },
+      "suite": "v2",
+      "title": "Repair streaming and background lifecycle",
+      "upstream": "https://github.com/Kludex/starlette.git",
+      "verification": [
+        "python -m pytest -o addopts= -q tests/test_background.py"
+      ]
+    },
+    {
+      "allowed_paths": [
+        "starlette/*.py",
+        "starlette/middleware/*.py",
+        "docs/*",
+        "benchmark_tests/*"
+      ],
+      "category": "bug",
+      "commit": "cb8f84f5284dc301ca7a31eb732b9e140769dd48",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Substantial multi-component behavior with independent private verification.",
+      "evidence": {},
+      "grader": {
+        "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py"
+      },
+      "id": "starlette-middleware",
+      "language": "python",
+      "mutants": [],
+      "prompt": "Repair GZip response isolation and repeated Set-Cookie headers. Concurrent compressed and uncompressed requests must retain their own headers/body; multiple response cookies must survive without replacement. Keep excluded event streams unchanged.\n\nWork autonomously in the main task checkout. Production source, documentation and new benchmark_tests/ tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/ are immutable. Leave the final patch on this checkout.",
+      "provenance": "fabricated-regression",
+      "reference": {
+        "starlette/middleware/gzip.py": [
+          {
+            "new": "self.initial_message = message",
+            "old": "self.initial_message = {**message, \"headers\": []}"
+          }
+        ],
+        "starlette/responses.py": [
+          {
+            "new": "self.raw_headers.append((b\"set-cookie\", cookie_val.encode(\"latin-1\")))",
+            "old": "self.headers[\"set-cookie\"] = cookie_val"
+          }
+        ]
+      },
+      "repo": "starlette",
+      "runtime": {
+        "cpus": 2,
+        "memory_gb": 3
+      },
+      "setup": {
+        "starlette/middleware/gzip.py": [
+          {
+            "new": "self.initial_message = {**message, \"headers\": []}",
+            "old": "self.initial_message = message"
+          }
+        ],
+        "starlette/responses.py": [
+          {
+            "new": "self.headers[\"set-cookie\"] = cookie_val",
+            "old": "self.raw_headers.append((b\"set-cookie\", cookie_val.encode(\"latin-1\")))"
+          }
+        ]
+      },
+      "suite": "v2",
+      "title": "Restore concurrent middleware isolation",
+      "upstream": "https://github.com/Kludex/starlette.git",
+      "verification": [
+        "python -m pytest -o addopts= -q tests/middleware/test_gzip.py tests/test_responses.py"
+      ]
+    },
+    {
+      "allowed_paths": [
+        "httpx/*.py",
+        "docs/*",
+        "research.md",
+        "benchmark_tests/*"
+      ],
+      "category": "research",
+      "commit": "26d48e0634e6ee9cdc0533996db289ce4b430177",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Substantial multi-component behavior with independent private verification.",
+      "evidence": {
+        "research": true
+      },
+      "grader": {
+        "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py"
+      },
+      "id": "httpx-redirects",
+      "language": "python",
+      "mutants": [],
+      "prompt": "Use web search and the pinned GitHub source to investigate and repair cross-origin redirects: remove credentials except a same-host default-port HTTP-to-HTTPS upgrade; do not carry raw Cookie headers into redirect requests. Before editing, obtain a researcher briefing. Leave research.md citing external sources and the pinned GitHub commit, explaining the compatibility contract and the changes. Shell-native agents use python /opt/benchmark-public/research.py search '{\"query\":\"HTTPX redirects\"}' and github '{\"args\":[\"api\",\"repos/encode/httpx/contents/httpx/_client.py?ref=26d48e0634e6ee9cdc0533996db289ce4b430177\",\"-H\",\"Accept: application/vnd.github.raw\"]}'. Successful search and GitHub source access are required.\n\nWork autonomously in the main task checkout. Production source, documentation and new benchmark_tests/ tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/ are immutable. Leave the final patch on this checkout.",
+      "provenance": "fabricated-regression",
+      "reference": {
+        "httpx/_client.py": [
+          {
+            "new": "headers.pop(\"Cookie\", None)",
+            "old": "headers.pop(\"X-Unused-Cookie\", None)"
+          },
+          {
+            "new": "headers.pop(\"Authorization\", None)",
+            "old": "headers.pop(\"X-Unused-Authorization\", None)"
+          }
+        ],
+        "httpx/_urls.py": [
+          {
+            "new": "host: str = self._uri_reference.host",
+            "old": "host: str = self._uri_reference.host.upper()"
+          }
+        ]
+      },
+      "repo": "httpx",
+      "research": {
+        "hosts": [
+          "www.python-httpx.org",
+          "www.rfc-editor.org",
+          "httpwg.org",
+          "docs.python.org"
+        ],
+        "repo_refs": {
+          "encode/httpx": "26d48e0634e6ee9cdc0533996db289ce4b430177"
+        }
+      },
+      "runtime": {
+        "cpus": 2,
+        "memory_gb": 3
+      },
+      "setup": {
+        "httpx/_client.py": [
+          {
+            "new": "headers.pop(\"X-Unused-Authorization\", None)",
+            "old": "headers.pop(\"Authorization\", None)"
+          },
+          {
+            "new": "headers.pop(\"X-Unused-Cookie\", None)",
+            "old": "headers.pop(\"Cookie\", None)"
+          }
+        ],
+        "httpx/_urls.py": [
+          {
+            "new": "host: str = self._uri_reference.host.upper()",
+            "old": "host: str = self._uri_reference.host"
+          }
+        ]
+      },
+      "suite": "v2",
+      "title": "Research and repair redirects",
+      "upstream": "https://github.com/encode/httpx.git",
+      "verification": [
+        "python -m pytest -o addopts= -q tests/client/test_redirects.py tests/models/test_url.py"
+      ]
+    },
+    {
+      "allowed_paths": [
+        "httpx/*.py",
+        "docs/*",
+        "research.md",
+        "benchmark_tests/*"
+      ],
+      "category": "research",
+      "commit": "26d48e0634e6ee9cdc0533996db289ce4b430177",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Substantial multi-component behavior with independent private verification.",
+      "evidence": {
+        "research": true
+      },
+      "grader": {
+        "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py"
+      },
+      "id": "httpx-timeouts",
+      "language": "python",
+      "mutants": [],
+      "prompt": "Use web search and the pinned GitHub source to investigate and repair timeout propagation: explicit request extensions win; otherwise requests inherit the client timeout. Timeout tuple connect/read/write/pool fields must retain their respective values, and None disables timeouts. Before editing, obtain a researcher briefing. Leave research.md citing external sources and the pinned GitHub commit, explaining the compatibility contract and the changes. Shell-native agents use python /opt/benchmark-public/research.py search '{\"query\":\"HTTPX timeouts\"}' and github '{\"args\":[\"api\",\"repos/encode/httpx/contents/httpx/_client.py?ref=26d48e0634e6ee9cdc0533996db289ce4b430177\",\"-H\",\"Accept: application/vnd.github.raw\"]}'. Successful search and GitHub source access are required.\n\nWork autonomously in the main task checkout. Production source, documentation and new benchmark_tests/ tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/ are immutable. Leave the final patch on this checkout.",
+      "provenance": "fabricated-regression",
+      "reference": {
+        "httpx/_client.py": [
+          {
+            "new": "request.extensions = dict(**request.extensions, timeout=timeout.as_dict())",
+            "old": "request.extensions = dict(**request.extensions, timeout=Timeout(None).as_dict())"
+          }
+        ],
+        "httpx/_config.py": [
+          {
+            "new": "self.write = None if len(timeout) < 3 else timeout[2]",
+            "old": "self.write = None if len(timeout) < 3 else timeout[1]"
+          }
+        ]
+      },
+      "repo": "httpx",
+      "research": {
+        "hosts": [
+          "www.python-httpx.org",
+          "www.rfc-editor.org",
+          "httpwg.org",
+          "docs.python.org"
+        ],
+        "repo_refs": {
+          "encode/httpx": "26d48e0634e6ee9cdc0533996db289ce4b430177"
+        }
+      },
+      "runtime": {
+        "cpus": 2,
+        "memory_gb": 3
+      },
+      "setup": {
+        "httpx/_client.py": [
+          {
+            "new": "request.extensions = dict(**request.extensions, timeout=Timeout(None).as_dict())",
+            "old": "request.extensions = dict(**request.extensions, timeout=timeout.as_dict())"
+          }
+        ],
+        "httpx/_config.py": [
+          {
+            "new": "self.write = None if len(timeout) < 3 else timeout[1]",
+            "old": "self.write = None if len(timeout) < 3 else timeout[2]"
+          }
+        ]
+      },
+      "suite": "v2",
+      "title": "Research and repair timeouts",
+      "upstream": "https://github.com/encode/httpx.git",
+      "verification": [
+        "python -m pytest -o addopts= -q tests/test_config.py tests/client/test_properties.py tests/client/test_client.py tests/client/test_async_client.py"
+      ]
+    },
+    {
+      "allowed_paths": [
+        "src/dotenv/*.py",
+        "tests/*.py",
+        "benchmark_tests/*"
+      ],
+      "category": "cross-file",
+      "certification": {
+        "reason": "Reference/no-op, regression and mutant checks have not run.",
+        "status": "pending"
+      },
+      "commit": "0b2880591780a426b0551436f47a17e7a76d954f",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Substantial multi-component behavior with independent private verification.",
+      "evidence": {},
+      "grader": {
+        "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py"
+      },
+      "id": "dotenv-strict",
+      "language": "python",
+      "mutants": [],
+      "prompt": "Add strict: bool=False to DotEnv, load_dotenv and dotenv_values. In strict mode a malformed binding raises public dotenv.DotEnvParseError(ValueError), with .line (1-based int) and .path (input path or None for streams), before setting any environment variable. Lenient defaults remain unchanged. Add dotenv run --strict that uses this API and exits nonzero on invalid input; valid files still run the command.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You may edit production source and add tests under benchmark_tests/, but existing tests/configuration and .bench files are immutable.\n\nWork autonomously in the main task checkout. Production source, documentation and new benchmark_tests/ tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/ are immutable. Leave the final patch on this checkout.",
+      "provenance": "cross-file",
+      "reference": {
+        "src/dotenv/__init__.py": [
+          {
+            "new": "from .main import DotEnvParseError, dotenv_values,",
+            "old": "from .main import dotenv_values,"
+          }
+        ],
+        "src/dotenv/cli.py": [
+          {
+            "new": "@click.option(\"--strict\", is_flag=True, default=False)\ndef run(ctx: click.Context, override: bool, commandline: tuple[str, ...], strict: bool = False) -> None:",
+            "old": "def run(ctx: click.Context, override: bool, commandline: tuple[str, ...]) -> None:"
+          },
+          {
+            "new": "DotEnv(file, override=override, encoding=\"utf-8\", strict=strict)",
+            "old": "DotEnv(file, override=override, encoding=\"utf-8\")"
+          }
+        ],
+        "src/dotenv/main.py": [
+          {
+            "new": "class DotEnvParseError(ValueError):\n    def __init__(self, line: int, path=None):\n        self.line = line\n        self.path = path\n        super().__init__(f\"Invalid binding at line {line}: {path or '<stream>'}\")\n\n\nclass DotEnv:\n",
+            "old": "class DotEnv:\n"
+          },
+          {
+            "new": "        override: bool = True,\n        strict: bool = False,\n    ) -> None:",
+            "old": "        override: bool = True,\n    ) -> None:"
+          },
+          {
+            "new": "        self.override: bool = override\n        self.strict = strict",
+            "old": "        self.override: bool = override"
+          },
+          {
+            "new": "                if mapping.error and self.strict:\n                    raise DotEnvParseError(mapping.original.line, self.dotenv_path)\n                if mapping.key is not None:\n                    yield mapping.key, mapping.value",
+            "old": "                if mapping.key is not None:\n                    yield mapping.key, mapping.value"
+          },
+          {
+            "new": "    encoding: Optional[str] = \"utf-8\",\n    strict: bool = False,\n) -> bool:",
+            "old": "    encoding: Optional[str] = \"utf-8\",\n) -> bool:"
+          },
+          {
+            "new": "    encoding: Optional[str] = \"utf-8\",\n    strict: bool = False,\n) -> Dict[str, Optional[str]]:",
+            "old": "    encoding: Optional[str] = \"utf-8\",\n) -> Dict[str, Optional[str]]:"
+          },
+          {
+            "new": "        interpolate=interpolate,\n        override=override,\n        encoding=encoding,\n        strict=strict,\n    )",
+            "old": "        interpolate=interpolate,\n        override=override,\n        encoding=encoding,\n    )"
+          },
+          {
+            "new": "        override=True,\n        encoding=encoding,\n        strict=strict,\n    ).dict()",
+            "old": "        override=True,\n        encoding=encoding,\n    ).dict()"
+          }
+        ]
+      },
+      "repo": "dotenv",
+      "runtime": {
+        "cpus": 2,
+        "memory_gb": 3
+      },
+      "setup": {},
+      "suite": "v2",
+      "title": "Strict dotenv loading API and CLI",
+      "upstream": "https://github.com/theskumar/python-dotenv.git",
+      "verification": [
+        "python -m pytest -q tests"
+      ]
+    },
+    {
+      "allowed_paths": [
+        "source/*.ts",
+        "test/*.ts",
+        "benchmark_tests/*"
+      ],
+      "category": "cross-file",
+      "certification": {
+        "reason": "Reference/no-op, regression and mutant checks have not run.",
+        "status": "pending"
+      },
+      "commit": "7f272ab5ff2254c0dc2537b7977e88ede1cd55e8",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Substantial multi-component behavior with independent private verification.",
+      "evidence": {},
+      "grader": {
+        "command": "node --import=tsx/esm /tmp/oracle/check.ts"
+      },
+      "id": "pqueue-bulk",
+      "language": "typescript",
+      "mutants": [],
+      "prompt": "Add setPriorities(updates: ReadonlyArray<{id:string;priority:number}>): void to PQueue, the Queue interface and PriorityQueue. Make the Queue capability optional to preserve existing custom queue types; PQueue must fall back to validated single updates when a custom queue lacks the bulk method. Validate the entire batch before any mutation: nonfinite priority -> TypeError; unknown or already-running ID -> ReferenceError. Empty batch is a no-op; duplicate IDs apply in order (last wins). Reuse single-update ordering, keep waiting-task metadata consistent, and preserve other queued tasks.\n\nWork autonomously. Leave the final output on the main task checkout, not only a branch/worktree. You may edit production source and add tests under benchmark_tests/, but existing tests/configuration and .bench files are immutable.\n\nWork autonomously in the main task checkout. Production source, documentation and new benchmark_tests/ tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/ are immutable. Leave the final patch on this checkout.",
+      "provenance": "cross-file",
+      "reference": {
+        "source/index.ts": [
+          {
+            "count": 1,
+            "new": "\tsetPriorities(updates: ReadonlyArray<{id: string; priority: number}>): void {\n\t\tfor (const {id, priority} of updates) {\n\t\t\tif (!Number.isFinite(priority)) { throw new TypeError('priority must be finite'); }\n\t\t\tif (![...this.#waitingTasks].some(task => task.id === id)) { throw new ReferenceError('unknown queued id'); }\n\t\t}\n\t\tif (this.#queue.setPriorities) { this.#queue.setPriorities(updates); }\n\t\telse { for (const {id, priority} of updates) { this.#queue.setPriority(id, priority); } }\n\t\tfor (const {id, priority} of updates) {\n\t\t\tfor (const task of this.#waitingTasks) { if (task.id === id) { task.priority = priority; } }\n\t\t}\n\t}\n\n\tsetPriority(id: string, priority: number) {",
+            "old": "\tsetPriority(id: string, priority: number) {"
+          }
+        ],
+        "source/priority-queue.ts": [
+          {
+            "count": 1,
+            "new": "\tsetPriorities(updates: ReadonlyArray<{id: string; priority: number}>): void {\n\t\tfor (const {id, priority} of updates) {\n\t\t\tif (!Number.isFinite(priority)) { throw new TypeError('priority must be finite'); }\n\t\t\tif (this.#findIndex(element => element.id === id) === -1) { throw new ReferenceError('unknown queued id'); }\n\t\t}\n\t\tfor (const {id, priority} of updates) { this.setPriority(id, priority); }\n\t}\n\n\tsetPriority(id: string, priority: number) {",
+            "old": "\tsetPriority(id: string, priority: number) {"
+          }
+        ],
+        "source/queue.ts": [
+          {
+            "count": 1,
+            "new": "\tsetPriorities?: (updates: ReadonlyArray<{id: string; priority: number}>) => void;\n\tsetPriority: (id: string, priority: number) => void;",
+            "old": "\tsetPriority: (id: string, priority: number) => void;"
+          }
+        ]
+      },
+      "repo": "pqueue",
+      "runtime": {
+        "cpus": 2,
+        "memory_gb": 3,
+        "node_workdir": ""
+      },
+      "setup": {
+        "test/strict.ts": [
+          {
+            "count": 1,
+            "new": "test('strict mode multiple complete intervals', async t => {\n\tt.mock.timers.enable({apis: ['setTimeout', 'setInterval', 'Date'], now: 1_000_000});",
+            "old": "test('strict mode multiple complete intervals', async () => {"
+          },
+          {
+            "count": 1,
+            "new": "\tawait flush();\n\tt.assert.strictEqual(executionTimes.length, 3);\n\n\t// Advance to each boundary, proving no task starts before its slot.\n\tt.mock.timers.tick(99);\n\tawait flush();\n\tt.assert.strictEqual(executionTimes.length, 3);\n\tt.mock.timers.tick(1);\n\tawait flush();\n\tt.assert.strictEqual(executionTimes.length, 6);\n\tt.mock.timers.tick(99);\n\tawait flush();\n\tt.assert.strictEqual(executionTimes.length, 6);\n\tt.mock.timers.tick(1);\n\tawait flush();\n\tt.assert.strictEqual(executionTimes.length, 9);\n\tt.mock.timers.tick(99);\n\tawait flush();\n\tt.assert.strictEqual(executionTimes.length, 9);\n\tt.mock.timers.tick(1);\n\tawait flush();\n\tt.assert.strictEqual(executionTimes.length, 12);\n\n\tawait queue.onIdle();\n\n\tt.assert.strictEqual(executionTimes.length, 12);",
+            "old": "\tawait queue.onIdle();\n\n\tassert.equal(executionTimes.length, 12);"
+          },
+          {
+            "count": 1,
+            "new": "\tt.assert.ok(tasksPerInterval.every(count => count <= 3), `Each 100ms interval should hold at most 3 tasks, got ${JSON.stringify(tasksPerInterval)}`);",
+            "old": "\tassert.ok(tasksPerInterval.every(count => count <= 3), `Each 100ms interval should hold at most 3 tasks, got ${JSON.stringify(tasksPerInterval)}`);"
+          },
+          {
+            "count": 1,
+            "new": "\tconst relativeExecutionTimes = executionTimes.map(time => time - startTime);\n\n\t// Group by approximate interval",
+            "old": "\tconst relativeExecutionTimes = executionTimes.map(t => t - startTime);\n\n\t// Group by approximate interval"
+          }
+        ]
+      },
+      "suite": "v2",
+      "title": "Atomic bulk queue priority updates",
+      "upstream": "https://github.com/sindresorhus/p-queue.git",
+      "verification": [
+        "npm run build",
+        "node --import=tsx/esm --test --test-timeout=60000 test/*.ts"
+      ]
+    },
+    {
+      "allowed_paths": [
+        "source/*.ts",
+        "readme.md",
+        "benchmark_tests/*"
+      ],
+      "category": "bug",
+      "commit": "7f272ab5ff2254c0dc2537b7977e88ede1cd55e8",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Substantial multi-component behavior with independent private verification.",
+      "evidence": {},
+      "grader": {
+        "command": "node --import=tsx/esm /tmp/oracle/check.ts"
+      },
+      "id": "pqueue-shutdown",
+      "language": "typescript",
+      "mutants": [],
+      "prompt": "Repair queued cancellation and clear(): canceled work must not execute; every queued promise must reject with AbortError when cleared; running work completes normally; onIdle and onPendingZero resolve at their documented boundaries. Cover cancellation of the first and later queued items with stable ordering.\n\nWork autonomously in the main task checkout. Production source, documentation and new benchmark_tests/ tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/ are immutable. Leave the final patch on this checkout.",
+      "provenance": "fabricated-regression",
+      "reference": {
+        "source/index.ts": [
+          {
+            "new": "waitingTask.reject!(error);",
+            "old": "void error; // Regression: cleared promises never settle."
+          }
+        ],
+        "source/priority-queue.ts": [
+          {
+            "new": "if (index === this.#head) {",
+            "old": "if (index === this.#head && false) {"
+          }
+        ]
+      },
+      "repo": "pqueue",
+      "runtime": {
+        "cpus": 2,
+        "memory_gb": 3,
+        "node_workdir": ""
+      },
+      "setup": {
+        "source/index.ts": [
+          {
+            "new": "void error; // Regression: cleared promises never settle.",
+            "old": "waitingTask.reject!(error);"
+          }
+        ],
+        "source/priority-queue.ts": [
+          {
+            "new": "if (index === this.#head && false) {",
+            "old": "if (index === this.#head) {"
+          }
+        ]
+      },
+      "suite": "v2",
+      "title": "Repair cancellation and shutdown bookkeeping",
+      "upstream": "https://github.com/sindresorhus/p-queue.git",
+      "verification": [
+        "node --import=tsx/esm --test --test-timeout=60000 test/*.ts"
+      ]
+    },
+    {
+      "allowed_paths": [
+        "httpie/*.py",
+        "httpie/legacy/*.py",
+        "docs/*",
+        "benchmark_tests/*"
+      ],
+      "category": "terminal",
+      "commit": "2105caa49bae87c5809c274e407619a0de2639d1",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Substantial multi-component behavior with independent private verification.",
+      "evidence": {
+        "command_pattern": "python(?:3)?\\s+-m\\s+httpie\\b",
+        "terminal": true
+      },
+      "grader": {
+        "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py"
+      },
+      "id": "httpie-downloads",
+      "language": "python",
+      "mutants": [],
+      "prompt": "Repair resumed downloads: send Range for an existing partial file; validate Content-Range before appending; restart rather than append if the server replies 200; malformed ranges must fail without modifying the existing file. Reproduce with actual python -m httpie commands against a local HTTP server. Record commands and observed exit codes in your report.\n\nWork autonomously in the main task checkout. Production source, documentation and new benchmark_tests/ tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/ are immutable. Leave the final patch on this checkout.",
+      "provenance": "fabricated-regression",
+      "reference": {
+        "httpie/core.py": [
+          {
+            "new": "resume=args.download_resume)",
+            "old": "resume=False)"
+          }
+        ],
+        "httpie/downloads.py": [
+          {
+            "new": "request_headers['Range'] = f'bytes={bytes_have}-'",
+            "old": "request_headers['Range'] = 'bytes=0-'"
+          }
+        ]
+      },
+      "repo": "httpie",
+      "runtime": {
+        "cpus": 2,
+        "memory_gb": 3
+      },
+      "setup": {
+        "httpie/core.py": [
+          {
+            "new": "resume=False)",
+            "old": "resume=args.download_resume)"
+          }
+        ],
+        "httpie/downloads.py": [
+          {
+            "new": "request_headers['Range'] = 'bytes=0-'",
+            "old": "request_headers['Range'] = f'bytes={bytes_have}-'"
+          }
+        ]
+      },
+      "suite": "v2",
+      "title": "Repair terminal downloads",
+      "upstream": "https://github.com/httpie/cli.git",
+      "verification": [
+        "python -m pytest -o addopts= -q tests/test_downloads.py"
+      ]
+    },
+    {
+      "allowed_paths": [
+        "httpie/*.py",
+        "httpie/legacy/*.py",
+        "docs/*",
+        "benchmark_tests/*"
+      ],
+      "category": "terminal",
+      "commit": "2105caa49bae87c5809c274e407619a0de2639d1",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Substantial multi-component behavior with independent private verification.",
+      "evidence": {
+        "command_pattern": "python(?:3)?\\s+-m\\s+httpie\\b",
+        "terminal": true
+      },
+      "grader": {
+        "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py"
+      },
+      "id": "httpie-sessions",
+      "language": "python",
+      "mutants": [],
+      "prompt": "Repair persistent session handling: existing --session-read-only files must remain byte-identical after a request, the explicit session upgrade CLI must migrate legacy dictionary header stores to the supported name/value list layout, and ordinary sessions must continue saving headers/cookies. Reproduce with actual python -m httpie commands against a local HTTP server. Record commands and observed exit codes in your report.\n\nWork autonomously in the main task checkout. Production source, documentation and new benchmark_tests/ tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/ are immutable. Leave the final patch on this checkout.",
+      "provenance": "fabricated-regression",
+      "reference": {
+        "httpie/client.py": [
+          {
+            "new": "if httpie_session.is_new() or not args.session_read_only:",
+            "old": "if True:"
+          }
+        ],
+        "httpie/legacy/v3_2_0_session_header_format.py": [
+          {
+            "new": "session['headers'] = materialize_headers(session['headers'])",
+            "old": "session['headers'] = []"
+          }
+        ]
+      },
+      "repo": "httpie",
+      "runtime": {
+        "cpus": 2,
+        "memory_gb": 3
+      },
+      "setup": {
+        "httpie/client.py": [
+          {
+            "new": "if True:",
+            "old": "if httpie_session.is_new() or not args.session_read_only:"
+          }
+        ],
+        "httpie/legacy/v3_2_0_session_header_format.py": [
+          {
+            "new": "session['headers'] = []",
+            "old": "session['headers'] = materialize_headers(session['headers'])"
+          }
+        ]
+      },
+      "suite": "v2",
+      "title": "Repair terminal sessions",
+      "upstream": "https://github.com/httpie/cli.git",
+      "verification": [
+        "python -m pytest -o addopts= -q tests/test_sessions.py"
+      ]
+    },
+    {
+      "allowed_paths": [
+        "tinydb/*.py",
+        "docs/*",
+        "benchmark_tests/*"
+      ],
+      "category": "cross-file",
+      "commit": "6d7c4fc3e04d398b1282876514660a33a7897b41",
+      "difficulty": "heavy",
+      "difficulty_rationale": "Substantial multi-component behavior with independent private verification.",
+      "evidence": {},
+      "grader": {
+        "command": "python -m pytest -o addopts= -q /tmp/oracle/check.py"
+      },
+      "id": "tinydb-snapshots",
+      "language": "python",
+      "mutants": [],
+      "prompt": "Add TinyDB.export_json() -> str and import_json(text: str) -> None. Export all tables preserving document IDs; import replaces the database only after validating the entire JSON object (table names map to objects of positive integer-string IDs mapping to document objects). Reject malformed input with ValueError before any write. Exported data must be independent of caller mutations; existing Table handles must immediately see imports with caches and next-ID allocation reset. A failed storage.write must not invalidate existing table caches. Existing storage APIs remain compatible.\n\nWork autonomously in the main task checkout. Production source, documentation and new benchmark_tests/ tests may change within allowed paths; existing upstream tests, dependency/configuration files and .bench/ are immutable. Leave the final patch on this checkout.",
+      "provenance": "authored-feature",
+      "reference": {
+        "tinydb/database.py": [
+          {
+            "new": "    def export_json(self) -> str:\n        from .snapshots import encode\n        return encode(self.storage.read() or {})\n\n    def import_json(self, text: str) -> None:\n        from .snapshots import decode\n        data = decode(text)\n        self.storage.write(data)\n        for table in self._tables.values():\n            table.clear_cache()\n            table._next_id = None\n\n    def __init__(self, *args, **kwargs) -> None:",
+            "old": "    def __init__(self, *args, **kwargs) -> None:"
+          }
+        ],
+        "tinydb/snapshots.py": "\"\"\"Validate snapshots before the database performs its single write.\"\"\"\nimport json\ndef encode(data):\n    return json.dumps(data, sort_keys=True)\ndef decode(text):\n    try: data=json.loads(text)\n    except (TypeError, ValueError) as exc: raise ValueError(\"Invalid snapshot\") from exc\n    if not isinstance(data,dict): raise ValueError(\"Expected tables object\")\n    for name,table in data.items():\n        if not isinstance(name,str) or not isinstance(table,dict): raise ValueError(\"Invalid table\")\n        for key,document in table.items():\n            if not key.isascii() or not key.isdigit() or str(int(key))!=key or int(key)<1 or not isinstance(document,dict): raise ValueError(\"Invalid document\")\n    return data\n"
+      },
+      "repo": "tinydb",
+      "runtime": {
+        "cpus": 2,
+        "memory_gb": 3
+      },
+      "setup": {},
+      "suite": "v2",
+      "title": "Atomic database snapshot import and export",
+      "upstream": "https://github.com/msiemens/tinydb.git",
+      "verification": [
+        "python -m pytest -o addopts= -q tests"
+      ]
+    }
+  ]
+}
