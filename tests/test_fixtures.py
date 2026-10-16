@@ -1,6 +1,16 @@
 import subprocess
-from codeloom_benchmark.fixtures import snapshot, save_patch, output_changes
+from codeloom_benchmark.fixtures import apply_recipe, snapshot, save_patch, output_changes
 from codeloom_benchmark.manifests import tasks
+
+
+def test_apply_recipe_creates_a_brand_new_file_via_an_empty_old_anchor(tmp_path):
+    root = tmp_path / "root"
+    root.mkdir()
+    apply_recipe(
+        root,
+        {"pkg/new_module.py": [{"old": "", "new": "VALUE = 1\n"}]},
+    )
+    assert (root / "pkg" / "new_module.py").read_text() == "VALUE = 1\n"
 
 
 def test_patch_includes_committed_changes_new_files_and_deletions(tmp_path):

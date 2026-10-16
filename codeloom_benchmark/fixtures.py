@@ -44,7 +44,10 @@ def apply_recipe(root: Path, recipe: dict):
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(changes)
         else:
-            text = path.read_text()
+            # A brand-new file starts as "", so a recipe can create one with
+            # an {old: "", new: <content>} change instead of the whole-file
+            # string form above.
+            text = path.read_text() if path.exists() else ""
             for change in changes:
                 old, new = change["old"], change["new"]
                 expected = change.get("count", 1)
@@ -53,6 +56,7 @@ def apply_recipe(root: Path, recipe: dict):
                         f"Recipe drift: {rel}, expected {expected} matches"
                     )
                 text = text.replace(old, new)
+            path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(text)
 
 
