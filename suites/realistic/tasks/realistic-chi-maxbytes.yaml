@@ -1,0 +1,149 @@
+id: realistic-chi-maxbytes
+repo: chi
+upstream: https://github.com/go-chi/chi.git
+commit: c9744a3641452cfe4fbb9929ceb554659d6bd950
+category: cross-file
+language: go
+title: Per-route request body size limit middleware
+prompt: 'Add a new middleware to chi, `middleware.MaxBytes(limit int64)`, that wraps the request body in `http.MaxBytesReader` so handlers reading past `limit` bytes get an error. It must be settable per-route (different routes in the same mux can have different limits) via chi''s existing route-chaining mechanism (e.g. `Router.With`), not only globally for the whole mux. Add a Go doc comment and tests covering: under-limit reads succeed, over-limit reads fail, and two routes with different limits behave independently. Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree.'
+allowed_paths:
+- middleware/maxbytes.go
+- middleware/maxbytes_test.go
+- mux.go
+- context.go
+- chain.go
+- mux_test.go
+- chi.go
+verification:
+- go test ./...
+provenance: cross-file
+setup: {}
+reference:
+  middleware/maxbytes.go:
+  - old: ''
+    new: |
+      package middleware
+
+      import "net/http"
+
+      // MaxBytes is a middleware that limits the size of request bodies to the
+      // given number of bytes. It wraps the request body in a http.MaxBytesReader,
+      // so a handler that reads more than limit bytes from r.Body will get an
+      // error (and the underlying connection will be closed).
+      //
+      // Because MaxBytes is applied through chi's regular middleware chaining
+      // (e.g. via Router.With or Router.Use), it can be set per-route: different
+      // routes on the same Mux may be wrapped with different limits, and each
+      // request only sees the limit configured for the route it matched.
+      //
+      //	r := chi.NewRouter()
+      //	r.With(middleware.MaxBytes(1024)).Post("/small", smallHandler)
+      //	r.With(middleware.MaxBytes(1024 * 1024)).Post("/large", largeHandler)
+      func MaxBytes(limit int64) func(next http.Handler) http.Handler {
+      	return func(next http.Handler) http.Handler {
+      		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+      			r.Body = http.MaxBytesReader(w, r.Body, limit)
+      			next.ServeHTTP(w, r)
+      		})
+      	}
+      }
+  middleware/maxbytes_test.go:
+  - old: ''
+    new: |
+      package middleware
+
+      import (
+      	"io"
+      	"net/http"
+      	"net/http/httptest"
+      	"strings"
+      	"testing"
+
+      	"github.com/go-chi/chi/v5"
+      )
+
+      func TestMaxBytes_UnderLimitSucceeds(t *testing.T) {
+      	t.Parallel()
+
+      	r := chi.NewRouter()
+      	r.With(MaxBytes(16)).Post("/small", func(w http.ResponseWriter, r *http.Request) {
+      		body, err := io.ReadAll(r.Body)
+      		if err != nil {
+      			http.Error(w, err.Error(), http.StatusRequestEntityTooLarge)
+      			return
+      		}
+      		w.Write(body)
+      	})
+
+      	req := httptest.NewRequest(http.MethodPost, "/small", strings.NewReader("short body"))
+      	rr := httptest.NewRecorder()
+      	r.ServeHTTP(rr, req)
+
+      	if rr.Code != http.StatusOK {
+      		t.Fatalf("expected status 200, got %d", rr.Code)
+      	}
+      	if rr.Body.String() != "short body" {
+      		t.Fatalf("unexpected body: %q", rr.Body.String())
+      	}
+      }
+
+      func TestMaxBytes_OverLimitFails(t *testing.T) {
+      	t.Parallel()
+
+      	r := chi.NewRouter()
+      	r.With(MaxBytes(8)).Post("/small", func(w http.ResponseWriter, r *http.Request) {
+      		_, err := io.ReadAll(r.Body)
+      		if err != nil {
+      			http.Error(w, err.Error(), http.StatusRequestEntityTooLarge)
+      			return
+      		}
+      		w.WriteHeader(http.StatusOK)
+      	})
+
+      	req := httptest.NewRequest(http.MethodPost, "/small", strings.NewReader("this body is way too long"))
+      	rr := httptest.NewRecorder()
+      	r.ServeHTTP(rr, req)
+
+      	if rr.Code != http.StatusRequestEntityTooLarge {
+      		t.Fatalf("expected status 413, got %d", rr.Code)
+      	}
+      }
+
+      func TestMaxBytes_PerRouteIndependence(t *testing.T) {
+      	t.Parallel()
+
+      	readBody := func(w http.ResponseWriter, r *http.Request) {
+      		_, err := io.ReadAll(r.Body)
+      		if err != nil {
+      			http.Error(w, err.Error(), http.StatusRequestEntityTooLarge)
+      			return
+      		}
+      		w.WriteHeader(http.StatusOK)
+      	}
+
+      	r := chi.NewRouter()
+      	r.With(MaxBytes(8)).Post("/strict", readBody)
+      	r.With(MaxBytes(1024)).Post("/lenient", readBody)
+
+      	body := "this body is way too long for the strict route"
+
+      	// The strict route rejects a body over its 8-byte limit.
+      	req := httptest.NewRequest(http.MethodPost, "/strict", strings.NewReader(body))
+      	rr := httptest.NewRecorder()
+      	r.ServeHTTP(rr, req)
+      	if rr.Code != http.StatusRequestEntityTooLarge {
+      		t.Fatalf("expected strict route to reject body, got status %d", rr.Code)
+      	}
+
+      	// The same-sized body is accepted on the lenient route's higher limit.
+      	req = httptest.NewRequest(http.MethodPost, "/lenient", strings.NewReader(body))
+      	rr = httptest.NewRecorder()
+      	r.ServeHTTP(rr, req)
+      	if rr.Code != http.StatusOK {
+      		t.Fatalf("expected lenient route to accept body, got status %d", rr.Code)
+      	}
+      }
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

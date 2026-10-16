@@ -1,0 +1,81 @@
+id: realistic-dotenv-diff
+repo: dotenv
+upstream: https://github.com/theskumar/python-dotenv.git
+commit: 0b2880591780a426b0551436f47a17e7a76d954f
+category: cross-file
+language: python
+title: Add a dotenv diff CLI subcommand
+prompt: Add a new `dotenv diff <file1> <file2>` CLI subcommand to python-dotenv. It should parse both .env files and print which keys were added, removed, and changed (old value -> new value) between file1 and file2, sorted by key name. The command should exit with code 0 if the files are equivalent and 1 if they differ. Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree.
+allowed_paths:
+- src/dotenv/cli.py
+- src/dotenv/main.py
+- src/dotenv/parser.py
+- tests/test_cli.py
+- tests/test_main.py
+- tests/test_parser.py
+verification:
+- python -m pytest -o addopts= -q tests
+provenance: cross-file
+setup: {}
+reference:
+  src/dotenv/cli.py:
+  - old: |2
+          # Empty strings are valid values; only missing keys / bare keys (None) fail.
+          if key not in values or values[key] is None:
+              sys.exit(1)
+          click.echo(values[key])
+
+
+      @cli.command()
+      @click.pass_context
+      @click.argument("key", required=True)
+      def unset(ctx: click.Context, key: Any) -> None:
+    new: |2
+          # Empty strings are valid values; only missing keys / bare keys (None) fail.
+          if key not in values or values[key] is None:
+              sys.exit(1)
+          click.echo(values[key])
+
+
+      @cli.command(name="diff")
+      @click.argument("file1", required=True, type=click.Path(exists=True, dir_okay=False))
+      @click.argument("file2", required=True, type=click.Path(exists=True, dir_okay=False))
+      def diff(file1: str, file2: str) -> None:
+          """
+          Compare two .env files.
+
+          Prints the keys that were added, removed, and changed between FILE1 and
+          FILE2, sorted by key name. Exits with 0 if the files are equivalent and 1
+          if they differ.
+          """
+          with stream_file(file1) as stream1:
+              values1 = dotenv_values(stream=stream1)
+          with stream_file(file2) as stream2:
+              values2 = dotenv_values(stream=stream2)
+
+          keys1 = set(values1)
+          keys2 = set(values2)
+
+          added = sorted(keys2 - keys1)
+          removed = sorted(keys1 - keys2)
+          changed = sorted(key for key in keys1 & keys2 if values1[key] != values2[key])
+
+          for key in added:
+              click.echo(f"+ {key}={values2[key]}")
+          for key in removed:
+              click.echo(f"- {key}={values1[key]}")
+          for key in changed:
+              click.echo(f"~ {key}: {values1[key]} -> {values2[key]}")
+
+          if added or removed or changed:
+              sys.exit(1)
+
+
+      @cli.command()
+      @click.pass_context
+      @click.argument("key", required=True)
+      def unset(ctx: click.Context, key: Any) -> None:
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

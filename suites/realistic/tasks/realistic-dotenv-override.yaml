@@ -1,0 +1,330 @@
+id: realistic-dotenv-override
+repo: dotenv
+upstream: https://github.com/theskumar/python-dotenv.git
+commit: 0b2880591780a426b0551436f47a17e7a76d954f
+category: cross-file
+language: python
+title: Add override_files support for layered .env loading
+prompt: 'Add override_files support to python-dotenv. Calling load_dotenv(dotenv_path, override_files=[...]) should load the base file first, then apply each file in override_files on top, in the given order: later files'' keys win over earlier files'' keys and over the base file''s keys. Do not change the meaning of the existing, unrelated override flag, which only controls precedence against the process environment. Also add a matching --override-file CLI flag (repeatable, applied in the order given) to the dotenv command. Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree.'
+allowed_paths:
+- src/dotenv/main.py
+- src/dotenv/cli.py
+- src/dotenv/__init__.py
+- tests/test_main.py
+- tests/test_cli.py
+- tests/test_lib.py
+verification:
+- python -m pytest -o addopts= -q tests
+provenance: cross-file
+setup: {}
+reference:
+  src/dotenv/main.py:
+  - old: |2
+              encoding: Optional[str] = None,
+              interpolate: bool = True,
+              override: bool = True,
+          ) -> None:
+              self.dotenv_path: Optional[StrPath] = dotenv_path
+              if isinstance(dotenv_path, str):
+                  self.dotenv_path = os.path.expanduser(dotenv_path)
+              elif dotenv_path is not None:
+                  self.dotenv_path = pathlib.Path(dotenv_path).expanduser()
+              self.stream: Optional[IO[str]] = stream
+              self._dict: Optional[Dict[str, Optional[str]]] = None
+              self.verbose: bool = verbose
+              self.encoding: Optional[str] = encoding
+              self.interpolate: bool = interpolate
+              self.override: bool = override
+    new: |2
+              encoding: Optional[str] = None,
+              interpolate: bool = True,
+              override: bool = True,
+              override_files: Optional[Iterable[StrPath]] = None,
+          ) -> None:
+              self.dotenv_path: Optional[StrPath] = dotenv_path
+              if isinstance(dotenv_path, str):
+                  self.dotenv_path = os.path.expanduser(dotenv_path)
+              elif dotenv_path is not None:
+                  self.dotenv_path = pathlib.Path(dotenv_path).expanduser()
+              self.stream: Optional[IO[str]] = stream
+              self._dict: Optional[Dict[str, Optional[str]]] = None
+              self.verbose: bool = verbose
+              self.encoding: Optional[str] = encoding
+              self.interpolate: bool = interpolate
+              self.override: bool = override
+              self.override_files: Tuple[StrPath, ...] = (
+                  tuple(override_files) if override_files else ()
+              )
+  - old: |2
+              raw_values = self.parse()
+
+              if self.interpolate:
+                  self._dict = OrderedDict(
+                      resolve_variables(raw_values, override=self.override)
+                  )
+              else:
+                  self._dict = OrderedDict(raw_values)
+
+              return self._dict
+
+          def parse(self) -> Iterator[Tuple[str, Optional[str]]]:
+              with self._get_stream() as stream:
+                  for mapping in with_warn_for_invalid_lines(parse_stream(stream)):
+                      if mapping.key is not None:
+                          yield mapping.key, mapping.value
+
+          def set_as_environment_variables(self) -> bool:
+    new: |2
+              raw_values = list(self.parse())
+              for override_path in self.override_files:
+                  raw_values.extend(self._parse_override_file(override_path))
+
+              if self.interpolate:
+                  self._dict = OrderedDict(
+                      resolve_variables(raw_values, override=self.override)
+                  )
+              else:
+                  self._dict = OrderedDict(raw_values)
+
+              return self._dict
+
+          def parse(self) -> Iterator[Tuple[str, Optional[str]]]:
+              with self._get_stream() as stream:
+                  for mapping in with_warn_for_invalid_lines(parse_stream(stream)):
+                      if mapping.key is not None:
+                          yield mapping.key, mapping.value
+
+          def _parse_override_file(
+              self, path: StrPath
+          ) -> Iterator[Tuple[str, Optional[str]]]:
+              """
+              Parse an additional file whose keys are applied on top of the base
+              file (and any override files already applied), later files winning.
+              """
+              if isinstance(path, str):
+                  path = os.path.expanduser(path)
+              else:
+                  path = pathlib.Path(path).expanduser()
+              with open(path, encoding=self.encoding) as stream:
+                  for mapping in with_warn_for_invalid_lines(parse_stream(stream)):
+                      if mapping.key is not None:
+                          yield mapping.key, mapping.value
+
+          def set_as_environment_variables(self) -> bool:
+  - old: |2
+          override: bool = False,
+          interpolate: bool = True,
+          encoding: Optional[str] = "utf-8",
+      ) -> bool:
+          """Parse a .env file and then load all the variables found as environment variables.
+
+          Parameters:
+              dotenv_path: Absolute or relative path to .env file. A leading `~` is
+                  expanded to the user's home directory.
+              stream: Text stream (such as `io.StringIO`) with .env content, used if
+                  `dotenv_path` is `None`.
+              verbose: Whether to output a warning the .env file is missing.
+              override: Whether to override the system environment variables with the variables
+                  from the `.env` file.
+              interpolate: Whether to interpolate variables using POSIX variable expansion.
+              encoding: Encoding to be used to read the file.
+          Returns:
+    new: |2
+          override: bool = False,
+          interpolate: bool = True,
+          encoding: Optional[str] = "utf-8",
+          override_files: Optional[Iterable[StrPath]] = None,
+      ) -> bool:
+          """Parse a .env file and then load all the variables found as environment variables.
+
+          Parameters:
+              dotenv_path: Absolute or relative path to .env file. A leading `~` is
+                  expanded to the user's home directory.
+              stream: Text stream (such as `io.StringIO`) with .env content, used if
+                  `dotenv_path` is `None`.
+              verbose: Whether to output a warning the .env file is missing.
+              override: Whether to override the system environment variables with the variables
+                  from the `.env` file.
+              interpolate: Whether to interpolate variables using POSIX variable expansion.
+              encoding: Encoding to be used to read the file.
+              override_files: Additional `.env` files applied, in order, on top of
+                  `dotenv_path` (or `stream`). Keys from a later file win over keys
+                  from an earlier file and over the base file. This is unrelated to
+                  the `override` flag above, which only controls precedence against
+                  the process environment.
+          Returns:
+  - old: |2
+          dotenv = DotEnv(
+              dotenv_path=dotenv_path,
+              stream=stream,
+              verbose=verbose,
+              interpolate=interpolate,
+              override=override,
+              encoding=encoding,
+          )
+          return dotenv.set_as_environment_variables()
+    new: |2
+          dotenv = DotEnv(
+              dotenv_path=dotenv_path,
+              stream=stream,
+              verbose=verbose,
+              interpolate=interpolate,
+              override=override,
+              encoding=encoding,
+              override_files=override_files,
+          )
+          return dotenv.set_as_environment_variables()
+  - old: |2
+          verbose: bool = False,
+          interpolate: bool = True,
+          encoding: Optional[str] = "utf-8",
+      ) -> Dict[str, Optional[str]]:
+          """
+          Parse a .env file and return its content as a dict.
+
+          The returned dict will have `None` values for keys without values in the .env file.
+          For example, `foo=bar` results in `{"foo": "bar"}` whereas `foo` alone results in
+          `{"foo": None}`
+
+          Parameters:
+              dotenv_path: Absolute or relative path to the .env file. A leading `~` is
+                  expanded to the user's home directory.
+              stream: `StringIO` object with .env content, used if `dotenv_path` is `None`.
+              verbose: Whether to output a warning if the .env file is missing.
+              interpolate: Whether to interpolate variables using POSIX variable expansion.
+              encoding: Encoding to be used to read the file.
+
+          If both `dotenv_path` and `stream` are `None`, `find_dotenv()` is used to find the
+          .env file.
+          """
+          if dotenv_path is None and stream is None:
+              dotenv_path = find_dotenv()
+
+          return DotEnv(
+              dotenv_path=dotenv_path,
+              stream=stream,
+              verbose=verbose,
+              interpolate=interpolate,
+              override=True,
+              encoding=encoding,
+          ).dict()
+    new: |2
+          verbose: bool = False,
+          interpolate: bool = True,
+          encoding: Optional[str] = "utf-8",
+          override_files: Optional[Iterable[StrPath]] = None,
+      ) -> Dict[str, Optional[str]]:
+          """
+          Parse a .env file and return its content as a dict.
+
+          The returned dict will have `None` values for keys without values in the .env file.
+          For example, `foo=bar` results in `{"foo": "bar"}` whereas `foo` alone results in
+          `{"foo": None}`
+
+          Parameters:
+              dotenv_path: Absolute or relative path to the .env file. A leading `~` is
+                  expanded to the user's home directory.
+              stream: `StringIO` object with .env content, used if `dotenv_path` is `None`.
+              verbose: Whether to output a warning if the .env file is missing.
+              interpolate: Whether to interpolate variables using POSIX variable expansion.
+              encoding: Encoding to be used to read the file.
+              override_files: Additional `.env` files applied, in order, on top of
+                  `dotenv_path` (or `stream`). Keys from a later file win over keys
+                  from an earlier file and over the base file.
+
+          If both `dotenv_path` and `stream` are `None`, `find_dotenv()` is used to find the
+          .env file.
+          """
+          if dotenv_path is None and stream is None:
+              dotenv_path = find_dotenv()
+
+          return DotEnv(
+              dotenv_path=dotenv_path,
+              stream=stream,
+              verbose=verbose,
+              interpolate=interpolate,
+              override=True,
+              encoding=encoding,
+              override_files=override_files,
+          ).dict()
+  src/dotenv/cli.py:
+  - old: |
+      @click.option(
+          "-e",
+          "--export",
+          default=False,
+          type=click.BOOL,
+          help="Whether to write the dot file as an executable bash script.",
+      )
+      @click.version_option(version=__version__)
+      @click.pass_context
+      def cli(ctx: click.Context, file: Any, quote: Any, export: Any) -> None:
+          """This script is used to set, get or unset values from a .env file."""
+          if file is not None:
+              file = os.path.expanduser(file)
+          ctx.obj = {"QUOTE": quote, "EXPORT": export, "FILE": file}
+    new: |
+      @click.option(
+          "-e",
+          "--export",
+          default=False,
+          type=click.BOOL,
+          help="Whether to write the dot file as an executable bash script.",
+      )
+      @click.option(
+          "--override-file",
+          "override_files",
+          multiple=True,
+          type=click.Path(file_okay=True),
+          help="Location of an additional .env file to apply on top of the base file. "
+          "Can be repeated; later files win over earlier ones and over the base file.",
+      )
+      @click.version_option(version=__version__)
+      @click.pass_context
+      def cli(
+          ctx: click.Context, file: Any, quote: Any, export: Any, override_files: Any
+      ) -> None:
+          """This script is used to set, get or unset values from a .env file."""
+          if file is not None:
+              file = os.path.expanduser(file)
+          override_files = tuple(os.path.expanduser(path) for path in override_files)
+          ctx.obj = {
+              "QUOTE": quote,
+              "EXPORT": export,
+              "FILE": file,
+              "OVERRIDE_FILES": override_files,
+          }
+  - old: |
+      def list_values(ctx: click.Context, output_format: str) -> None:
+          """Display all the stored key/value."""
+          file = ctx.obj["FILE"]
+
+          with stream_file(file) as stream:
+              values = dotenv_values(stream=stream)
+    new: |
+      def list_values(ctx: click.Context, output_format: str) -> None:
+          """Display all the stored key/value."""
+          file = ctx.obj["FILE"]
+          override_files = ctx.obj["OVERRIDE_FILES"]
+
+          with stream_file(file) as stream:
+              values = dotenv_values(stream=stream, override_files=override_files)
+  - old: |
+      def get(ctx: click.Context, key: Any) -> None:
+          """Retrieve the value for the given key."""
+          file = ctx.obj["FILE"]
+
+          with stream_file(file) as stream:
+              values = dotenv_values(stream=stream)
+    new: |
+      def get(ctx: click.Context, key: Any) -> None:
+          """Retrieve the value for the given key."""
+          file = ctx.obj["FILE"]
+          override_files = ctx.obj["OVERRIDE_FILES"]
+
+          with stream_file(file) as stream:
+              values = dotenv_values(stream=stream, override_files=override_files)
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

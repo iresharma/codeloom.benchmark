@@ -63,7 +63,13 @@ def oracle_command(task, cid):
     private = (
         ROOT
         / "evaluator"
-        / ("dev" if task["id"].startswith("dev-") else "v1")
+        / (
+            "dev"
+            if task["id"].startswith("dev-")
+            else "realistic"
+            if task["id"].startswith("realistic-")
+            else "v1"
+        )
         / task["id"]
     )
     command(["docker", "cp", str(private) + "/.", cid + ":/tmp/oracle"])

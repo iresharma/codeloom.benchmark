@@ -1,0 +1,38 @@
+id: realistic-chi-tags
+repo: chi
+upstream: https://github.com/go-chi/chi.git
+commit: c9744a3641452cfe4fbb9929ceb554659d6bd950
+category: cross-file
+language: go
+title: Route tagging metadata for tooling
+prompt: Add route metadata/tagging to chi so later tooling (e.g. OpenAPI generation) can consume it. Routes must be able to carry arbitrary string tags at registration time, using an API consistent with chi's existing middleware-chaining style (for example `r.With(chi.Tag("auth-required")).Get(...)`, or another idiomatic approach of your choosing). Add `Mux.RoutesWithTags()` (or an equivalently-named method) that walks the route tree, including mounted sub-routers, and returns each route's method, pattern, and its tags. Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree.
+allowed_paths:
+- mux.go
+- tree.go
+- context.go
+- chain.go
+- chi.go
+- mux_test.go
+- tree_test.go
+verification:
+- go test ./...
+provenance: cross-file
+setup: {}
+reference:
+  chi.go:
+  - old: 'ndler''s.
+
+      type Middlewares []func(http.Handler) http.Handler
+
+      '
+    new: "ndler's.\ntype Middlewares []func(http.Handler) http.Handler\n\n// Tag returns a middleware that attaches the given tags to the route(s) it\n// is applied to, as metadata for tooling (e.g. OpenAPI generation) to\n// consume later via Mux.RoutesWithTags. It is a transparent, pass-through\n// middleware: it never alters request handling.\n//\n// Tags are typically scoped to a subset of routes using With(), the same\n// way any other chi middleware is scoped to a subset of routes:\n//\n//\tr.With(chi.Tag(\"auth-required\")).Get(\"/admin\", adminHandler)\nfunc Tag(tags ...string) func(http.Handler) http.Handler {\n\treturn func(next http.Handler) http.Handler {\n\t\treturn &tagHandler{next: next, tags: tags}\n\t}\n}\n\n// tagHandler is a transparent http.Handler wrapper carrying the tags passed\n// to Tag(). It forwards every request to next unchanged; the tags are only\n// ever read back out-of-band, by RoutesWithTags.\ntype tagHandler struct {\n\tnext http.Handler\n\ttags []string\n}\n\nfunc (t *tagHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {\n\tt.next.ServeHTTP(w, r)\n}\n\n// Tags returns the tags attached via Tag().\nfunc (t *tagHandler) Tags() []string {\n\treturn t.tags\n}\n\n// tagged is implemented by tagHandler, allowing RoutesWithTags to recognize\n// a Tag() middleware among an arbitrary middleware stack without depending\n// on its concrete type.\ntype tagged interface {\n\tTags() []string\n}\n"
+  mux.go:
+  - old: "s of a router.\nfunc (mx *Mux) Routes() []Route {\n\treturn mx.tree.routes()\n}\n\n// "
+    new: "s of a router.\nfunc (mx *Mux) Routes() []Route {\n\treturn mx.tree.routes()\n}\n\n// RouteTags describes a single registered route (method + pattern) along\n// with any tags attached to it via Tag(), for tooling that needs route\n// metadata, such as generating OpenAPI documentation.\ntype RouteTags struct {\n\tMethod  string\n\tPattern string\n\tTags    []string\n}\n\n// RoutesWithTags walks the full routing tree, including mounted\n// sub-routers, and returns the method, pattern and tags (attached via\n// Tag(), if any) for every registered route. A route with no tags is\n// still included, with a nil Tags slice.\nfunc (mx *Mux) RoutesWithTags() []RouteTags {\n\tvar rts []RouteTags\n\t_ = Walk(mx, func(method, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {\n\t\tvar tags []string\n\t\tfor _, mw := range middlewares {\n\t\t\twrapped := mw(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}))\n\t\t\tif tg, ok := wrapped.(tagged); ok {\n\t\t\t\ttags = append(tags, tg.Tags()...)\n\t\t\t}\n\t\t}\n\t\trts = append(rts, RouteTags{Method: method, Pattern: route, Tags: tags})\n\t\treturn nil\n\t})\n\treturn rts\n}\n\n// "
+  mux_test.go:
+  - old: " b.Loop() {\n\t\t\t\tmx.ServeHTTP(w, r)\n\t\t\t}\n\t\t})\n\t}\n}\n"
+    new: " b.Loop() {\n\t\t\t\tmx.ServeHTTP(w, r)\n\t\t\t}\n\t\t})\n\t}\n}\n\nfunc TestMuxTag(t *testing.T) {\n\th := func(w http.ResponseWriter, r *http.Request) {\n\t\tw.WriteHeader(200)\n\t}\n\n\tr := NewRouter()\n\tr.With(Tag(\"auth-required\"), Tag(\"admin\")).Get(\"/admin\", h)\n\tr.With(Tag(\"public\")).Post(\"/signup\", h)\n\tr.Get(\"/no-tags\", h)\n\n\tbyPattern := map[string][]string{}\n\tfor _, rt := range r.RoutesWithTags() {\n\t\tif rt.Method == \"GET\" && rt.Pattern == \"/admin\" {\n\t\t\tbyPattern[\"GET /admin\"] = rt.Tags\n\t\t}\n\t\tif rt.Method == \"POST\" && rt.Pattern == \"/signup\" {\n\t\t\tbyPattern[\"POST /signup\"] = rt.Tags\n\t\t}\n\t\tif rt.Method == \"GET\" && rt.Pattern == \"/no-tags\" {\n\t\t\tbyPattern[\"GET /no-tags\"] = rt.Tags\n\t\t}\n\t}\n\n\tif got := byPattern[\"GET /admin\"]; len(got) != 2 || got[0] != \"auth-required\" || got[1] != \"admin\" {\n\t\tt.Fatalf(\"expected [auth-required admin] tags on GET /admin, got %v\", got)\n\t}\n\tif got := byPattern[\"POST /signup\"]; len(got) != 1 || got[0] != \"public\" {\n\t\tt.Fatalf(\"expected [public] tag on POST /signup, got %v\", got)\n\t}\n\tif got := byPattern[\"GET /no-tags\"]; len(got) != 0 {\n\t\tt.Fatalf(\"expected no tags on GET /no-tags, got %v\", got)\n\t}\n\n\t// Tag() must remain a transparent pass-through middleware: requests\n\t// still reach the underlying handler normally.\n\treq := httptest.NewRequest(http.MethodGet, \"/admin\", nil)\n\trr := httptest.NewRecorder()\n\tr.ServeHTTP(rr, req)\n\tif rr.Code != 200 {\n\t\tt.Fatalf(\"expected status 200 from tagged route, got %d\", rr.Code)\n\t}\n}\n\nfunc TestMuxTagMountedSubrouter(t *testing.T) {\n\th := func(w http.ResponseWriter, r *http.Request) {\n\t\tw.WriteHeader(200)\n\t}\n\n\tsub := NewRouter()\n\tsub.With(Tag(\"sub-tag\")).Get(\"/thing\", h)\n\n\tr := NewRouter()\n\tr.Mount(\"/api\", sub)\n\n\tvar tags []string\n\tfor _, rt := range r.RoutesWithTags() {\n\t\tif rt.Method == \"GET\" && rt.Pattern == \"/api/thing\" {\n\t\t\ttags = rt.Tags\n\t\t}\n\t}\n\n\tif len(tags) != 1 || tags[0] != \"sub-tag\" {\n\t\tt.Fatalf(\"expected [sub-tag] tag on mounted route, got %v\", tags)\n\t}\n}\n"
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

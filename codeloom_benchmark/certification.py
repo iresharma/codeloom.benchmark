@@ -26,7 +26,13 @@ def grading_fingerprint(task: dict, root: Path = ROOT):
     runtime = json.loads((root / ".cache/runtime.json").read_text())
     paths = [root / rel for rel in GRADE_FILES]
     paths += sorted((root / "codeloom_benchmark/graders").glob("*.py"))
-    suite = "dev" if task["id"].startswith("dev-") else "v1"
+    suite = (
+        "dev"
+        if task["id"].startswith("dev-")
+        else "realistic"
+        if task["id"].startswith("realistic-")
+        else "v1"
+    )
     paths += sorted((root / "evaluator" / suite / task["id"]).rglob("*"))
     lock = root / "suites/v1/dependencies" / task["repo"] / "package-lock.json"
     if lock.exists():

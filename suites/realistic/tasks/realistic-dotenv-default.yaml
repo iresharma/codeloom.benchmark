@@ -1,0 +1,139 @@
+id: realistic-dotenv-default
+repo: dotenv
+upstream: https://github.com/theskumar/python-dotenv.git
+commit: 0b2880591780a426b0551436f47a17e7a76d954f
+category: cross-file
+language: python
+title: Support ${VAR:-default} interpolation syntax
+prompt: 'Extend python-dotenv''s variable interpolation to support the ${VAR:-default} syntax: when VAR is unset or empty, substitute default instead. The existing ${VAR} interpolation must keep working unchanged. The default value may itself contain further ${...} references, which must also be resolved. Wire this through load_dotenv(), dotenv_values(), and the dotenv CLI''s get and list commands, so that all of them resolve ${VAR:-default} the same way. Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree.'
+allowed_paths:
+- src/dotenv/parser.py
+- src/dotenv/variables.py
+- src/dotenv/main.py
+- src/dotenv/cli.py
+- tests/test_parser.py
+- tests/test_variables.py
+- tests/test_main.py
+verification:
+- python -m pytest -o addopts= -q tests
+provenance: cross-file
+setup: {}
+reference:
+  src/dotenv/variables.py:
+  - old: |
+      import re
+      from abc import ABCMeta, abstractmethod
+      from typing import Iterator, Mapping, Optional, Pattern
+
+      _posix_variable: Pattern[str] = re.compile(
+          r"""
+          \$\{
+              (?P<name>[^\}:]*)
+              (?::-
+                  (?P<default>[^\}]*)
+              )?
+          \}
+          """,
+          re.VERBOSE,
+      )
+    new: |
+      from abc import ABCMeta, abstractmethod
+      from typing import Iterator, Mapping, Optional
+  - old: |2
+          def resolve(self, env: Mapping[str, Optional[str]]) -> str:
+              default = self.default if self.default is not None else ""
+              result = env.get(self.name, default)
+              return result if result is not None else ""
+    new: |2
+          def resolve(self, env: Mapping[str, Optional[str]]) -> str:
+              value = env.get(self.name)
+              if value:
+                  return value
+              if self.default is not None:
+                  return "".join(
+                      atom.resolve(env) for atom in parse_variables(self.default)
+                  )
+              return ""
+  - old: |
+      def parse_variables(value: str) -> Iterator[Atom]:
+          cursor = 0
+
+          for match in _posix_variable.finditer(value):
+              (start, end) = match.span()
+              name = match["name"]
+              default = match["default"]
+
+              if start > cursor:
+                  yield Literal(value=value[cursor:start])
+
+              yield Variable(name=name, default=default)
+              cursor = end
+
+          length = len(value)
+          if cursor < length:
+              yield Literal(value=value[cursor:length])
+    new: |
+      def parse_variables(value: str) -> Iterator[Atom]:
+          cursor = 0
+          pos = 0
+          length = len(value)
+
+          while True:
+              start = value.find("${", pos)
+              if start == -1:
+                  break
+
+              # Parse the variable name, stopping at the first ":" or "}".
+              name_end = start + 2
+              while name_end < length and value[name_end] not in ":}":
+                  name_end += 1
+
+              if name_end >= length:
+                  # No closing brace found; leave "${" as part of the literal text.
+                  pos = start + 2
+                  continue
+
+              name = value[start + 2 : name_end]
+              default: Optional[str] = None
+
+              if value[name_end] == "}":
+                  end = name_end + 1
+              elif value[name_end : name_end + 2] == ":-":
+                  # Scan the default value, tracking brace depth so that further
+                  # ${...} references nested inside the default are kept intact.
+                  default_start = name_end + 2
+                  depth = 1
+                  j = default_start
+                  while j < length and depth > 0:
+                      if value[j] == "{":
+                          depth += 1
+                      elif value[j] == "}":
+                          depth -= 1
+                      j += 1
+
+                  if depth != 0:
+                      # Unbalanced braces; leave "${" as part of the literal text.
+                      pos = start + 2
+                      continue
+
+                  default = value[default_start : j - 1]
+                  end = j
+              else:
+                  # A bare ":" not followed by "-"; leave "${" as part of the
+                  # literal text (this mirrors the previous, stricter regex).
+                  pos = start + 2
+                  continue
+
+              if start > cursor:
+                  yield Literal(value=value[cursor:start])
+
+              yield Variable(name=name, default=default)
+              cursor = end
+              pos = end
+
+          if cursor < length:
+              yield Literal(value=value[cursor:length])
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.
