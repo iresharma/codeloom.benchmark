@@ -1,0 +1,274 @@
+id: realistic-tinydb-cache
+repo: tinydb
+upstream: https://github.com/msiemens/tinydb.git
+commit: 6d7c4fc3e04d398b1282876514660a33a7897b41
+category: cross-file
+language: python
+title: Fix cross-handle stale query-cache reads and add cache_stats()
+prompt: 'TinyDB''s per-table LRU query cache can return stale results: when two `Table` (or `TinyDB`) instances are opened on the same underlying storage and table name, each keeps its own private query cache, so deleting a document through one handle via `Table.remove(cond)` and then re-running a previously-cached query on a *different* handle for the same table can still return the stale cached result (and the same applies in reverse: a newly inserted, now-matching document can stay invisible to a handle that had already cached an empty result for that query). Reproduce this bug first against the pinned commit, then fix the underlying cache-invalidation logic so every `search()` call detects out-of-band changes to the table''s storage and discards a now-stale cache before serving a result. Also add `Table.cache_stats()` returning a dict with at least `hits` and `misses` counters that accurately reflect query-cache hit/miss behavior across inserts, removes and invalidation. Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree.'
+allowed_paths:
+- tinydb/table.py
+- tinydb/utils.py
+- tinydb/queries.py
+- tinydb/database.py
+- tests/test_tables.py
+- tests/test_utils.py
+- tests/test_queries.py
+verification:
+- python -m pytest -o addopts= -q tests
+provenance: cross-file
+setup: {}
+reference:
+  tinydb/table.py:
+  - old: |2-
+              self._query_cache: LRUCache[QueryLike, list[Document]] \
+                  = self.query_cache_class(capacity=cache_size)
+
+              self._next_id: Optional[int] = None
+    new: |2-
+              self._query_cache: LRUCache[QueryLike, list[Document]] \
+                  = self.query_cache_class(capacity=cache_size)
+
+              # A cheap fingerprint of the table's document-ID set, used to
+              # detect when the underlying storage has been changed by someone
+              # other than this exact ``Table`` instance (for example a second
+              # ``Table``/``TinyDB`` instance pointing at the same storage and
+              # table name). Without this check, a query cache populated before
+              # such an out-of-band write would keep serving stale results
+              # forever, since this instance's own ``clear_cache`` is never
+              # triggered by writes it didn't perform itself. See
+              # :meth:`_table_fingerprint` and :meth:`_sync_cache_fingerprint`.
+              self._cache_fingerprint: Optional[tuple] = None
+
+              # Query cache hit/miss counters, see :meth:`cache_stats`.
+              self._cache_hits = 0
+              self._cache_misses = 0
+
+              self._next_id: Optional[int] = None
+  - old: |2-
+              # First, we check the query cache to see if it has results for this
+              # query
+              cached_results = self._query_cache.get(cond)
+              if cached_results is not None:
+                  return cached_results[:]
+
+              # Perform the search by applying the query to all documents.
+    new: |2-
+              # Read the table up front (rather than only on a cache miss) so we
+              # can detect whether the underlying storage has changed since this
+              # cache was last known to be in sync -- see
+              # ``_sync_cache_fingerprint`` for why this matters: a write
+              # performed through a *different* ``Table``/``TinyDB`` instance
+              # pointing at the same storage and table name would otherwise go
+              # unnoticed and this instance's cache would keep serving stale
+              # results forever.
+              self._sync_cache_fingerprint()
+
+              # Now we check the query cache to see if it has results for this
+              # query
+              cached_results = self._query_cache.get(cond)
+              if cached_results is not None:
+                  self._cache_hits += 1
+                  return cached_results[:]
+
+              self._cache_misses += 1
+
+              # Perform the search by applying the query to all documents.
+  - old: |2-
+          def clear_cache(self) -> None:
+              """
+              Clear the query cache.
+              """
+
+              self._query_cache.clear()
+
+          def __len__(self):
+    new: |2-
+          def clear_cache(self) -> None:
+              """
+              Clear the query cache.
+              """
+
+              self._query_cache.clear()
+
+              # The cache is now empty, so it's trivially in sync with nothing.
+              # Forcing the next ``search()`` to recompute the fingerprint (rather
+              # than assuming it's still valid) keeps this cheap and correct.
+              self._cache_fingerprint = None
+
+          def cache_stats(self) -> dict[str, int]:
+              """
+              Get statistics about this table's query cache.
+
+              :returns: a dict with (at least) the keys ``hits`` (the number of
+                        ``search()`` calls served from the query cache) and
+                        ``misses`` (the number of ``search()`` calls that had to
+                        recompute their results)
+              """
+
+              return {
+                  'hits': self._cache_hits,
+                  'misses': self._cache_misses,
+                  'size': len(self._query_cache),
+              }
+
+          def _table_fingerprint(self, raw_table: Mapping) -> tuple:
+              """
+              Compute a cheap fingerprint of a table's current document-ID set.
+
+              This intentionally only looks at the set of IDs (not document
+              contents) so it stays cheap to compute. It's enough to detect
+              insertions/removals, which is exactly the kind of out-of-band
+              change that can otherwise leave a stale query cache around -- see
+              :meth:`_sync_cache_fingerprint`.
+              """
+
+              return (len(raw_table), frozenset(raw_table.keys()))
+
+          def _sync_cache_fingerprint(self) -> None:
+              """
+              Make sure the query cache reflects the current state of storage.
+
+              Normally this table's own writes always go through
+              :meth:`_update_table`, which already clears the cache. But if a
+              *different* ``Table``/``TinyDB`` instance writes to the same
+              underlying storage and table name (for example two ``TinyDB``
+              instances opened on the same file, or two ``Table`` objects
+              constructed directly on the same storage), this instance's own
+              ``clear_cache`` is never called, and its query cache would
+              otherwise keep returning stale results (e.g. a document that was
+              removed through the other instance) forever. Comparing the current
+              document-ID fingerprint against the one we last saw lets us detect
+              that case and discard the now-untrustworthy cache.
+
+              Note: this deliberately reads directly from ``self._storage``
+              rather than going through :meth:`_read_table` (which also builds
+              the ID-converted copy used for the actual search/filtering), so
+              that a cache *hit* still costs only this cheap fingerprint check
+              rather than a full table read/convert.
+              """
+
+              tables = self._storage.read()
+              raw_table = {} if tables is None else tables.get(self.name, {})
+              fingerprint = self._table_fingerprint(raw_table)
+
+              if fingerprint != self._cache_fingerprint:
+                  self._query_cache.clear()
+                  self._cache_fingerprint = fingerprint
+
+          def __len__(self):
+  - old: |2-
+              # Clear the query cache, as the table contents have changed
+              self.clear_cache()
+    new: |2-
+              # Clear the query cache, as the table contents have changed
+              self.clear_cache()
+
+              # Record the fingerprint of the data we just wrote so that this
+              # instance recognizes its own write as already in sync (see
+              # ``_sync_cache_fingerprint``) instead of re-detecting it as an
+              # "external" change on the very next ``search()`` call.
+              self._cache_fingerprint = self._table_fingerprint(tables[self.name])
+  tests/test_tables.py:
+  - old: |2-
+          db = TinyDB(path)
+          assert 't' not in db._tables
+          table = db.table('t', persist_empty=True)
+          assert len(table) == 1
+          assert table.all() == [{'a': 1}]
+          db.close()
+    new: |2-
+          db = TinyDB(path)
+          assert 't' not in db._tables
+          table = db.table('t', persist_empty=True)
+          assert len(table) == 1
+          assert table.all() == [{'a': 1}]
+          db.close()
+
+
+      def test_cache_stale_after_remove_from_another_table_handle():
+          """A second Table instance over the same storage+name must not keep
+          serving a removed document from its own query cache.
+
+          This is a regression test for a stale-cache bug: two ``Table`` objects
+          (or two ``TinyDB`` instances) pointing at the same underlying storage
+          and table name each keep their own query cache. Removing a document
+          through one handle must still be visible to a cached query re-run on
+          the other handle.
+          """
+          from tinydb.table import Table
+          from tinydb.storages import MemoryStorage
+
+          storage = MemoryStorage()
+          t1 = Table(storage, 'shared')
+          t2 = Table(storage, 'shared')
+
+          t1.insert({'a': 1})
+          t1.insert({'a': 2})
+
+          q = where('a') == 2
+
+          # Populate t2's cache
+          assert t2.search(q) == [{'a': 2}]
+
+          # Remove the matching document through the *other* handle
+          t1.remove(where('a') == 2)
+
+          # t2's cached result for `q` must no longer be trusted
+          assert t2.search(q) == []
+          assert len(t2) == 1
+
+
+      def test_cache_stats_tracks_hits_and_misses():
+          from tinydb import TinyDB
+          from tinydb.storages import MemoryStorage
+
+          db = TinyDB(storage=MemoryStorage)
+          table = db.table('stats_test')
+          table.insert({'a': 1})
+          table.insert({'a': 2})
+
+          stats = table.cache_stats()
+          assert stats['hits'] == 0
+          assert stats['misses'] == 0
+
+          q = where('a') == 2
+          table.search(q)  # miss
+          table.search(q)  # hit
+          table.search(q)  # hit
+
+          stats = table.cache_stats()
+          assert stats['hits'] == 2
+          assert stats['misses'] == 1
+
+          q2 = where('a') == 1
+          table.search(q2)  # miss
+
+          stats = table.cache_stats()
+          assert stats['hits'] == 2
+          assert stats['misses'] == 2
+
+
+      def test_cache_stats_miss_after_remove():
+          from tinydb import TinyDB
+          from tinydb.storages import MemoryStorage
+
+          db = TinyDB(storage=MemoryStorage)
+          table = db.table('stats_test2')
+          table.insert({'a': 1})
+          table.insert({'a': 2})
+
+          q = where('a') == 2
+          table.search(q)  # miss
+          table.search(q)  # hit
+
+          table.remove(where('a') == 2)
+
+          table.search(q)  # miss again: cache was invalidated by the removal
+          stats = table.cache_stats()
+          assert stats['misses'] == 2
+          assert stats['hits'] == 1
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

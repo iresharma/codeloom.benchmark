@@ -1,0 +1,49 @@
+id: realistic-pqueue-dedup
+repo: pqueue
+upstream: https://github.com/sindresorhus/p-queue.git
+commit: 7f272ab5ff2254c0dc2537b7977e88ede1cd55e8
+category: cross-file
+language: typescript
+title: Deduplicate tasks by id
+prompt: Add task deduplication by id to p-queue. If `.add(fn, {id})` is called while a task with that same `id` is already pending or running, it must return that task's existing promise instead of enqueueing a duplicate, and the new function must never be called. Once the original task settles, a later `.add()` call with the same `id` enqueues a fresh task as normal. This must also apply to `.addAll()`. Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree.
+allowed_paths:
+- source/index.ts
+- test/basic.ts
+- test/advanced.ts
+- readme.md
+verification:
+- node --import=tsx/esm --test --test-timeout=60000 test/*.ts
+provenance: cross-file
+setup: {}
+reference:
+  readme.md:
+  - old: 'A unique identifier for the task, used to change its priority with `.setPriority()`. Defaults to an incrementing number as a string (`''1''`, `''2''`, and so on), so do not use such strings as your own ids.
+
+
+      ##### timeout'
+    new: 'A unique identifier for the task, used to change its priority with `.setPriority()`. Defaults to an incrementing number as a string (`''1''`, `''2''`, and so on), so do not use such strings as your own ids.
+
+
+      If a task with this `id` is already pending or running, `.add()` returns its promise instead of enqueueing a duplicate, and the new function is never called. Once that task settles, a later `.add()` call with the same `id` enqueues a fresh task as normal. This also applies to `.addAll()`.
+
+
+      ##### timeout'
+  source/index.ts:
+  - old: "\t// Use to assign a unique identifier to a promise function, if not explicitly specified\n\t#idAssigner = 1n;\n\n\t// Track currently running tasks for debugging"
+    new: "\t// Use to assign a unique identifier to a promise function, if not explicitly specified\n\t#idAssigner = 1n;\n\n\t// The promise of each task with an explicit `id` that is still pending or running, so that `.add()` can return it instead of enqueueing a duplicate.\n\treadonly #activeTasksById = new Map<string, Promise<unknown>>();\n\n\t// Track currently running tasks for debugging"
+  - old: "\tadd<TaskResultType>(function_: Task<TaskResultType>, options: Partial<EnqueueOptionsType> = {}): Promise<Awaited<TaskResultType>> { // eslint-disable-line @typescript-eslint/promise-function-async\n\t\t// Not `async`, so that `.clear()` gets the same promise as the caller and can mark it as handled. An `async` wrapper would return a different promise.\n\t\tconst waitingTask: WaitingTask = {};\n\t\tconst promise = this.#add(function_, options, waitingTask);\n\t\twaitingTask.promise = promise;\n\n\t\t// An `add` event listener can call `.clear()` before the promise exists."
+    new: "\tadd<TaskResultType>(function_: Task<TaskResultType>, options: Partial<EnqueueOptionsType> = {}): Promise<Awaited<TaskResultType>> { // eslint-disable-line @typescript-eslint/promise-function-async\n\t\t// A task with this `id` is already pending or running, so return its promise instead of enqueueing a duplicate. The new `function_` is never called.\n\t\tif (options.id !== undefined) {\n\t\t\tconst existingTask = this.#activeTasksById.get(options.id);\n\t\t\tif (existingTask !== undefined) {\n\t\t\t\treturn existingTask as Promise<Awaited<TaskResultType>>;\n\t\t\t}\n\t\t}\n\n\t\t// Not `async`, so that `.clear()` gets the same promise as the caller and can mark it as handled. An `async` wrapper would return a different promise.\n\t\tconst waitingTask: WaitingTask = {};\n\t\tconst promise = this.#add(function_, options, waitingTask);\n\t\twaitingTask.promise = promise;\n\n\t\t// Tracked only for an explicit `id`, so a later duplicate call is deduplicated against it until it settles.\n\t\tif (options.id !== undefined) {\n\t\t\tconst {id} = options;\n\t\t\tthis.#activeTasksById.set(id, promise);\n\t\t\tconst forget = () => {\n\t\t\t\tif (this.#activeTasksById.get(id) === promise) {\n\t\t\t\t\tthis.#activeTasksById.delete(id);\n\t\t\t\t}\n\t\t\t};\n\t\t\tpromise.then(forget, forget);\n\t\t}\n\n\t\t// An `add` event listener can call `.clear()` before the promise exists."
+  test/advanced.ts:
+  - old: test('aborting a queued task with duplicate id removes the correct task', async () => {
+    new: test('aborting a queued task with an explicit id removes the correct task among other explicit ids', async () => {
+  - old: "\tconst keptTask = queue.add(async () => {\n\t\tresults.push('kept');\n\t\treturn 'kept';\n\t}, {id: 'duplicate'});\n\tconst abortableTask = queue.add(async () => {\n\t\tresults.push('aborted');\n\t\treturn 'aborted';\n\t}, {id: 'duplicate', signal: controller.signal});"
+    new: "\tconst keptTask = queue.add(async () => {\n\t\tresults.push('kept');\n\t\treturn 'kept';\n\t}, {id: 'kept'});\n\tconst abortableTask = queue.add(async () => {\n\t\tresults.push('aborted');\n\t\treturn 'aborted';\n\t}, {id: 'aborted', signal: controller.signal});"
+  - old: "\tqueue.add(async () => {\n\t\tawait delay(400);\n\t\tresult.push('\U0001F986');\n\t}, {id: '\U0001F986'});\n\tqueue.add(async () => {\n\t\tawait delay(400);\n\t\tresult.push('\U0001F986');\n\t}, {id: '\U0001F986'});\n\tqueue.add(async () => {\n\t\tawait delay(400);\n\t\tresult.push('\U0001F422');\n\t}, {id: '\U0001F422'});\n\tqueue.add(async () => {\n\t\tawait delay(400);\n\t\tresult.push('\U0001F986');\n\t}, {id: '\U0001F986'});\n\tqueue.add(async () => {\n\t\tawait delay(400);\n\t\tresult.push('\U0001F986');\n\t}, {id: '\U0001F986'});\n\tqueue.setPriority('\U0001F422', -1);"
+    new: "\tqueue.add(async () => {\n\t\tawait delay(400);\n\t\tresult.push('\U0001F986');\n\t}, {id: '\U0001F986-1'});\n\tqueue.add(async () => {\n\t\tawait delay(400);\n\t\tresult.push('\U0001F986');\n\t}, {id: '\U0001F986-2'});\n\tqueue.add(async () => {\n\t\tawait delay(400);\n\t\tresult.push('\U0001F422');\n\t}, {id: '\U0001F422'});\n\tqueue.add(async () => {\n\t\tawait delay(400);\n\t\tresult.push('\U0001F986');\n\t}, {id: '\U0001F986-3'});\n\tqueue.add(async () => {\n\t\tawait delay(400);\n\t\tresult.push('\U0001F986');\n\t}, {id: '\U0001F986-4'});\n\tqueue.setPriority('\U0001F422', -1);"
+  test/basic.ts:
+  - old: "\tassert.deepEqual(started, ['first']);\n\tassert.equal(queue.size, 1);\n\tqueue.clear();\n});\n"
+    new: "\tassert.deepEqual(started, ['first']);\n\tassert.equal(queue.size, 1);\n\tqueue.clear();\n});\n\ntest('.add() with an `id` already pending returns the existing promise and never calls the new function', async () => {\n\tconst queue = new PQueue({concurrency: 1});\n\tconst calls: string[] = [];\n\n\tconst first = queue.add(async () => {\n\t\tcalls.push('first');\n\t\tawait delay(50);\n\t\treturn 'first-result';\n\t}, {id: 'dedup-key'});\n\n\tassert.equal(queue.size + queue.pending, 1);\n\n\tconst second = queue.add(async () => {\n\t\tcalls.push('second');\n\t\treturn 'second-result';\n\t}, {id: 'dedup-key'});\n\n\t// The duplicate add did not enqueue a new task.\n\tassert.equal(queue.size, 0);\n\tassert.equal(queue.pending, 1);\n\tassert.equal(first, second);\n\n\tassert.equal(await first, 'first-result');\n\tassert.equal(await second, 'first-result');\n\tassert.deepEqual(calls, ['first']);\n});\n\ntest('.add() with an `id` already waiting (not yet running) returns the existing promise', async () => {\n\tconst queue = new PQueue({concurrency: 1});\n\tconst calls: string[] = [];\n\n\t// Occupies the only concurrency slot, so the next add waits.\n\tconst blocker = queue.add(async () => {\n\t\tawait delay(50);\n\t});\n\n\tconst waiting = queue.add(async () => {\n\t\tcalls.push('waiting');\n\t\treturn 'waiting-result';\n\t}, {id: 'dedup-key'});\n\n\tassert.equal(queue.size, 1);\n\n\tconst duplicate = queue.add(async () => {\n\t\tcalls.push('duplicate');\n\t\treturn 'duplicate-result';\n\t}, {id: 'dedup-key'});\n\n\tassert.equal(queue.size, 1);\n\tassert.equal(waiting, duplicate);\n\n\tawait blocker;\n\tassert.equal(await duplicate, 'waiting-result');\n\tassert.deepEqual(calls, ['waiting']);\n});\n\ntest('.add() with an `id` enqueues a fresh task once the earlier one with that id has settled', async () => {\n\tconst queue = new PQueue({concurrency: 1});\n\tconst calls: string[] = [];\n\n\tconst first = queue.add(async () => {\n\t\tcalls.push('first');\n\t\treturn 'first-result';\n\t}, {id: 'dedup-key'});\n\n\tassert.equal(await first, 'first-result');\n\n\tconst second = queue.add(async () => {\n\t\tcalls.push('second');\n\t\treturn 'second-result';\n\t}, {id: 'dedup-key'});\n\n\tassert.notEqual(first, second);\n\tassert.equal(await second, 'second-result');\n\tassert.deepEqual(calls, ['first', 'second']);\n});\n\ntest('.addAll() deduplicates a task that shares an `id` with an already pending task', async () => {\n\tconst queue = new PQueue({concurrency: 1});\n\tconst calls: string[] = [];\n\n\tconst blocker = queue.add(async () => {\n\t\tawait delay(50);\n\t});\n\n\tconst first = queue.add(async () => {\n\t\tcalls.push('first');\n\t\treturn 'first-result';\n\t}, {id: 'shared'});\n\n\tconst allPromise = queue.addAll([\n\t\tasync () => {\n\t\t\tcalls.push('second');\n\t\t\treturn 'second-result';\n\t\t},\n\t], {id: 'shared'});\n\n\tawait blocker;\n\tconst [second] = await allPromise;\n\tawait first;\n\n\tassert.deepEqual(calls, ['first']);\n\tassert.equal(second, 'first-result');\n});\n"
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

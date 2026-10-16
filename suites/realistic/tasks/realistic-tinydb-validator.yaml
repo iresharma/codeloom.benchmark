@@ -1,0 +1,359 @@
+id: realistic-tinydb-validator
+repo: tinydb
+upstream: https://github.com/msiemens/tinydb.git
+commit: 6d7c4fc3e04d398b1282876514660a33a7897b41
+category: cross-file
+language: python
+title: Add an optional per-table document validator to TinyDB
+prompt: 'Add an optional per-table schema validator to TinyDB. `TinyDB.table(name, validator=fn)` (which forwards to `Table.__init__`) and a new `Table.set_validator(fn)` method should let callers install a callable that is run against every document before `insert`, `insert_multiple` and `update`. If the validator returns `False` or raises an exception, the write must be aborted (nothing persisted, including the rest of an `insert_multiple` batch) and a new `tinydb.table.ValidationError` must be raised with a useful message; an exception raised by the validator itself should be wrapped into `ValidationError` rather than propagating raw. This must also apply correctly when the table''s storage uses `CachingMiddleware`: validation must happen before a document enters the write cache, not only on flush, so an invalid document is rejected immediately even if the cache has not been flushed yet. Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree.'
+allowed_paths:
+- tinydb/table.py
+- tinydb/database.py
+- tinydb/middlewares.py
+- tinydb/utils.py
+- tests/test_tables.py
+- tests/test_tinydb.py
+- tests/test_middlewares.py
+verification:
+- python -m pytest -o addopts= -q tests
+provenance: cross-file
+setup: {}
+reference:
+  tinydb/table.py:
+  - old: |-
+      from .storages import Storage
+      from .utils import LRUCache
+
+      __all__ = ('Document', 'Table')
+    new: |-
+      from .storages import Storage
+      from .utils import LRUCache
+
+      __all__ = ('Document', 'Table', 'ValidationError')
+
+
+      class ValidationError(Exception):
+          """
+          Raised when a document fails a table's validator.
+
+          This is raised when a table has a validator configured (see
+          ``Table(..., validator=...)``, ``Table.set_validator`` or
+          ``TinyDB.table(name, validator=...)``) and that validator either
+          returns ``False`` or raises an exception for a document that is about
+          to be inserted or updated. In either case the write is aborted and no
+          data is persisted.
+          """
+          pass
+  - old: |2
+              storage: Storage,
+              name: str,
+              cache_size: int = default_query_cache_capacity,
+              persist_empty: bool = False
+          ):
+              """
+              Create a table instance.
+              """
+
+              self._storage = storage
+              self._name = name
+              self._query_cache: LRUCache[QueryLike, list[Document]] \
+                  = self.query_cache_class(capacity=cache_size)
+
+              self._next_id: Optional[int] = None
+              # Only persist a brand-new empty table. Never clear existing documents
+              # when reopen/construct with persist_empty=True (see issue #636).
+              if persist_empty and not self._read_table():
+                  self._update_table(lambda table: table.clear())
+    new: |2
+              storage: Storage,
+              name: str,
+              cache_size: int = default_query_cache_capacity,
+              persist_empty: bool = False,
+              validator: Optional[Callable[[Mapping], Optional[bool]]] = None
+          ):
+              """
+              Create a table instance.
+
+              :param validator: an optional callable that is run against every
+                  document before it is inserted or updated. If it returns
+                  ``False`` or raises an exception, the write is aborted and a
+                  :class:`~tinydb.table.ValidationError` is raised instead.
+              """
+
+              self._storage = storage
+              self._name = name
+              self._query_cache: LRUCache[QueryLike, list[Document]] \
+                  = self.query_cache_class(capacity=cache_size)
+
+              self._next_id: Optional[int] = None
+              self._validator = validator
+              # Only persist a brand-new empty table. Never clear existing documents
+              # when reopen/construct with persist_empty=True (see issue #636).
+              if persist_empty and not self._read_table():
+                  self._update_table(lambda table: table.clear())
+
+          def set_validator(
+              self,
+              validator: Optional[Callable[[Mapping], Optional[bool]]]
+          ) -> None:
+              """
+              Set (or clear, with ``None``) this table's document validator.
+
+              The validator is called with each document that is about to be
+              inserted or updated. Returning ``False`` or raising an exception
+              aborts the write and raises :class:`~tinydb.table.ValidationError`.
+
+              :param validator: the validator callable, or ``None`` to disable
+                                 validation
+              """
+              self._validator = validator
+
+          def _validate_document(self, document: Mapping) -> None:
+              """
+              Run this table's validator (if any) against ``document``.
+
+              :raises ValidationError: if the validator returns ``False`` or
+                                        raises an exception
+              """
+              if self._validator is None:
+                  return
+
+              try:
+                  result = self._validator(document)
+              except ValidationError:
+                  raise
+              except Exception as exc:
+                  raise ValidationError(
+                      f'Validator raised an exception for document '
+                      f'{document!r}: {exc}'
+                  ) from exc
+
+              if result is False:
+                  raise ValidationError(
+                      f'Document failed validation: {document!r}'
+                  )
+  - old: |2-
+                  # In all other cases we use the next free ID
+                  doc_id = self._get_next_id()
+
+              # Now, we update the table and add the document
+    new: |2-
+                  # In all other cases we use the next free ID
+                  doc_id = self._get_next_id()
+
+              # Validate the document before it ever reaches the storage (or a
+              # middleware's write cache) by running it through the table's
+              # validator, if one is configured.
+              self._validate_document(document)
+
+              # Now, we update the table and add the document
+  - old: |2-
+                      if not isinstance(document, Mapping):
+                          raise ValueError('Document is not a Mapping')
+
+                      if isinstance(document, self.document_class):
+                          # Check if document does not override an existing document
+    new: |2-
+                      if not isinstance(document, Mapping):
+                          raise ValueError('Document is not a Mapping')
+
+                      # Validate before the document is added to the table (and
+                      # thus before it reaches the storage/write cache). Raising
+                      # here aborts the whole batch -- nothing gets written.
+                      self._validate_document(document)
+
+                      if isinstance(document, self.document_class):
+                          # Check if document does not override an existing document
+  - old: |2-
+              # Define the function that will perform the update
+              if callable(fields):
+                  def perform_update(table, doc_id):
+                      # Update documents by calling the update function provided by
+                      # the user
+                      fields(table[doc_id])
+              else:
+                  def perform_update(table, doc_id):
+                      # Update documents by setting all fields from the provided data
+                      table[doc_id].update(fields)
+    new: |2-
+              # Define the function that will perform the update
+              #
+              # Both branches first compute the resulting document on a throwaway
+              # copy and validate *that* before touching the real document. This
+              # matters because some storages (e.g. MemoryStorage) hand back the
+              # very same dict object that's held in memory, so mutating it
+              # in-place before validation would corrupt the live document even
+              # though the write to storage never actually happens.
+              if callable(fields):
+                  def perform_update(table, doc_id):
+                      # Update documents by calling the update function provided by
+                      # the user
+                      candidate = dict(table[doc_id])
+                      fields(candidate)
+                      self._validate_document(candidate)
+                      table[doc_id].clear()
+                      table[doc_id].update(candidate)
+              else:
+                  def perform_update(table, doc_id):
+                      # Update documents by setting all fields from the provided data
+                      candidate = dict(table[doc_id])
+                      candidate.update(fields)
+                      self._validate_document(candidate)
+                      table[doc_id].clear()
+                      table[doc_id].update(candidate)
+  tests/test_tables.py:
+  - old: |2-
+          db = TinyDB(path)
+          assert 't' not in db._tables
+          table = db.table('t', persist_empty=True)
+          assert len(table) == 1
+          assert table.all() == [{'a': 1}]
+          db.close()
+    new: |2-
+          db = TinyDB(path)
+          assert 't' not in db._tables
+          table = db.table('t', persist_empty=True)
+          assert len(table) == 1
+          assert table.all() == [{'a': 1}]
+          db.close()
+
+
+      def test_validator_blocks_bad_insert(db):
+          from tinydb.table import ValidationError
+
+          def only_positive(doc):
+              return doc.get('n', 0) > 0
+
+          table = db.table('validated', validator=only_positive)
+          table.insert({'n': 5})
+          assert len(table) == 1
+
+          with pytest.raises(ValidationError):
+              table.insert({'n': -1})
+
+          # The failed insert must not have been persisted
+          assert len(table) == 1
+
+
+      def test_validator_blocks_bad_insert_multiple(db):
+          from tinydb.table import ValidationError
+
+          def only_positive(doc):
+              return doc.get('n', 0) > 0
+
+          table = db.table('validated_multi', validator=only_positive)
+
+          with pytest.raises(ValidationError):
+              table.insert_multiple([{'n': 1}, {'n': -1}, {'n': 2}])
+
+          # Atomic: none of the batch should have been written
+          assert len(table) == 0
+
+
+      def test_validator_blocks_bad_update(db):
+          from tinydb.table import ValidationError
+
+          def only_positive(doc):
+              return doc.get('n', 0) > 0
+
+          table = db.table('validated_update', validator=only_positive)
+          doc_id = table.insert({'n': 1})
+
+          with pytest.raises(ValidationError):
+              table.update({'n': -5}, doc_ids=[doc_id])
+
+          # Update must have been aborted, original document unchanged
+          assert table.get(doc_id=doc_id) == {'n': 1}
+
+
+      def test_validator_raising_is_wrapped(db):
+          from tinydb.table import ValidationError
+
+          def picky(doc):
+              if 'name' not in doc:
+                  raise KeyError('name')
+              return True
+
+          table = db.table('validated_raise', validator=picky)
+
+          with pytest.raises(ValidationError):
+              table.insert({'n': 1})
+
+          assert len(table) == 0
+
+
+      def test_set_validator_at_runtime(db):
+          from tinydb.table import ValidationError
+
+          table = db.table('validated_runtime')
+          table.insert({'n': -1})  # no validator yet, should succeed
+
+          table.set_validator(lambda doc: doc.get('n', 0) > 0)
+
+          with pytest.raises(ValidationError):
+              table.insert({'n': -2})
+
+          table.set_validator(None)
+          table.insert({'n': -3})  # validator cleared, should succeed again
+          assert len(table) == 2
+  tests/test_middlewares.py:
+  - old: |-
+      def test_caching_rejects_use_after_close(tmpdir):
+          path = str(tmpdir.join('closed.db'))
+          db = TinyDB(path, storage=CachingMiddleware(JSONStorage))
+          db.insert({'key': 'value'})
+          db.close()
+
+          with pytest.raises(ValueError, match='closed'):
+              db.insert({'key': 'again'})
+
+          with pytest.raises(ValueError, match='closed'):
+              db.all()
+
+          with TinyDB(path, storage=CachingMiddleware(JSONStorage)) as reopened:
+              assert reopened.all() == [{'key': 'value'}]
+    new: |-
+      def test_caching_rejects_use_after_close(tmpdir):
+          path = str(tmpdir.join('closed.db'))
+          db = TinyDB(path, storage=CachingMiddleware(JSONStorage))
+          db.insert({'key': 'value'})
+          db.close()
+
+          with pytest.raises(ValueError, match='closed'):
+              db.insert({'key': 'again'})
+
+          with pytest.raises(ValueError, match='closed'):
+              db.all()
+
+          with TinyDB(path, storage=CachingMiddleware(JSONStorage)) as reopened:
+              assert reopened.all() == [{'key': 'value'}]
+
+
+      def test_validator_runs_before_entering_write_cache():
+          from tinydb.table import ValidationError
+
+          def only_positive(doc):
+              return doc.get('n', 0) > 0
+
+          db = TinyDB(storage=CachingMiddleware(MemoryStorage))
+          table = db.table('validated', validator=only_positive)
+
+          # Bump the write cache size so the invalid write would otherwise sit
+          # unflushed in the cache -- if validation ran only on flush, this
+          # invalid document would still be accepted here.
+          db.storage.WRITE_CACHE_SIZE = 1000
+
+          table.insert({'n': 1})
+
+          with pytest.raises(ValidationError):
+              table.insert({'n': -1})
+
+          # The invalid document must never have made it into the cache at all
+          assert len(table) == 1
+          assert table.all() == [{'n': 1}]
+
+          db.close()
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.

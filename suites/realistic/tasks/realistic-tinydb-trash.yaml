@@ -1,0 +1,279 @@
+id: realistic-tinydb-trash
+repo: tinydb
+upstream: https://github.com/msiemens/tinydb.git
+commit: 6d7c4fc3e04d398b1282876514660a33a7897b41
+category: cross-file
+language: python
+title: Add soft-delete (trash/restore) support to TinyDB tables
+prompt: 'Add soft-delete support to TinyDB. Implement `Table.trash(doc_ids)` so it moves the given documents into a hidden trash table instead of permanently deleting them: trashed documents must no longer appear in normal queries, iteration, `len(table)`, `get()`, `search()` or `contains()`. Add `Table.restore(doc_ids)` to move documents back out of the trash table into the table, preserving their original doc_ids and content. Add `Table.purge_trash()` to permanently empty the trash table. Document IDs that don''t refer to an existing document should be silently skipped by `trash()`/`restore()`, with the return value reflecting only the IDs actually affected. Work autonomously. Leave the final output on the main task checkout, not only a branch/worktree.'
+allowed_paths:
+- tinydb/table.py
+- tinydb/database.py
+- tinydb/storages.py
+- tinydb/queries.py
+- tests/test_tables.py
+- tests/test_tinydb.py
+- docs/api.rst
+verification:
+- python -m pytest -o addopts= -q tests
+provenance: cross-file
+setup: {}
+reference:
+  tinydb/table.py:
+  - old: |2-
+          default_query_cache_capacity = 10
+
+          def __init__(
+    new: |2-
+          default_query_cache_capacity = 10
+
+          #: The prefix used to name the hidden table that holds this table's
+          #: trashed (soft-deleted) documents.
+          trash_table_prefix = '_trash_'
+
+          def __init__(
+  - old: |2-
+              raise RuntimeError('Use truncate() to remove all documents')
+
+          def truncate(self) -> None:
+    new: |2-
+              raise RuntimeError('Use truncate() to remove all documents')
+
+          def trash(self, doc_ids: Iterable[int]) -> list[int]:
+              """
+              Soft-delete the given documents by moving them into this table's
+              hidden trash table instead of permanently removing them.
+
+              Trashed documents no longer appear in normal queries, iteration,
+              ``len()`` or ``get``/``search``/``contains``. Their original IDs and
+              content are preserved so they can later be brought back with
+              :meth:`restore`.
+
+              Document IDs that don't refer to an existing document in this table
+              are silently skipped, and the returned list only contains the IDs
+              that were actually trashed.
+
+              :param doc_ids: the document IDs to trash
+              :returns: a list containing the IDs of the documents that were
+                        trashed
+              """
+              requested_ids = list(doc_ids)
+              trashed_ids: list[int] = []
+              trashed_docs: dict[int, Mapping] = {}
+
+              def updater(table: dict):
+                  for doc_id in requested_ids:
+                      if doc_id in table:
+                          trashed_docs[doc_id] = table.pop(doc_id)
+                          trashed_ids.append(doc_id)
+
+              self._update_table(updater)
+
+              if trashed_docs:
+                  def trash_updater(trash_table: dict):
+                      trash_table.update(trashed_docs)
+
+                  self._update_trash_table(trash_updater)
+
+              return trashed_ids
+
+          def restore(self, doc_ids: Iterable[int]) -> list[int]:
+              """
+              Move the given documents out of this table's trash table and back
+              into the table, preserving their original document IDs and content.
+
+              Document IDs that don't refer to an existing document in the trash
+              table are silently skipped, and the returned list only contains the
+              IDs that were actually restored.
+
+              :param doc_ids: the document IDs to restore
+              :returns: a list containing the IDs of the documents that were
+                        restored
+              """
+              requested_ids = list(doc_ids)
+              restored_ids: list[int] = []
+              restored_docs: dict[int, Mapping] = {}
+
+              def trash_updater(trash_table: dict):
+                  for doc_id in requested_ids:
+                      if doc_id in trash_table:
+                          restored_docs[doc_id] = trash_table.pop(doc_id)
+                          restored_ids.append(doc_id)
+
+              self._update_trash_table(trash_updater)
+
+              if restored_docs:
+                  def updater(table: dict):
+                      table.update(restored_docs)
+
+                  self._update_table(updater)
+
+              return restored_ids
+
+          def purge_trash(self) -> None:
+              """
+              Permanently remove all documents currently held in this table's
+              trash table. **CANNOT BE REVERSED!**
+              """
+
+              self._update_trash_table(lambda trash_table: trash_table.clear())
+
+          def trashed(self) -> list[Document]:
+              """
+              Get all documents currently held in this table's trash table.
+
+              :returns: a list with all trashed documents.
+              """
+
+              return [
+                  self.document_class(doc, self.document_id_class(doc_id))
+                  for doc_id, doc in self._read_trash_table().items()
+              ]
+
+          def truncate(self) -> None:
+  - old: |2-
+              # Clear the query cache, as the table contents have changed
+              self.clear_cache()
+    new: |2-
+              # Clear the query cache, as the table contents have changed
+              self.clear_cache()
+
+          @property
+          def _trash_name(self) -> str:
+              """
+              The (hidden) name of the table used to hold this table's trashed
+              (soft-deleted) documents.
+              """
+
+              return self.trash_table_prefix + self._name
+
+          def _read_trash_table(self) -> dict[str, Mapping]:
+              """
+              Read this table's trash table data from the underlying storage.
+
+              See :meth:`_read_table` for details; this behaves identically but
+              operates on the hidden trash table instead.
+              """
+
+              tables = self._storage.read()
+
+              if tables is None:
+                  # The database is empty
+                  return {}
+
+              try:
+                  table = tables[self._trash_name]
+              except KeyError:
+                  # The trash table does not exist yet, so it is empty
+                  return {}
+
+              return table
+
+          def _update_trash_table(self, updater: Callable[[dict[int, Mapping]], None]):
+              """
+              Perform an update operation on this table's trash table.
+
+              See :meth:`_update_table` for details; this behaves identically but
+              operates on the hidden trash table instead. Note that updating the
+              trash table does not clear this table's query cache, since it never
+              contains trashed documents.
+              """
+
+              tables = self._storage.read()
+
+              if tables is None:
+                  # The database is empty
+                  tables = {}
+
+              try:
+                  raw_table = tables[self._trash_name]
+              except KeyError:
+                  # The trash table does not exist yet, so it is empty
+                  raw_table = {}
+
+              table = {
+                  self.document_id_class(doc_id): doc
+                  for doc_id, doc in raw_table.items()
+              }
+
+              updater(table)
+
+              tables[self._trash_name] = {
+                  str(doc_id): doc
+                  for doc_id, doc in table.items()
+              }
+
+              self._storage.write(tables)
+  tests/test_tables.py:
+  - old: |2-
+          db = TinyDB(path)
+          assert 't' not in db._tables
+          table = db.table('t', persist_empty=True)
+          assert len(table) == 1
+          assert table.all() == [{'a': 1}]
+          db.close()
+    new: |2-
+          db = TinyDB(path)
+          assert 't' not in db._tables
+          table = db.table('t', persist_empty=True)
+          assert len(table) == 1
+          assert table.all() == [{'a': 1}]
+          db.close()
+
+
+      def test_trash_hides_documents(db):
+          table = db.table('trash_test')
+          id1 = table.insert({'a': 1})
+          id2 = table.insert({'a': 2})
+
+          trashed = table.trash([id1])
+
+          assert trashed == [id1]
+          assert len(table) == 1
+          assert table.all() == [table.document_class({'a': 2}, id2)]
+          assert table.get(doc_id=id1) is None
+          assert table.contains(doc_id=id1) is False
+          assert [doc.doc_id for doc in table] == [id2]
+
+
+      def test_trash_unknown_id_is_skipped(db):
+          table = db.table('trash_test2')
+          table.insert({'a': 1})
+
+          assert table.trash([999]) == []
+          assert len(table) == 1
+
+
+      def test_restore_brings_document_back(db):
+          table = db.table('trash_test3')
+          id1 = table.insert({'a': 1})
+          table.insert({'a': 2})
+
+          table.trash([id1])
+          assert len(table) == 1
+
+          restored = table.restore([id1])
+
+          assert restored == [id1]
+          assert len(table) == 2
+          doc = table.get(doc_id=id1)
+          assert doc == {'a': 1}
+          assert doc.doc_id == id1
+
+
+      def test_purge_trash_empties_trash(db):
+          table = db.table('trash_test4')
+          id1 = table.insert({'a': 1})
+
+          table.trash([id1])
+          assert table.trashed() != []
+
+          table.purge_trash()
+
+          assert table.trashed() == []
+          assert table.restore([id1]) == []
+          assert len(table) == 0
+mutants: []
+certification:
+  status: pending
+  reason: Reference/no-op, regression and mutant checks have not run.
