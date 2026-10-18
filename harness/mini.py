@@ -51,7 +51,8 @@ def main():
             "--network",
             cfg["network"],
             "-e",
-            "ENGINE_RESEARCH_GATEWAY=" + cfg["url"].removesuffix("/v1") + "/research",
+            "ENGINE_RESEARCH_GATEWAY="
+            + (cfg.get("research_url") or cfg["url"].removesuffix("/v1") + "/research"),
             "-e",
             "ENGINE_RESEARCH_TOKEN=" + cfg["token"],
         ],

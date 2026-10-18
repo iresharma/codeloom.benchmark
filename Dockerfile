@@ -25,8 +25,10 @@ RUN ln -s /usr/local/go/bin/go /usr/local/bin/go && ln -s /usr/local/go/bin/gofm
     && ln -s /opt/node-tools/node_modules/.bin/typescript-language-server /usr/local/bin/typescript-language-server \
     && printf '/task/src\n/task\n' > /usr/local/lib/python3.12/site-packages/benchmark-task.pth
 COPY public /opt/benchmark-public
+COPY engine /opt/engine
 RUN cp /opt/benchmark-public/dotenv_cli.py /usr/local/bin/dotenv && chmod +x /usr/local/bin/dotenv
-RUN useradd --create-home --uid 1000 bench && mkdir -p /task /ipc /opt/engine /opt/benchmark /opt/go-modules \
+RUN useradd --create-home --uid 1000 bench && mkdir -p /task /ipc /opt/benchmark /opt/go-modules \
     && chown -R bench:bench /task /ipc /opt/engine /opt/go-modules /tmp
+ENV PYTHONPATH="/opt/engine:/task/src:/task"
 WORKDIR /task
 USER bench

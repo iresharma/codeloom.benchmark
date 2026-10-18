@@ -5,7 +5,10 @@ commit: 26d48e0634e6ee9cdc0533996db289ce4b430177
 title: Research and repair redirects
 prompt: 'Use web search and the pinned GitHub source to investigate and repair cross-origin redirects:
   remove credentials except a same-host default-port HTTP-to-HTTPS upgrade; do not carry raw Cookie headers
-  into redirect requests. Before editing, obtain a researcher briefing. Leave research.md citing external
+  into redirect requests. Also repair URL host normalization: httpx.URL(...).host must return the host
+  as given (e.g. lowercase-preserving), not forcibly uppercased. Run the full existing test suite, not
+  just the files you touched, before finishing. Before editing, obtain a researcher briefing. Leave
+  research.md citing external
   sources and the pinned GitHub commit, explaining the compatibility contract and the changes. Shell-native
   agents use python /opt/benchmark-public/research.py search ''{"query":"HTTPX redirects"}'' and github
   ''{"args":["api","repos/encode/httpx/contents/httpx/_client.py?ref=26d48e0634e6ee9cdc0533996db289ce4b430177","-H","Accept:

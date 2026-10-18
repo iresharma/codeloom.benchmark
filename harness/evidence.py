@@ -6,6 +6,17 @@ import json
 import re
 from pathlib import Path
 
+# A search-engine host reached directly (bypassing the host-mediated research
+# gateway, which only ever proxies `github`) is accepted as equivalent to a
+# successful dedicated `web_search` call: once `search`/`fetch` route through
+# the container's own native network transport instead of the gateway, no
+# host-side research/*.json record is ever written for them, so that log is
+# no longer a complete signal on its own.
+_SEARCH_ENGINE_URL = re.compile(
+    r"https?://(?:[\w.-]*\.)?(?:google|bing|duckduckgo)\.[a-z.]+/(?:search|html)\b",
+    re.I,
+)
+
 
 def grade_evidence(task, trial: Path, system: str, view: dict) -> dict:
     required = task.get("evidence") or {}
@@ -49,7 +60,17 @@ def grade_evidence(task, trial: Path, system: str, view: dict) -> dict:
             json.loads(path.read_text()) for path in sorted((trial / "research").glob("*.json"))
         ]
         successful_records = [row for row in records if row.get("ok") and row.get("sha256")]
-        checks["web_search"] = any(row["operation"] == "search" for row in successful_records)
+
+        def native_search(event):
+            return (
+                successful(event)
+                and event.get("title") in ("web_search", "web_fetch")
+                and _SEARCH_ENGINE_URL.search(event.get("detail", "") or "")
+            )
+
+        checks["web_search"] = any(
+            row["operation"] == "search" for row in successful_records
+        ) or any(native_search(event) for event in tools)
         sources = [
             row
             for row in successful_records
@@ -69,7 +90,12 @@ def grade_evidence(task, trial: Path, system: str, view: dict) -> dict:
                 for event in tools
                 if roles.get(event.get("agent_id")) == "researcher" and successful(event)
             }
-            checks["researcher_role"] = "web_search" in observed and "github_file" in observed
+            researcher_searched = "web_search" in observed or any(
+                native_search(event)
+                for event in tools
+                if roles.get(event.get("agent_id")) == "researcher"
+            )
+            checks["researcher_role"] = researcher_searched and "github_file" in observed
     if required.get("terminal"):
         pattern = required.get("command_pattern", r"(?:python\s+-m\s+httpie|\bhttp(?:ie)?\b)")
         checks["terminal_execution"] = any(

@@ -13,9 +13,11 @@ Hidden checks live under `evaluator/`. Agents never see them.
 
 ## Run on this laptop
 
-Needs Docker, Git, Python 3.12, [uv](https://docs.astral.sh/uv/), and the Engine checkout at `../engine`. Plug the charger in and leave the lid open. The runner calls `caffeinate` so the Mac stays awake on AC power.
+Needs Docker, Git, Python 3.12, and the Engine checkout at `../engine`. Plug the charger in and leave the lid open. The runner calls `caffeinate` so the Mac stays awake on AC power.
 
 ```sh
+python3.12 -m venv .venv
+.venv/bin/pip install -e ".[dev]"
 export OPENROUTER_API_KEY=...
 ./scripts/benchmark prepare-runtime --engine ../engine
 ./scripts/benchmark run --suite classic --run-dir runs/classic --engine ../engine
@@ -47,7 +49,8 @@ Engine submissions come from `/task/.engine/worktrees/<agent_id>`. The runner ke
 ## Development
 
 ```sh
-uv sync --frozen
-uv run pytest -q
-uv run ruff check .
+python3.12 -m venv .venv
+.venv/bin/pip install -e ".[dev]"
+.venv/bin/pytest -q
+.venv/bin/ruff check .
 ```

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 from pathlib import Path
 
@@ -9,6 +10,28 @@ from jsonschema import validate
 from . import ROOT, write_json
 from .report import report
 from .traces import export_run_views
+
+# Per-trial proxy-issued bearer tokens (harness/proxy.py: secrets.token_urlsafe(24))
+# end up logged verbatim by mini-swe-agent's own trace/view output (its init
+# config, including the docker run_args and model_kwargs it was given, gets
+# written into native-trace.json and carried into view.json). Those tokens
+# are already dead once the per-run proxy process closes, but they must not
+# ship into a public repo regardless. Scrub every place one of these is known
+# to surface, by context rather than by guessing the token's shape.
+_TOKEN_CONTEXTS = [
+    re.compile(r"(ENGINE_RESEARCH_TOKEN=)[^\s\"\\]+"),
+    re.compile(r'("api_key"\s*:\s*")[^"]+(")'),
+    re.compile(r"(Bearer\s+)[A-Za-z0-9_\-]{16,}"),
+]
+
+
+def _scrub_credentials(text: str) -> str:
+    for pattern in _TOKEN_CONTEXTS:
+        text = pattern.sub(
+            lambda m: m.group(1) + "<redacted>" + (m.group(2) if m.lastindex and m.lastindex >= 2 else ""),
+            text,
+        )
+    return text
 
 
 def publish(run_dir: Path, pages: Path) -> dict:
@@ -56,7 +79,7 @@ def _copy_public_trials(run_dir: Path, assets: Path) -> None:
                 text = source.read_text()
                 if "sk-or-v1-" in text:
                     raise ValueError("Credential marker in export")
-                shutil.copy2(source, dest / name)
+                (dest / name).write_text(_scrub_credentials(text))
         for directory in ("browser", "research"):
             source = trial / directory
             if source.exists():

@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
-if command -v uv >/dev/null 2>&1; then
-  uv sync --frozen
-  exec uv run --frozen harness "${@:-run}"
+if [[ -x .venv/bin/python ]]; then
+  exec .venv/bin/python -m harness "${@:-run}"
 fi
-if [[ -x .venv/bin/harness ]]; then
-  exec .venv/bin/harness "${@:-run}"
-fi
-printf '%s\n' 'Install uv (https://docs.astral.sh/uv/) then rerun this command.' >&2
+printf '%s\n' 'Create a venv first:' \
+  '  python3.12 -m venv .venv' \
+  '  .venv/bin/pip install -e ".[dev]"' >&2
 exit 2

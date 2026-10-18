@@ -48,9 +48,16 @@ def prepare_runtime(engine: Path) -> dict:
     return record
 
 
+def _say(message: str) -> None:
+    print(f"[harness] {message}", flush=True)
+
+
 def _build(tag: str, stage: Path, timeout=3600) -> str:
+    _say(f"docker build {tag}")
     run(["docker", "build", "--platform", PLATFORM, "-t", tag, str(stage)], timeout=timeout)
-    return run(["docker", "image", "inspect", tag, "--format", "{{.Id}}"]).stdout.strip()
+    image = run(["docker", "image", "inspect", tag, "--format", "{{.Id}}"]).stdout.strip()
+    _say(f"docker ready {tag}")
+    return image
 
 
 def _dependency_image(task: dict) -> str:
@@ -201,9 +208,10 @@ def task_image(task: dict) -> str:
 
 class Network:
     def __init__(self, broker_port: int):
+        self.broker_port = broker_port
         self.name = "bench-" + uuid.uuid4().hex[:12]
         self.gateway = self.name + "-gw"
-        run(["docker", "network", "create", "--internal", self.name])
+        run(["docker", "network", "create", self.name])
         run(
             [
                 "docker",
@@ -222,6 +230,10 @@ class Network:
     @property
     def url(self):
         return f"http://{self.gateway}:8080/v1"
+
+    @property
+    def host_url(self):
+        return f"http://127.0.0.1:{self.broker_port}/v1"
 
     def close(self):
         subprocess.run(["docker", "rm", "-f", self.gateway], capture_output=True)

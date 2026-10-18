@@ -36,9 +36,10 @@ class BudgetRefused(Exception):
 
 
 class Proxy:
-    def __init__(self, key: str, run_dir: Path):
+    def __init__(self, key: str, run_dir: Path, upstream: str = UPSTREAM):
         self.key = key
         self.run_dir = run_dir
+        self.upstream = upstream.rstrip("/")
         self.lock = threading.Lock()
         self.trials = {}
         self.spent = {}
@@ -152,8 +153,19 @@ class Proxy:
         proxy = self
 
         class Handler(BaseHTTPRequestHandler):
+            protocol_version = "HTTP/1.1"
+
             def log_message(self, *_):
                 return
+
+            def _write(self, status, body: bytes, content_type="application/json"):
+                self.send_response(status)
+                self.send_header("Content-Type", content_type)
+                self.send_header("Content-Length", str(len(body)))
+                self.send_header("Connection", "close")
+                self.end_headers()
+                self.wfile.write(body)
+                self.wfile.flush()
 
             def error(self, status, code, detail):
                 payload = json.dumps({"error": {"code": code, "message": detail}}).encode()
@@ -220,7 +232,7 @@ class Proxy:
                 started = time.monotonic()
                 try:
                     response = requests.post(
-                        UPSTREAM + "/chat/completions",
+                        proxy.upstream + "/chat/completions",
                         json=body,
                         headers={
                             "Authorization": "Bearer " + proxy.key,
@@ -229,27 +241,21 @@ class Proxy:
                         stream=True,
                         timeout=2400,
                     )
+                    chunks = []
+                    try:
+                        for chunk in response.iter_content(8192):
+                            if chunk:
+                                chunks.append(chunk)
+                    finally:
+                        response.close()
+                    payload = b"".join(chunks)
+                    status = "complete" if response.status_code < 400 else "provider_error"
                 except requests.RequestException as exc:
                     proxy.record(
                         trial["id"],
                         {"id": secrets.token_hex(8), "status": "transport_error", "detail": str(exc)},
                     )
                     return self.error(502, "transport_error", str(exc))
-                chunks = []
-                try:
-                    self.send_response(response.status_code)
-                    for key, value in response.headers.items():
-                        if key.lower() in {"content-type", "transfer-encoding"}:
-                            self.send_header(key, value)
-                    self.end_headers()
-                    for chunk in response.iter_content(8192):
-                        if chunk:
-                            chunks.append(chunk)
-                            self.wfile.write(chunk)
-                    self.wfile.flush()
-                finally:
-                    response.close()
-                payload = b"".join(chunks)
                 usage = _usage(payload)
                 cost = _cost_usd(usage, body["model"])
                 proxy.charge(trial["id"], cost)
@@ -257,7 +263,7 @@ class Proxy:
                     trial["id"],
                     {
                         "id": secrets.token_hex(8),
-                        "status": "complete" if response.status_code < 400 else "provider_error",
+                        "status": status,
                         "elapsed_s": time.monotonic() - started,
                         "usage": usage,
                         "cost_usd": cost,
@@ -265,7 +271,13 @@ class Proxy:
                         "response_blob": proxy._blob(payload),
                     },
                 )
-                if response.status_code >= 400:
+                try:
+                    self._write(
+                        response.status_code,
+                        payload,
+                        response.headers.get("Content-Type", "application/json"),
+                    )
+                except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
                     return
 
             def research(self, trial, raw):

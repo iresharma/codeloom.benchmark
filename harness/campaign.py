@@ -34,6 +34,10 @@ def trial_id(task, system):
     return f"{task['id']}-{system}"
 
 
+def _say(message: str) -> None:
+    print(f"[harness] {message}", flush=True)
+
+
 def _engine_env(token, network, task):
     return {
         "OPENROUTER_API_KEY": token,
@@ -95,9 +99,11 @@ def attempt(task, system, image, proxy: Proxy, network: Network, run_dir: Path) 
     ident = trial_id(task, system)
     trial = run_dir / "trials" / ident
     if (trial / "result.json").exists():
+        _say(f"skip {ident} (already finished)")
         return read_json(trial / "result.json")
     trial.mkdir(parents=True, exist_ok=True)
     cap = cap_for(task["difficulty"])
+    _say(f"start {ident}  {task['difficulty']}  cap ${cap:.0f}")
     token = proxy.issue(ident, cap, research_policy(task))
     write_json(
         trial / "attempt.json",
@@ -121,7 +127,8 @@ def attempt(task, system, image, proxy: Proxy, network: Network, run_dir: Path) 
                 "root": str(trial),
                 "image": image,
                 "network": network.name,
-                "url": network.url,
+                "url": network.host_url,
+                "research_url": network.url.removesuffix("/v1") + "/research",
                 "token": token,
                 "model": MODEL,
                 "prompt": task["prompt"],
@@ -155,9 +162,12 @@ def attempt(task, system, image, proxy: Proxy, network: Network, run_dir: Path) 
             )
             process.stdin.write(json.dumps(payload) + "\n")
             process.stdin.close()
+            _say(f"agent running {ident}")
             code = process.wait()
         if code not in (0, None):
             termination = "agent_crash"
+        elapsed = time.monotonic() - started
+        _say(f"agent stopped {ident}  exit {code}  {elapsed:.0f}s")
         if container is None and (trial / "container.json").exists():
             container = read_json(trial / "container.json")["id"]
         if container:
@@ -181,6 +191,7 @@ def attempt(task, system, image, proxy: Proxy, network: Network, run_dir: Path) 
                 save_patch(baseline, submitted, trial / "patch.diff")
                 staged = Path(tmp) / "submitted"
                 copy_tree(submitted, staged)
+                _say(f"grade {ident}  from {origin}")
                 verification = grade(image, task, staged, trial / "verification.json")
             view = build_view(run_dir, trial)
             evidence = grade_evidence(task, trial, system, view)
@@ -240,6 +251,12 @@ def attempt(task, system, image, proxy: Proxy, network: Network, run_dir: Path) 
         if container:
             stop(container)
     write_json(trial / "result.json", result)
+    passed = result.get("verification", {}).get("pass")
+    _say(
+        f"done {ident}  {result.get('termination')}  "
+        f"{'pass' if passed else 'fail'}  ${result.get('cost_usd') or 0:.3f}  "
+        f"{result.get('elapsed_s') or 0:.0f}s"
+    )
     return result
 
 
@@ -250,6 +267,7 @@ def measured(name: str, run_dir: Path, engine: Path, only=None, parallel=2):
     suite = suite_id(name)
     tasks = load_suite(name, only)
     run_dir.mkdir(parents=True, exist_ok=True)
+    _say(f"campaign {run_dir.name}  suite {name} ({suite})  {len(tasks)} tasks  parallel {parallel}")
     write_json(
         run_dir / "manifest.json",
         {
@@ -272,7 +290,9 @@ def measured(name: str, run_dir: Path, engine: Path, only=None, parallel=2):
         },
     )
     if not (ROOT / ".cache/runtime.json").exists():
+        _say("runtime image missing; building")
         prepare_runtime(engine)
+    _say("preparing task images")
     images = {task["id"]: task_image(task) for task in tasks}
     key = os.environ.get("OPENROUTER_API_KEY", "").strip()
     if not key:
@@ -280,15 +300,18 @@ def measured(name: str, run_dir: Path, engine: Path, only=None, parallel=2):
     proxy = Proxy(key, run_dir)
     port = proxy.start()
     network = Network(port)
+    _say(f"proxy on :{port}  network {network.name}")
     try:
         workers = 2 if parallel != 1 else 1
-        for task in tasks:
+        for index, task in enumerate(tasks, 1):
+            _say(f"task {index}/{len(tasks)}  {task['id']}  {task['difficulty']}  {task['title']}")
             pending = [
                 (task, system, images[task["id"]])
                 for system in ("mini-swe-agent", "engine-core")
                 if not (run_dir / "trials" / trial_id(task, system) / "result.json").exists()
             ]
             if not pending:
+                _say(f"skip {task['id']} (both arms finished)")
                 continue
             if workers == 1:
                 for item in pending:
@@ -304,4 +327,7 @@ def measured(name: str, run_dir: Path, engine: Path, only=None, parallel=2):
     finally:
         network.close()
         proxy.close()
-    return report(run_dir)
+    summary = report(run_dir)
+    spend = sum(s.get("cost_usd") or 0 for s in summary.get("systems", []))
+    _say(f"campaign {summary.get('status')}  spend ${spend:.3f}")
+    return summary
